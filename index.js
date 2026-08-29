@@ -1,55 +1,46 @@
-/**
- * Medovy Dom — Telegram order backend for Cloudflare Workers
- *
- * Cloudflare Secrets:
- *
- * BOT_TOKEN
- * GROUP_CHAT_ID
- *
- * Optional:
- * WEBAPP_ORIGIN
- */
-
 const cors = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "Content-Type",
-  "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-const json = (body, status = 200) => {
-  return new Response(JSON.stringify(body), {
+function json(data, status = 200) {
+  return new Response(JSON.stringify(data), {
     status,
     headers: {
       "Content-Type": "application/json; charset=utf-8",
       ...cors,
     },
   });
-};
+}
 
-
-// ======================================================
-// TELEGRAM API
-// ======================================================
-
-async function telegram(env, method, payload) {
+async function sendTelegram(env, text) {
   if (!env.BOT_TOKEN) {
     throw new Error("BOT_TOKEN is not configured");
   }
 
+  if (!env.GROUP_CHAT_ID) {
+    throw new Error("GROUP_CHAT_ID is not configured");
+  }
+
   const response = await fetch(
-    `https://api.telegram.org/bot${env.BOT_TOKEN}/${method}`,
+    `https://api.telegram.org/bot${env.BOT_TOKEN}/sendMessage`,
     {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify({
+        chat_id: env.GROUP_CHAT_ID,
+        text,
+        parse_mode: "HTML",
+      }),
     }
   );
 
   const result = await response.json();
 
-  if (!result.ok) {
+  if (!response.ok || !result.ok) {
     throw new Error(
       result.description || "Telegram API error"
     );
@@ -58,90 +49,23 @@ async function telegram(env, method, payload) {
   return result;
 }
 
-
-// ======================================================
-// HELPERS
-// ======================================================
-
-function esc(value = "") {
+function escapeHtml(value = "") {
   return String(value)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;");
 }
 
-function format(value) {
+function formatPrice(value) {
   return (
     Number(value || 0).toLocaleString("ru-RU") + " ₽"
   );
 }
 
+async function handleOrder(request, env) {
+  const data = await request.json();
 
-// ======================================================
-// ORDER
-// ======================================================
-
-async function order(request, env) {
-
-  // Проверяем секрет группы
-  if (!env.GROUP_CHAT_ID) {
-    return json(
-      {
-        ok: false,
-        error: "GROUP_CHAT_ID is not configured",
-      },
-      500
-    );
-  }
-
-  // Проверяем Origin
-  const origin = request.headers.get("Origin") || "";
-
-  if (
-    env.WEBAPP_ORIGIN &&
-    origin &&
-    origin !== env.WEBAPP_ORIGIN
-  ) {
-    return json(
-      {
-        ok: false,
-        error: "Origin not allowed",
-      },
-      403
-    );
-  }
-
-  // Получаем заказ
-  let data;
-
-  try {
-    data = await request.json();
-  } catch {
-    return json(
-      {
-        ok: false,
-        error: "Invalid JSON",
-      },
-      400
-    );
-  }
-
-
-  // ====================================================
-  // ПРОВЕРКА ЗАКАЗА
-  // ====================================================
-
-  if (!data.items || !Array.isArray(data.items)) {
-    return json(
-      {
-        ok: false,
-        error: "Некорректная корзина",
-      },
-      400
-    );
-  }
-
-  if (data.items.length === 0) {
+  if (!data.items || !data.items.length) {
     return json(
       {
         ok: false,
@@ -151,231 +75,120 @@ async function order(request, env) {
     );
   }
 
-  if (!data.name || !data.phone) {
-    return json(
-      {
-        ok: false,
-        error: "Не указаны имя или телефон",
-      },
-      400
-    );
-  }
-
-
-  // ====================================================
-  // ФОРМИРУЕМ СПИСОК ТОВАРОВ
-  // ====================================================
-
-  const lines = data.items
+  const products = data.items
     .map((item) => {
-
-      const name = esc(item.name || "Товар");
-
+      const name = escapeHtml(item.name || "Товар");
       const qty = Number(item.qty) || 1;
-
       const price = Number(item.price) || 0;
-
       const total = price * qty;
 
-      return (
-        `• ${name} × ${qty} — ${format(total)}`
-      );
+      return `• ${name} × ${qty} — ${formatPrice(total)}`;
     })
     .join("\n");
 
+  const text =
+    `<b>🍰 НОВЫЙ ЗАКАЗ — МЕДОВЫЙ ДОМ</b>\n\n` +
 
-  // ====================================================
-  // ФОРМИРУЕМ СООБЩЕНИЕ ДЛЯ ГРУППЫ
-  // ====================================================
+    `<b>Заказ:</b>\n` +
+    `${products}\n\n` +
 
-  let text = "";
+    `<b>Итого:</b> ${formatPrice(data.total)}\n\n` +
 
-  text += "<b>🍰 НОВЫЙ ЗАКАЗ — МЕДОВЫЙ ДОМ</b>\n\n";
+    `<b>Клиент:</b> ${escapeHtml(
+      data.name || "Не указано"
+    )}\n` +
 
-  text += "<b>📦 Заказ:</b>\n";
-  text += lines;
-  text += "\n\n";
+    `<b>Телефон:</b> ${escapeHtml(
+      data.phone || "Не указано"
+    )}\n` +
 
-  text += `<b>💰 Итого:</b> ${format(data.total)}\n\n`;
-
-  text += "<b>👤 Клиент:</b>\n";
-  text += `${esc(data.name)}\n`;
-
-  text += "<b>📞 Телефон:</b>\n";
-  text += `${esc(data.phone)}\n\n`;
-
-  text += `<b>🚚 Получение:</b> ${esc(
-    data.method || "Самовывоз"
-  )}`;
+    `<b>Получение:</b> ${escapeHtml(
+      data.method || "Самовывоз"
+    )}`;
 
   if (data.address) {
-    text += `\n<b>📍 Адрес:</b> ${esc(data.address)}`;
+    text += `\n<b>Адрес:</b> ${escapeHtml(data.address)}`;
   }
 
   if (data.date) {
-    text += `\n<b>📅 Дата:</b> ${esc(data.date)}`;
+    text += `\n<b>Дата:</b> ${escapeHtml(data.date)}`;
   }
 
   if (data.comment) {
-    text += `\n<b>💬 Комментарий:</b> ${esc(data.comment)}`;
+    text += `\n<b>Комментарий:</b> ${escapeHtml(data.comment)}`;
   }
 
-
-  // ====================================================
-  // ОТПРАВЛЯЕМ ИМЕННО В ГРУППУ
-  // ====================================================
-
-  await telegram(env, "sendMessage", {
-    chat_id: env.GROUP_CHAT_ID,
-    text: text,
-    parse_mode: "HTML",
-  });
-
-
-  // ====================================================
-  // ОТВЕТ САЙТУ
-  // ====================================================
-
-  return json({
-    ok: true,
-    message: "Заказ отправлен в Telegram-группу",
-  });
-}
-
-
-// ======================================================
-// TELEGRAM WEBHOOK
-// ======================================================
-
-async function webhook(request, env) {
-
-  let update;
-
-  try {
-    update = await request.json();
-  } catch {
-    return json({
-      ok: true,
-    });
-  }
-
-  const message = update.message;
-
-  if (!message) {
-    return json({
-      ok: true,
-    });
-  }
-
-  const chat = message.chat;
-
-  // Если написать /id в группе,
-  // бот отправит ID этой группы
-  if (
-    message.text === "/id" ||
-    message.text === "/start"
-  ) {
-
-    await telegram(env, "sendMessage", {
-      chat_id: chat.id,
-
-      text:
-        `<b>Telegram Chat ID</b>\n\n` +
-        `<code>${chat.id}</code>\n\n` +
-        `Тип чата: <code>${esc(chat.type)}</code>`,
-
-      parse_mode: "HTML",
-    });
-  }
+  await sendTelegram(env, text);
 
   return json({
     ok: true,
   });
 }
-
-
-// ======================================================
-// MAIN WORKER
-// ======================================================
 
 export default {
-
   async fetch(request, env) {
-
     try {
-
-      // =================================================
-      // CORS PREFLIGHT
-      // =================================================
-
+      /*
+       * CORS preflight
+       */
       if (request.method === "OPTIONS") {
-
         return new Response(null, {
           status: 204,
           headers: cors,
         });
-
       }
-
 
       const url = new URL(request.url);
 
-
-      // =================================================
-      // HEALTH CHECK
-      // =================================================
-
+      /*
+       * Проверка Worker
+       *
+       * https://...workers.dev/health
+       */
       if (
-        request.method === "GET" &&
-        (
-          url.pathname === "/" ||
-          url.pathname === "/health"
-        )
+        url.pathname === "/health" &&
+        request.method === "GET"
       ) {
-
         return json({
           ok: true,
-          service: "Medovy Dom Telegram API",
+          service: "Medovy Dom API",
         });
-
       }
 
-
-      // =================================================
-      // ЗАКАЗ С САЙТА
-      // =================================================
-
+      /*
+       * Проверка Telegram
+       *
+       * https://...workers.dev/debug
+       */
       if (
-        request.method === "POST" &&
-        (
-          url.pathname === "/" ||
-          url.pathname === "/order"
-        )
+        url.pathname === "/debug" &&
+        request.method === "GET"
       ) {
-
-        return await order(request, env);
-
+        return json({
+          ok: true,
+          debug: {
+            hasBotToken: Boolean(env.BOT_TOKEN),
+            hasGroupChatId: Boolean(env.GROUP_CHAT_ID),
+            groupChatIdType: typeof env.GROUP_CHAT_ID,
+          },
+        });
       }
 
-
-      // =================================================
-      // TELEGRAM WEBHOOK
-      // =================================================
-
+      /*
+       * СОЗДАНИЕ ЗАКАЗА
+       *
+       * POST /order
+       */
       if (
-        request.method === "POST" &&
-        url.pathname === "/telegram-webhook"
+        url.pathname === "/order" &&
+        request.method === "POST"
       ) {
-
-        return await webhook(request, env);
-
+        return await handleOrder(request, env);
       }
 
-
-      // =================================================
-      // NOT FOUND
-      // =================================================
-
+      /*
+       * Всё остальное
+       */
       return json(
         {
           ok: false,
@@ -387,18 +200,12 @@ export default {
       );
 
     } catch (error) {
-
-      console.error(
-        "Worker error:",
-        error
-      );
+      console.error("Worker error:", error);
 
       return json(
         {
           ok: false,
-          error:
-            error.message ||
-            "Server error",
+          error: error.message || "Server error",
         },
         500
       );
