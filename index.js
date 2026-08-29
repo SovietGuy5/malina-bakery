@@ -48,7 +48,7 @@ async function order(request, env) {
   
   const text = `<b>🍰 Новый заказ — Медовый Дом</b>\n\n${lines}\n\n<b>Итого:</b> ${format(data.total)}\n\n<b>Клиент:</b> ${esc(data.name)}\n<b>Telegram:</b> ${esc(tgUser)}${user.username ? ` (@${esc(user.username)})` : ''}\n<b>ID:</b> <code>${user.id}</code>\n<b>Телефон:</b> ${esc(data.phone)}\n<b>Получение:</b> ${esc(data.method || 'Самовывоз')}${data.address ? `\n<b>Адрес:</b> ${esc(data.address)}` : ''}${data.date ? `\n<b>Дата:</b> ${esc(data.date)}` : ''}${data.comment ? `\n<b>Комментарий:</b> ${esc(data.comment)}` : ''}`;
   
-  await tg(env,'sendMessage',{chat_id:env.ADMIN_CHAT_ID,text,parse_mode:'HTML'});
+  await tg(env,'sendMessage',{chat_id:env.GROUP_CHAT_ID,text,parse_mode:'HTML'});
   return json({ok:true});
 }
 
@@ -56,7 +56,7 @@ async function webhook(request, env) {
   const update = await request.json();
   const msg = update.message;
   if (msg?.chat?.id && (msg.text === '/start' || msg.text === '/id')) {
-    await tg(env,'sendMessage',{chat_id:msg.chat.id,text:`Ваш Telegram chat ID: <code>${msg.chat.id}</code>\n\nЕсли это аккаунт владельца, укажите этот ID в секретe ADMIN_CHAT_ID.`,parse_mode:'HTML'});
+    await tg(env,'sendMessage',{chat_id:msg.chat.id,text:`Ваш Telegram chat ID: <code>${msg.chat.id}</code>\n\nЕсли это аккаунт владельца, укажите этот ID в секретe GROUP_CHAT_ID.`,parse_mode:'HTML'});
   }
   return json({ok:true});
 }
