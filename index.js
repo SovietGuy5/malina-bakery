@@ -167,7 +167,7 @@ async function webhook(request, env) {
 export default {
   async fetch(request, env) {
     try {
-      // CORS preflight
+      // CORS
       if (request.method === "OPTIONS") {
         return new Response(null, {
           status: 204,
@@ -177,22 +177,29 @@ export default {
 
       const u = new URL(request.url);
 
-      // Проверка Worker
-      if (
-        request.method === "GET" &&
-        (u.pathname === "/" || u.pathname === "/health")
-      ) {
+      // GET /
+      if (request.method === "GET" && u.pathname === "/") {
         return json({
           ok: true,
           service: "Medovy Dom Telegram API",
         });
       }
 
-      // Заказ с обычного сайта
-      if (
-        request.method === "POST" &&
-        (u.pathname === "/" || u.pathname === "/order")
-      ) {
+      // GET /health
+      if (request.method === "GET" && u.pathname === "/health") {
+        return json({
+          ok: true,
+          service: "Medovy Dom Telegram API",
+        });
+      }
+
+      // ПРИЁМ ЗАКАЗА С САЙТА
+      if (request.method === "POST" && u.pathname === "/") {
+        return await order(request, env);
+      }
+
+      // Старый адрес тоже оставляем
+      if (request.method === "POST" && u.pathname === "/order") {
         return await order(request, env);
       }
 
@@ -208,9 +215,12 @@ export default {
         {
           ok: false,
           error: "Not found",
+          path: u.pathname,
+          method: request.method,
         },
         404
       );
+
     } catch (e) {
       console.error("Worker error:", e);
 
