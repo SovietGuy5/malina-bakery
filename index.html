@@ -404,30 +404,35 @@
 
   .cart-view{ display:flex; flex-direction:column; flex:1; min-height:0; overflow-y:auto; }
   .cart-view[hidden]{ display:none !important; }
-  .cart-items{ flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:14px; padding-bottom:16px; }
+  .cart-items{ flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:8px; padding-bottom:12px; }
   .cart-empty{ text-align:center; padding:60px 10px; color:var(--espresso-45); font-size:14.5px; }
   .cart-empty svg{ width:44px; height:44px; margin:0 auto 16px; opacity:0.4; display:block; }
 
-  .cart-item{ display:flex; gap:14px; background:#fff; border:1px solid var(--cream-line); border-radius:16px; padding:12px; align-items:center; }
-  .ci-thumb{ width:56px; height:56px; border-radius:12px; flex-shrink:0; display:flex; align-items:center; justify-content:center; overflow:hidden; background:var(--bg-2); }
+  .cart-item{ display:flex; gap:9px; background:#fff; border:1px solid var(--cream-line); border-radius:13px; padding:8px; align-items:center; }
+  .ci-thumb{ width:46px; height:46px; border-radius:12px; flex-shrink:0; display:flex; align-items:center; justify-content:center; overflow:hidden; background:var(--bg-2); }
   .ci-thumb img{ width:100%; height:100%; object-fit:cover; }
   .ci-thumb svg{ width:60%; height:60%; }
   .ci-info{ flex:1; min-width:0; }
-  .ci-info h4{ font-family:'Playfair Display',serif; font-size:14.5px; font-weight:600; margin-bottom:4px; line-height:1.25; }
-  .ci-price{ font-size:12.5px; color:var(--espresso-45); }
-  .ci-controls{ display:flex; align-items:center; gap:10px; margin-top:8px; }
+  .ci-info h4{ font-family:'Playfair Display',serif; font-size:13.5px; font-weight:600; margin-bottom:4px; line-height:1.25; }
+  .ci-price{ font-size:11.5px; color:var(--espresso-45); }
+  .ci-controls{ display:flex; align-items:center; gap:7px; margin-top:5px; }
   .qty-stepper{ display:flex; align-items:center; gap:0; border:1px solid var(--cream-line); border-radius:999px; overflow:hidden; }
   .qty-stepper button{ width:26px; height:26px; background:#fff; border:none; font-size:15px; font-weight:700; color:var(--espresso); }
   .qty-stepper button:hover{ background:var(--bg-2); }
   .qty-stepper span{ min-width:22px; text-align:center; font-size:13px; font-weight:700; }
   .ci-remove{
-    appearance:none; border:1px solid rgba(177,91,91,.28); background:linear-gradient(135deg,rgba(255,244,242,.95),rgba(250,232,229,.82));
-    color:var(--rose-deep); font-size:11px; font-weight:800; letter-spacing:.01em; padding:6px 9px; border-radius:9px;
-    box-shadow:0 4px 12px -9px rgba(126,58,58,.55); cursor:pointer; transition:transform .18s ease,background .18s ease,border-color .18s ease,box-shadow .18s ease;
+    appearance:none; width:32px; height:32px; flex:0 0 32px; display:flex; align-items:center; justify-content:center;
+    border:1px solid rgba(177,91,91,.28); background:linear-gradient(135deg,rgba(255,244,242,.95),rgba(250,232,229,.82));
+    color:var(--rose-deep); padding:0; border-radius:10px; box-shadow:0 4px 12px -9px rgba(126,58,58,.55); cursor:pointer;
+    transition:transform .18s ease,background .18s ease,border-color .18s ease,box-shadow .18s ease;
   }
   .ci-remove:hover{ transform:translateY(-1px); background:linear-gradient(135deg,#fff1ef,#f7dfdc); border-color:rgba(177,91,91,.48); box-shadow:0 7px 16px -10px rgba(126,58,58,.7); }
   .ci-remove:active{ transform:translateY(0); }
-  .ci-line-total{ font-family:'Playfair Display',serif; font-size:14.5px; font-weight:600; flex-shrink:0; }
+  .ci-remove svg{ width:16px; height:16px; stroke:currentColor; }
+  .cart-head-actions{ display:flex; align-items:center; gap:7px; }
+  .cart-clear{ appearance:none; border:1px solid rgba(177,91,91,.24); background:rgba(255,244,242,.72); color:var(--rose-deep); border-radius:10px; padding:7px 10px; font-size:11px; font-weight:800; cursor:pointer; transition:.18s ease; }
+  .cart-clear:hover{ background:#f7dfdc; border-color:rgba(177,91,91,.42); transform:translateY(-1px); }
+  .ci-line-total{ font-family:'Playfair Display',serif; font-size:13px; font-weight:600; flex-shrink:0; }
 
   .cart-summary{ flex-shrink:0; border-top:1px solid var(--cream-line); padding-top:16px; }
   .cart-total-row{ display:flex; justify-content:space-between; align-items:center; font-family:'Playfair Display',serif; font-size:19px; font-weight:600; margin-bottom:14px; }
@@ -464,10 +469,6 @@
     display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px;
     padding:8px 6px 7px; box-shadow:0 14px 34px -13px rgba(63,42,42,.48); cursor:pointer;
     transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease; overflow:visible;
-  }
-  .floating-cart::after{
-    content:''; position:absolute; left:10px; right:10px; bottom:7px; height:1px;
-    background:var(--cream-line); opacity:.9;
   }
   .floating-cart:hover{ transform:translateY(-3px); border-color:var(--rose); box-shadow:0 18px 40px -13px rgba(63,42,42,.55); }
   .floating-cart svg{ width:24px; height:24px; margin-top:-3px; }
@@ -859,9 +860,12 @@
 <aside class="cart-drawer" id="cartDrawer" aria-label="Корзина">
   <div class="cart-head">
     <h3 id="cartTitle">Корзина</h3>
-    <button class="cart-close" id="cartClose" aria-label="Закрыть">
+    <div class="cart-head-actions">
+      <button class="cart-clear" id="cartClear" type="button">Очистить корзину</button>
+      <button class="cart-close" id="cartClose" aria-label="Закрыть">
       <svg viewBox="0 0 24 24" fill="none" stroke="#3F2A2A" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
     </button>
+    </div>
   </div>
 
   <div class="cart-view" id="cartViewItems">
@@ -1231,7 +1235,7 @@
               <span>${item.qty}</span>
               <button type="button" onclick="changeQty(${idx},1)">+</button>
             </div>
-            <button type="button" class="ci-remove" onclick="removeItem(${idx})">Удалить</button>
+            <button type="button" class="ci-remove" onclick="removeItem(${idx})" aria-label="Удалить товар" title="Удалить"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5"/></svg></button>
           </div>
         </div>
         <div class="ci-line-total">${formatMoney(item.priceNum * item.qty)}</div>
@@ -1266,6 +1270,14 @@
   document.getElementById('cartOverlay').addEventListener('click', closeCart);
   document.getElementById('mobileStickyBtn').addEventListener('click', ()=>{
     openCart();
+  });
+
+  document.getElementById('cartClear').addEventListener('click', ()=>{
+    if(!cart.length) return;
+    cart = [];
+    renderCartBadge();
+    renderCartItems();
+    showCartView('items');
   });
 
   document.getElementById('cartCheckoutBtn').addEventListener('click', ()=>{
