@@ -1,77 +1,441 @@
-/** Medovy Dom Telegram order backend for Cloudflare Workers.
- * Secrets: BOT_TOKEN, ADMIN_CHAT_ID. Optional: WEBAPP_ORIGIN.
- * Routes: POST /order, POST /telegram-webhook, GET /health
- */
-const cors = { 
-  'Access-Control-Allow-Origin': '*', 
-  'Access-Control-Allow-Headers': '*', 
-  'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
-  'Access-Control-Max-Age': '86400' 
+const cors = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "Content-Type",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Max-Age": "86400",
 };
-const json = (body, status=200) => new Response(JSON.stringify(body), { status, headers: { 'content-type':'application/json; charset=utf-8', ...cors } });
 
-async function verifyTelegramInitData(initData, botToken) {
-  if (!initData) return null;
-  const params = new URLSearchParams(initData);
-  const hash = params.get('hash');
-  if (!hash) return null;
-  params.delete('hash');
-  const dataCheck = [...params.entries()].sort(([a],[b]) => a.localeCompare(b)).map(([k,v]) => `${k}=${v}`).join('\n');
-  const secretKey = await crypto.subtle.importKey('raw', new TextEncoder().encode('WebAppData'), {name:'HMAC',hash:'SHA-256'}, false, ['sign']);
-  const secret = await crypto.subtle.sign('HMAC', secretKey, new TextEncoder().encode(botToken));
-  const key = await crypto.subtle.importKey('raw', secret, {name:'HMAC',hash:'SHA-256'}, false, ['sign']);
-  const sig = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(dataCheck));
-  const got = [...new Uint8Array(sig)].map(b=>b.toString(16).padStart(2,'0')).join('');
-  if (got !== hash) return null;
-  const userRaw = params.get('user');
-  try { return userRaw ? JSON.parse(userRaw) : null; } catch { return null; }
+function json(body, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+      ...cors,
+    },
+  });
 }
 
-async function tg(env, method, payload) {
-  const r = await fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/${method}`, { method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify(payload) });
-  const j = await r.json(); if (!j.ok) throw new Error(j.description || 'Telegram API error'); return j;
+
+// ======================================================
+// TELEGRAM API
+// ======================================================
+
+async function telegram(env, method, payload) {
+
+  if (!env.BOT_TOKEN) {
+    throw new Error("BOT_TOKEN is not configured");
+  }
+
+  const response = await fetch(
+    `https://api.telegram.org/bot${env.BOT_TOKEN}/${method}`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    }
+  );
+
+  const result = await response.json();
+
+  if (!result.ok) {
+    throw new Error(
+      result.description || "Telegram API error"
+    );
+  }
+
+  return result;
 }
 
-function esc(s=''){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function format(n){ return Number(n||0).toLocaleString('ru-RU')+' ₽'; }
+
+// ======================================================
+// HELPERS
+// ======================================================
+
+function esc(value = "") {
+
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+
+}
+
+
+function format(value) {
+
+  return (
+    Number(value || 0)
+      .toLocaleString("ru-RU") +
+    " ₽"
+  );
+
+}
+
+
+// ======================================================
+// ORDER
+// ======================================================
 
 async function order(request, env) {
-  const origin = request.headers.get('Origin') || '';
-  if (env.WEBAPP_ORIGIN && origin && origin !== env.WEBAPP_ORIGIN) return json({error:'Origin not allowed'},403);
-  const data = await request.json();
-  const user = await verifyTelegramInitData(data.initData, env.BOT_TOKEN);
-  if (!user) return json({error:'Telegram authorization failed'},401);
-  if (!data.items?.length) return json({error:'Корзина пуста'},400);
-  
-  const lines = data.items.map(i => `• ${esc(i.name)} × ${Number(i.qty)||1} — ${format((Number(i.price)||0)*(Number(i.qty)||1))}`).join('\n');
-  const tgUser = [user.first_name,user.last_name].filter(Boolean).join(' ') || user.username || String(user.id);
-  
-  const text = `<b>🍰 Новый заказ — Медовый Дом</b>\n\n${lines}\n\n<b>Итого:</b> ${format(data.total)}\n\n<b>Клиент:</b> ${esc(data.name)}\n<b>Telegram:</b> ${esc(tgUser)}${user.username ? ` (@${esc(user.username)})` : ''}\n<b>ID:</b> <code>${user.id}</code>\n<b>Телефон:</b> ${esc(data.phone)}\n<b>Получение:</b> ${esc(data.method || 'Самовывоз')}${data.address ? `\n<b>Адрес:</b> ${esc(data.address)}` : ''}${data.date ? `\n<b>Дата:</b> ${esc(data.date)}` : ''}${data.comment ? `\n<b>Комментарий:</b> ${esc(data.comment)}` : ''}`;
-  
-  await tg(env,'sendMessage',{chat_id:env.GROUP_CHAT_ID,text,parse_mode:'HTML'});
-  return json({ok:true});
+
+  if (!env.GROUP_CHAT_ID) {
+
+    return json(
+      {
+        ok: false,
+        error: "GROUP_CHAT_ID is not configured",
+      },
+      500
+    );
+
+  }
+
+
+  let data;
+
+  try {
+
+    data = await request.json();
+
+  } catch {
+
+    return json(
+      {
+        ok: false,
+        error: "Invalid JSON",
+      },
+      400
+    );
+
+  }
+
+
+  if (
+    !data.items ||
+    !Array.isArray(data.items)
+  ) {
+
+    return json(
+      {
+        ok: false,
+        error: "Некорректная корзина",
+      },
+      400
+    );
+
+  }
+
+
+  if (data.items.length === 0) {
+
+    return json(
+      {
+        ok: false,
+        error: "Корзина пуста",
+      },
+      400
+    );
+
+  }
+
+
+  if (!data.name || !data.phone) {
+
+    return json(
+      {
+        ok: false,
+        error: "Не указаны имя или телефон",
+      },
+      400
+    );
+
+  }
+
+
+  const lines = data.items
+    .map((item) => {
+
+      const name =
+        esc(item.name || "Товар");
+
+      const qty =
+        Number(item.qty) || 1;
+
+      const price =
+        Number(item.price) || 0;
+
+      const total =
+        price * qty;
+
+      return (
+        `• ${name} × ${qty} — ${format(total)}`
+      );
+
+    })
+    .join("\n");
+
+
+  let text = "";
+
+  text +=
+    "<b>🍰 НОВЫЙ ЗАКАЗ — МЕДОВЫЙ ДОМ</b>\n\n";
+
+  text += "<b>📦 Заказ:</b>\n";
+
+  text += lines;
+
+  text += "\n\n";
+
+  text +=
+    `<b>💰 Итого:</b> ${format(data.total)}\n\n`;
+
+  text += "<b>👤 Клиент:</b>\n";
+
+  text += esc(data.name);
+
+  text += "\n";
+
+  text += "<b>📞 Телефон:</b>\n";
+
+  text += esc(data.phone);
+
+  text += "\n\n";
+
+  text +=
+    `<b>🚚 Получение:</b> ${esc(
+      data.method || "Самовывоз"
+    )}`;
+
+
+  if (data.address) {
+
+    text +=
+      `\n<b>📍 Адрес:</b> ${esc(
+        data.address
+      )}`;
+
+  }
+
+
+  if (data.date) {
+
+    text +=
+      `\n<b>📅 Дата:</b> ${esc(
+        data.date
+      )}`;
+
+  }
+
+
+  if (data.comment) {
+
+    text +=
+      `\n<b>💬 Комментарий:</b> ${esc(
+        data.comment
+      )}`;
+
+  }
+
+
+  await telegram(
+    env,
+    "sendMessage",
+    {
+      chat_id: env.GROUP_CHAT_ID,
+      text,
+      parse_mode: "HTML",
+    }
+  );
+
+
+  return json({
+    ok: true,
+    message:
+      "Заказ отправлен в Telegram-группу",
+  });
+
 }
+
+
+// ======================================================
+// WEBHOOK
+// ======================================================
 
 async function webhook(request, env) {
-  const update = await request.json();
-  const msg = update.message;
-  if (msg?.chat?.id && (msg.text === '/start' || msg.text === '/id')) {
-    await tg(env,'sendMessage',{chat_id:msg.chat.id,text:`Ваш Telegram chat ID: <code>${msg.chat.id}</code>\n\nЕсли это аккаунт владельца, укажите этот ID в секретe GROUP_CHAT_ID.`,parse_mode:'HTML'});
+
+  let update;
+
+  try {
+
+    update =
+      await request.json();
+
+  } catch {
+
+    return json({
+      ok: true,
+    });
+
   }
-  return json({ok:true});
+
+
+  const message =
+    update.message;
+
+  if (!message) {
+
+    return json({
+      ok: true,
+    });
+
+  }
+
+
+  const chat =
+    message.chat;
+
+
+  if (
+    message.text === "/id" ||
+    message.text === "/start"
+  ) {
+
+    await telegram(
+      env,
+      "sendMessage",
+      {
+        chat_id: chat.id,
+
+        text:
+          `<b>Telegram Chat ID</b>\n\n` +
+          `<code>${chat.id}</code>\n\n` +
+          `Тип чата: <code>${esc(
+            chat.type
+          )}</code>`,
+
+        parse_mode: "HTML",
+      }
+    );
+
+  }
+
+
+  return json({
+    ok: true,
+  });
+
 }
 
-export default { 
-  async fetch(request, env) { 
-    try { 
-      if(request.method==='OPTIONS') return new Response(null,{headers:cors}); 
-      const u=new URL(request.url); 
-      if(u.pathname==='/health') return json({ok:true}); 
-      if(request.method==='POST'&&u.pathname==='/order') return order(request,env); 
-      if(request.method==='POST'&&u.pathname==='/telegram-webhook') return webhook(request,env); 
-      return json({error:'Not found'},404); 
-    } catch(e) { 
-      return json({error:e.message||'Server error'},500); 
-    } 
-  } 
+
+// ======================================================
+// MAIN
+// ======================================================
+
+export default {
+
+  async fetch(request, env) {
+
+    try {
+
+      // CORS
+      if (
+        request.method === "OPTIONS"
+      ) {
+
+        return new Response(null, {
+          status: 204,
+          headers: cors,
+        });
+
+      }
+
+
+      const url =
+        new URL(request.url);
+
+
+      // HEALTH
+      if (
+        request.method === "GET" &&
+        (
+          url.pathname === "/" ||
+          url.pathname === "/health"
+        )
+      ) {
+
+        return json({
+          ok: true,
+          service:
+            "Medovy Dom Telegram API",
+        });
+
+      }
+
+
+      // ORDER
+      if (
+        request.method === "POST" &&
+        (
+          url.pathname === "/" ||
+          url.pathname === "/order"
+        )
+      ) {
+
+        return await order(
+          request,
+          env
+        );
+
+      }
+
+
+      // WEBHOOK
+      if (
+        request.method === "POST" &&
+        url.pathname ===
+          "/telegram-webhook"
+      ) {
+
+        return await webhook(
+          request,
+          env
+        );
+
+      }
+
+
+      return json(
+        {
+          ok: false,
+          error: "Not found",
+          path: url.pathname,
+          method: request.method,
+        },
+        404
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "Worker error:",
+        error
+      );
+
+      return json(
+        {
+          ok: false,
+          error:
+            error.message ||
+            "Server error",
+        },
+        500
+      );
+
+    }
+
+  },
+
 };
