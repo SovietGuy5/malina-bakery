@@ -74,6 +74,7 @@ async function order(request, env) {
     );
   }
 
+  // Читаем JSON заказа
   const data = await request.json();
 
   // Проверяем корзину
@@ -87,14 +88,26 @@ async function order(request, env) {
     );
   }
 
+  // Проверяем обязательные данные
+  if (!data.name || !data.phone) {
+    return json(
+      {
+        ok: false,
+        error: "Не указаны имя или телефон",
+      },
+      400
+    );
+  }
+
   // Формируем список товаров
   const lines = data.items
-    .map(
-      (i) =>
-        `• ${esc(i.name)} × ${Number(i.qty) || 1} — ${format(
-          (Number(i.price) || 0) * (Number(i.qty) || 1)
-        )}`
-    )
+    .map((i) => {
+      const qty = Number(i.qty) || 1;
+      const price = Number(i.price) || 0;
+      const total = price * qty;
+
+      return `• ${esc(i.name)} × ${qty} — ${format(total)}`;
+    })
     .join("\n");
 
   // Формируем сообщение для Telegram
@@ -102,8 +115,8 @@ async function order(request, env) {
     `<b>🍰 Новый заказ — Медовый Дом</b>\n\n` +
     `${lines}\n\n` +
     `<b>Итого:</b> ${format(data.total)}\n\n` +
-    `<b>Клиент:</b> ${esc(data.name || "Не указано")}\n` +
-    `<b>Телефон:</b> ${esc(data.phone || "Не указано")}\n` +
+    `<b>Клиент:</b> ${esc(data.name)}\n` +
+    `<b>Телефон:</b> ${esc(data.phone)}\n` +
     `<b>Получение:</b> ${esc(data.method || "Самовывоз")}` +
     (data.address
       ? `\n<b>Адрес:</b> ${esc(data.address)}`
@@ -124,6 +137,7 @@ async function order(request, env) {
 
   return json({
     ok: true,
+    message: "Заказ успешно отправлен",
   });
 }
 
@@ -164,17 +178,20 @@ export default {
       const u = new URL(request.url);
 
       // Проверка Worker
-      if (u.pathname === "/health") {
+      if (
+        request.method === "GET" &&
+        (u.pathname === "/" || u.pathname === "/health")
+      ) {
         return json({
           ok: true,
           service: "Medovy Dom Telegram API",
         });
       }
 
-      // Заказ
+      // Заказ с обычного сайта
       if (
         request.method === "POST" &&
-        u.pathname === "/order"
+        (u.pathname === "/" || u.pathname === "/order")
       ) {
         return await order(request, env);
       }
@@ -195,7 +212,7 @@ export default {
         404
       );
     } catch (e) {
-      console.error(e);
+      console.error("Worker error:", e);
 
       return json(
         {
