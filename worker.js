@@ -1,3 +1,4 @@
+js
 const corsHeaders = {
   "Access-Control-Allow-Origin": "https://sovietguy5.github.io",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
@@ -6,6 +7,7 @@ const corsHeaders = {
 
 export default {
   async fetch(request, env) {
+    // Обработка CORS preflight
     if (request.method === "OPTIONS") {
       return new Response(null, {
         status: 204,
@@ -15,19 +17,25 @@ export default {
 
     const url = new URL(request.url);
 
+    // Приём заказа
     if (url.pathname === "/order" && request.method === "POST") {
       try {
         const order = await request.json();
 
-        if (!order.name  !order.phone  !order.order) {
+        // Проверка обязательных полей
+        if (!order.name || !order.phone || !order.order) {
           return json(
-            { ok: false, error: "Не заполнены обязательные поля" },
+            {
+              ok: false,
+              error: "Не заполнены обязательные поля",
+            },
             400
           );
         }
 
+        // Отправка заказа в Telegram-группу
         const telegramResponse = await fetch(
-          https://api.telegram.org/bot${env.BOT_TOKEN}/sendMessage,
+          `https://api.telegram.org/bot${env.BOT_TOKEN}/sendMessage`,
           {
             method: "POST",
             headers: {
@@ -35,7 +43,11 @@ export default {
             },
             body: JSON.stringify({
               chat_id: env.ADMIN_CHAT_ID,
-              text: order.order,
+              text:
+                `🛒 НОВЫЙ ЗАКАЗ\n\n` +
+                `👤 Имя: ${order.name}\n` +
+                `📞 Телефон: ${order.phone}\n\n` +
+                `📦 Заказ:\n${order.order}`,
             }),
           }
         );
@@ -46,17 +58,25 @@ export default {
           console.error("Telegram error:", telegramResult);
 
           return json(
-            { ok: false, error: "Telegram Bot API error" },
+            {
+              ok: false,
+              error: "Telegram Bot API error",
+            },
             500
           );
         }
 
-        return json({ ok: true });
+        return json({
+          ok: true,
+        });
       } catch (error) {
-        console.error(error);
+        console.error("Server error:", error);
 
         return json(
-          { ok: false, error: "Ошибка сервера" },
+          {
+            ok: false,
+            error: "Ошибка сервера",
+          },
           500
         );
       }
