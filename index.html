@@ -1120,7 +1120,7 @@ a{
       </div>
 
       <div class="hero-note" data-i18n="heroNote">
-        Заказ оформляется прямо внутри Telegram.
+        Заказ можно оформить на сайте или прямо внутри Telegram.
       </div>
 
     </div>
@@ -1619,7 +1619,7 @@ const I18N = {
     cart: "Корзина",
 
     heroNote:
-      "Заказ оформляется прямо внутри Telegram.",
+      "Заказ можно оформить на сайте или прямо внутри Telegram.",
 
     heroImageAlt:
       "Чизкейк с черникой",
@@ -2422,6 +2422,9 @@ const CATALOG_CONFIG = {
 
 
 const ORDER_API_URL='https://xheusnpmmmhbwwfcozbr.supabase.co/functions/v1/hyper-processor';
+
+const IS_TELEGRAM = !!TG;
+const ORDER_SOURCE = IS_TELEGRAM ? 'telegram' : 'website';
 
 
 const FALLBACK_PRODUCTS = [
@@ -3549,8 +3552,6 @@ async function performSubmit(){
     "Самовывоз";
 
 
-  const telegramInitData = TG?.initData || "";
-
   const data = {
 
     name:
@@ -3594,7 +3595,11 @@ async function performSubmit(){
       null,
 
     initData:
-      telegramInitData,
+      TG?.initData ||
+      "",
+
+    source:
+      ORDER_SOURCE,
 
     language:
       currentLanguage
@@ -3620,15 +3625,7 @@ async function performSubmit(){
 
   try{
 
-    if(!telegramInitData){
-
-      throw new Error(
-        "Telegram initData отсутствует. Откройте приложение через Telegram, а не напрямую в браузере."
-      );
-
-    }
-
-    if(!ORDER_API_URL || ORDER_API_URL.includes("YOUR_PROJECT_REF")){
+    if(!ORDER_API_URL){
 
       throw new Error(
         t("backendError")
@@ -3669,8 +3666,8 @@ async function performSubmit(){
     if(!r.ok || j.ok === false){
 
       throw new Error(
-        j.error ||
-        t("orderError")
+        typeof j.error === 'string' ? j.error :
+        (j.error ? JSON.stringify(j.error) : t("orderError"))
       );
 
     }
@@ -3697,7 +3694,7 @@ async function performSubmit(){
     const message =
       err?.name === "AbortError" ?
         t("timeoutError") :
-        err.message;
+        err?.message || String(err) || t("orderError");
 
     orderStatus.className =
       "status error";
