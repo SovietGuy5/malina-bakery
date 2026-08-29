@@ -1764,7 +1764,7 @@ const I18N = {
       "Отправляем заказ…",
 
     backendError:
-      "Backend ещё не подключён: вставьте URL Worker в ORDER_API_URL.",
+      "Backend ещё не подключён: укажите URL Supabase Function.",
 
     orderError:
       "Не удалось отправить заказ",
@@ -1959,7 +1959,7 @@ const I18N = {
       "Sending order…",
 
     backendError:
-      "Backend is not connected: add the Worker URL to ORDER_API_URL.",
+      "Backend is not connected: add the Supabase Function URL.",
 
     orderError:
       "Failed to send the order",
@@ -2421,7 +2421,8 @@ const CATALOG_CONFIG = {
 };
 
 
-const ORDER_API_URL='https://website-for-bakery.kolganovd24.workers.dev/order';
+const SUPABASE_FUNCTION_URL =
+  "https://YOUR_PROJECT_REF.supabase.co/functions/v1/create-order";
 
 
 const FALLBACK_PRODUCTS = [
@@ -3573,11 +3574,12 @@ async function performSubmit(){
       cart.map(
         i => ({
           name:i.name,
-          qty:i.qty,
-          price:i.priceNum
+          qty:i.qty
         })
       ),
 
+    // Итоговая сумма НЕ считается доверенной:
+    // Supabase Function пересчитает её по актуальному Google Sheets.
     total:
       cart.reduce(
         (s,i) =>
@@ -3619,7 +3621,10 @@ async function performSubmit(){
 
   try{
 
-    if(!ORDER_API_URL){
+    if(
+      !SUPABASE_FUNCTION_URL ||
+      SUPABASE_FUNCTION_URL.includes("YOUR_PROJECT_REF")
+    ){
 
       throw new Error(
         t("backendError")
@@ -3630,7 +3635,7 @@ async function performSubmit(){
 
     const r =
       await fetch(
-        ORDER_API_URL,
+        SUPABASE_FUNCTION_URL,
         {
           method:"POST",
 

@@ -1,0 +1,1 @@
+Скопируйте сюда папку assets из текущего проекта (hero-cheesecake-1.png, hero-cheesecake-2.png и остальные изображения).

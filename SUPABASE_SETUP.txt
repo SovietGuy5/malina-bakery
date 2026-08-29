@@ -1,0 +1,23 @@
+# Настройки проекта
+
+После создания Supabase проекта открой:
+Supabase Dashboard -> Project Settings -> API
+
+В index.html замени:
+
+const SUPABASE_FUNCTION_URL =
+  "https://YOUR_PROJECT_REF.supabase.co/functions/v1/create-order";
+
+на URL своего проекта.
+
+## Secrets Supabase Edge Function
+
+Нужны:
+
+BOT_TOKEN=токен_твоего_бота
+GROUP_CHAT_ID=id_твоей_telegram_группы
+SHEET_ID=1J8hFErndX8rmt4Q6_lCvdSeAkuYL28cmvRKVMPA2Uuw
+SHEET_NAME=Каталог
+
+SUPABASE_URL и SUPABASE_SERVICE_ROLE_KEY обычно доступны Edge Functions автоматически.
+Не добавляй service_role key в index.html.
