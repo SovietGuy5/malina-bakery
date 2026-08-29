@@ -79,7 +79,7 @@ if(TG){
 }
 const CATALOG_CONFIG={SHEET_ID:'1J8hFErndX8rmt4Q6_lCvdSeAkuYL28cmvRKVMPA2Uuw',SHEET_NAME:'Каталог',COLUMNS:{name:'Название',category:'Категория',description:'Описание',weight:'Вес',price:'Цена',image:'Картинка',tag:'Метка',inStock:'В наличии'}};
 // После размещения backend вставьте сюда URL Cloudflare Worker, например https://medovy-dom-api.xxx.workers.dev
-const ORDER_API_URL='https://website-for-bakery.kolganovd24.workers.dev/order';
+const ORDER_API_URL='https://website-for-bakery.kolganovd24.workers.dev';
 const FALLBACK_PRODUCTS=[{name:'Медово-карамельный торт',category:'Торты',description:'Мёд, сметанный крем, карамель',weight:'1.2 кг',price:'2 900 ₽',image:'assets/hero-cheesecake-1.png',tag:'Хит',inStock:'Да'},{name:'Классический чизкейк Нью-Йорк',category:'Чизкейки',description:'Сливочный сыр, песочная основа',weight:'900 г',price:'2 200 ₽',image:'assets/hero-cheesecake-2.png',tag:'',inStock:'Да'},{name:'Меренговый рулет с малиной',category:'Меренговые рулеты',description:'Безе, сливки, малина',weight:'600 г',price:'1 850 ₽',image:'assets/hero-cheesecake-2.png',tag:'Новинка',inStock:'Да'},{name:'Набор мини-пирожных',category:'Пирожные',description:'6 видов начинок, набор 12 шт',weight:'',price:'1 650 ₽',image:'assets/hero-cheesecake-1.png',tag:'',inStock:'Да'}];
 let allProducts=[],activeFilter='Все',currentFiltered=[],currentHits=[],cart=[];
 const fallbackIcon='<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="35" fill="#d8dde1"/><path d="M28 62c9-16 22-24 42-14 4 2 7 7 9 14H28z" fill="#8a5b46"/></svg>';
