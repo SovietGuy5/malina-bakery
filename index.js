@@ -1,9 +1,10 @@
 /**
- * Medovy Dom Telegram order backend for Cloudflare Workers.
+ * Medovy Dom — Telegram order backend for Cloudflare Workers
  *
- * Secrets:
+ * Cloudflare Secrets:
+ *
  * BOT_TOKEN
- * ADMIN_CHAT_ID
+ * GROUP_CHAT_ID
  *
  * Optional:
  * WEBAPP_ORIGIN
@@ -15,49 +16,85 @@ const cors = {
   "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
 };
 
-const json = (body, status = 200) =>
-  new Response(JSON.stringify(body), {
+const json = (body, status = 200) => {
+  return new Response(JSON.stringify(body), {
     status,
     headers: {
-      "content-type": "application/json; charset=utf-8",
+      "Content-Type": "application/json; charset=utf-8",
       ...cors,
     },
   });
+};
 
-async function tg(env, method, payload) {
-  const r = await fetch(
+
+// ======================================================
+// TELEGRAM API
+// ======================================================
+
+async function telegram(env, method, payload) {
+  if (!env.BOT_TOKEN) {
+    throw new Error("BOT_TOKEN is not configured");
+  }
+
+  const response = await fetch(
     `https://api.telegram.org/bot${env.BOT_TOKEN}/${method}`,
     {
       method: "POST",
       headers: {
-        "content-type": "application/json",
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(payload),
     }
   );
 
-  const j = await r.json();
+  const result = await response.json();
 
-  if (!j.ok) {
-    throw new Error(j.description || "Telegram API error");
+  if (!result.ok) {
+    throw new Error(
+      result.description || "Telegram API error"
+    );
   }
 
-  return j;
+  return result;
 }
 
-function esc(s = "") {
-  return String(s)
+
+// ======================================================
+// HELPERS
+// ======================================================
+
+function esc(value = "") {
+  return String(value)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;");
 }
 
-function format(n) {
-  return Number(n || 0).toLocaleString("ru-RU") + " ₽";
+function format(value) {
+  return (
+    Number(value || 0).toLocaleString("ru-RU") + " ₽"
+  );
 }
 
+
+// ======================================================
+// ORDER
+// ======================================================
+
 async function order(request, env) {
-  // Проверяем источник запроса
+
+  // Проверяем секрет группы
+  if (!env.GROUP_CHAT_ID) {
+    return json(
+      {
+        ok: false,
+        error: "GROUP_CHAT_ID is not configured",
+      },
+      500
+    );
+  }
+
+  // Проверяем Origin
   const origin = request.headers.get("Origin") || "";
 
   if (
@@ -74,11 +111,37 @@ async function order(request, env) {
     );
   }
 
-  // Читаем JSON заказа
-  const data = await request.json();
+  // Получаем заказ
+  let data;
 
-  // Проверяем корзину
-  if (!data.items?.length) {
+  try {
+    data = await request.json();
+  } catch {
+    return json(
+      {
+        ok: false,
+        error: "Invalid JSON",
+      },
+      400
+    );
+  }
+
+
+  // ====================================================
+  // ПРОВЕРКА ЗАКАЗА
+  // ====================================================
+
+  if (!data.items || !Array.isArray(data.items)) {
+    return json(
+      {
+        ok: false,
+        error: "Некорректная корзина",
+      },
+      400
+    );
+  }
+
+  if (data.items.length === 0) {
     return json(
       {
         ok: false,
@@ -88,7 +151,6 @@ async function order(request, env) {
     );
   }
 
-  // Проверяем обязательные данные
   if (!data.name || !data.phone) {
     return json(
       {
@@ -99,62 +161,129 @@ async function order(request, env) {
     );
   }
 
-  // Формируем список товаров
+
+  // ====================================================
+  // ФОРМИРУЕМ СПИСОК ТОВАРОВ
+  // ====================================================
+
   const lines = data.items
-    .map((i) => {
-      const qty = Number(i.qty) || 1;
-      const price = Number(i.price) || 0;
+    .map((item) => {
+
+      const name = esc(item.name || "Товар");
+
+      const qty = Number(item.qty) || 1;
+
+      const price = Number(item.price) || 0;
+
       const total = price * qty;
 
-      return `• ${esc(i.name)} × ${qty} — ${format(total)}`;
+      return (
+        `• ${name} × ${qty} — ${format(total)}`
+      );
     })
     .join("\n");
 
-  // Формируем сообщение для Telegram
-  const text =
-    `<b>🍰 Новый заказ — Медовый Дом</b>\n\n` +
-    `${lines}\n\n` +
-    `<b>Итого:</b> ${format(data.total)}\n\n` +
-    `<b>Клиент:</b> ${esc(data.name)}\n` +
-    `<b>Телефон:</b> ${esc(data.phone)}\n` +
-    `<b>Получение:</b> ${esc(data.method || "Самовывоз")}` +
-    (data.address
-      ? `\n<b>Адрес:</b> ${esc(data.address)}`
-      : "") +
-    (data.date
-      ? `\n<b>Дата:</b> ${esc(data.date)}`
-      : "") +
-    (data.comment
-      ? `\n<b>Комментарий:</b> ${esc(data.comment)}`
-      : "");
 
-  // Отправляем заказ в Telegram
-  await tg(env, "sendMessage", {
-    chat_id: env.ADMIN_CHAT_ID,
-    text,
+  // ====================================================
+  // ФОРМИРУЕМ СООБЩЕНИЕ ДЛЯ ГРУППЫ
+  // ====================================================
+
+  let text = "";
+
+  text += "<b>🍰 НОВЫЙ ЗАКАЗ — МЕДОВЫЙ ДОМ</b>\n\n";
+
+  text += "<b>📦 Заказ:</b>\n";
+  text += lines;
+  text += "\n\n";
+
+  text += `<b>💰 Итого:</b> ${format(data.total)}\n\n`;
+
+  text += "<b>👤 Клиент:</b>\n";
+  text += `${esc(data.name)}\n`;
+
+  text += "<b>📞 Телефон:</b>\n";
+  text += `${esc(data.phone)}\n\n`;
+
+  text += `<b>🚚 Получение:</b> ${esc(
+    data.method || "Самовывоз"
+  )}`;
+
+  if (data.address) {
+    text += `\n<b>📍 Адрес:</b> ${esc(data.address)}`;
+  }
+
+  if (data.date) {
+    text += `\n<b>📅 Дата:</b> ${esc(data.date)}`;
+  }
+
+  if (data.comment) {
+    text += `\n<b>💬 Комментарий:</b> ${esc(data.comment)}`;
+  }
+
+
+  // ====================================================
+  // ОТПРАВЛЯЕМ ИМЕННО В ГРУППУ
+  // ====================================================
+
+  await telegram(env, "sendMessage", {
+    chat_id: env.GROUP_CHAT_ID,
+    text: text,
     parse_mode: "HTML",
   });
 
+
+  // ====================================================
+  // ОТВЕТ САЙТУ
+  // ====================================================
+
   return json({
     ok: true,
-    message: "Заказ успешно отправлен",
+    message: "Заказ отправлен в Telegram-группу",
   });
 }
 
-async function webhook(request, env) {
-  const update = await request.json();
-  const msg = update.message;
 
+// ======================================================
+// TELEGRAM WEBHOOK
+// ======================================================
+
+async function webhook(request, env) {
+
+  let update;
+
+  try {
+    update = await request.json();
+  } catch {
+    return json({
+      ok: true,
+    });
+  }
+
+  const message = update.message;
+
+  if (!message) {
+    return json({
+      ok: true,
+    });
+  }
+
+  const chat = message.chat;
+
+  // Если написать /id в группе,
+  // бот отправит ID этой группы
   if (
-    msg?.chat?.id &&
-    (msg.text === "/start" || msg.text === "/id")
+    message.text === "/id" ||
+    message.text === "/start"
   ) {
-    await tg(env, "sendMessage", {
-      chat_id: msg.chat.id,
+
+    await telegram(env, "sendMessage", {
+      chat_id: chat.id,
+
       text:
-        `Ваш Telegram chat ID: <code>${msg.chat.id}</code>\n\n` +
-        `Если это аккаунт владельца, укажите этот ID ` +
-        `в секрете ADMIN_CHAT_ID.`,
+        `<b>Telegram Chat ID</b>\n\n` +
+        `<code>${chat.id}</code>\n\n` +
+        `Тип чата: <code>${esc(chat.type)}</code>`,
+
       parse_mode: "HTML",
     });
   }
@@ -164,70 +293,112 @@ async function webhook(request, env) {
   });
 }
 
+
+// ======================================================
+// MAIN WORKER
+// ======================================================
+
 export default {
+
   async fetch(request, env) {
+
     try {
-      // CORS
+
+      // =================================================
+      // CORS PREFLIGHT
+      // =================================================
+
       if (request.method === "OPTIONS") {
+
         return new Response(null, {
           status: 204,
           headers: cors,
         });
+
       }
 
-      const u = new URL(request.url);
 
-      // GET /
-      if (request.method === "GET" && u.pathname === "/") {
+      const url = new URL(request.url);
+
+
+      // =================================================
+      // HEALTH CHECK
+      // =================================================
+
+      if (
+        request.method === "GET" &&
+        (
+          url.pathname === "/" ||
+          url.pathname === "/health"
+        )
+      ) {
+
         return json({
           ok: true,
           service: "Medovy Dom Telegram API",
         });
+
       }
 
-      // GET /health
-      if (request.method === "GET" && u.pathname === "/health") {
-        return json({
-          ok: true,
-          service: "Medovy Dom Telegram API",
-        });
-      }
 
-      // ПРИЁМ ЗАКАЗА С САЙТА
-      if (request.method === "POST" && u.pathname === "/") {
-        return await order(request, env);
-      }
+      // =================================================
+      // ЗАКАЗ С САЙТА
+      // =================================================
 
-      // Старый адрес тоже оставляем
-      if (request.method === "POST" && u.pathname === "/order") {
-        return await order(request, env);
-      }
-
-      // Telegram webhook
       if (
         request.method === "POST" &&
-        u.pathname === "/telegram-webhook"
+        (
+          url.pathname === "/" ||
+          url.pathname === "/order"
+        )
       ) {
-        return await webhook(request, env);
+
+        return await order(request, env);
+
       }
+
+
+      // =================================================
+      // TELEGRAM WEBHOOK
+      // =================================================
+
+      if (
+        request.method === "POST" &&
+        url.pathname === "/telegram-webhook"
+      ) {
+
+        return await webhook(request, env);
+
+      }
+
+
+      // =================================================
+      // NOT FOUND
+      // =================================================
 
       return json(
         {
           ok: false,
           error: "Not found",
-          path: u.pathname,
+          path: url.pathname,
           method: request.method,
         },
         404
       );
 
-    } catch (e) {
-      console.error("Worker error:", e);
+    } catch (error) {
+
+      console.error(
+        "Worker error:",
+        error
+      );
 
       return json(
         {
           ok: false,
-          error: e.message || "Server error",
+          error:
+            error.message ||
+            "Server error",
         },
         500
       );
