@@ -1,22 +1,11 @@
-/**
- * Medovy Dom — Telegram order backend for Cloudflare Workers
- *
- * Cloudflare Secrets:
- *
- * BOT_TOKEN
- * GROUP_CHAT_ID
- *
- * Optional:
- * WEBAPP_ORIGIN
- */
-
 const cors = {
   "Access-Control-Allow-Origin": "https://sovietguy5.github.io",
-  "Access-Control-Allow-Headers": "content-type",
-  "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Max-Age": "86400",
 };
 
-const json = (body, status = 200) => {
+function json(body, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
     headers: {
@@ -24,7 +13,7 @@ const json = (body, status = 200) => {
       ...cors,
     },
   });
-};
+}
 
 
 // ======================================================
@@ -32,6 +21,7 @@ const json = (body, status = 200) => {
 // ======================================================
 
 async function telegram(env, method, payload) {
+
   if (!env.BOT_TOKEN) {
     throw new Error("BOT_TOKEN is not configured");
   }
@@ -64,16 +54,23 @@ async function telegram(env, method, payload) {
 // ======================================================
 
 function esc(value = "") {
+
   return String(value)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;");
+
 }
 
+
 function format(value) {
+
   return (
-    Number(value || 0).toLocaleString("ru-RU") + " ₽"
+    Number(value || 0)
+      .toLocaleString("ru-RU") +
+    " ₽"
   );
+
 }
 
 
@@ -83,8 +80,8 @@ function format(value) {
 
 async function order(request, env) {
 
-  // Проверяем секрет группы
   if (!env.GROUP_CHAT_ID) {
+
     return json(
       {
         ok: false,
@@ -92,31 +89,18 @@ async function order(request, env) {
       },
       500
     );
+
   }
 
-  // Проверяем Origin
-  const origin = request.headers.get("Origin") || "";
 
-  if (
-    env.WEBAPP_ORIGIN &&
-    origin &&
-    origin !== env.WEBAPP_ORIGIN
-  ) {
-    return json(
-      {
-        ok: false,
-        error: "Origin not allowed",
-      },
-      403
-    );
-  }
-
-  // Получаем заказ
   let data;
 
   try {
+
     data = await request.json();
+
   } catch {
+
     return json(
       {
         ok: false,
@@ -124,14 +108,15 @@ async function order(request, env) {
       },
       400
     );
+
   }
 
 
-  // ====================================================
-  // ПРОВЕРКА ЗАКАЗА
-  // ====================================================
+  if (
+    !data.items ||
+    !Array.isArray(data.items)
+  ) {
 
-  if (!data.items || !Array.isArray(data.items)) {
     return json(
       {
         ok: false,
@@ -139,9 +124,12 @@ async function order(request, env) {
       },
       400
     );
+
   }
 
+
   if (data.items.length === 0) {
+
     return json(
       {
         ok: false,
@@ -149,9 +137,12 @@ async function order(request, env) {
       },
       400
     );
+
   }
 
+
   if (!data.name || !data.phone) {
+
     return json(
       {
         ok: false,
@@ -159,92 +150,117 @@ async function order(request, env) {
       },
       400
     );
+
   }
 
-
-  // ====================================================
-  // ФОРМИРУЕМ СПИСОК ТОВАРОВ
-  // ====================================================
 
   const lines = data.items
     .map((item) => {
 
-      const name = esc(item.name || "Товар");
+      const name =
+        esc(item.name || "Товар");
 
-      const qty = Number(item.qty) || 1;
+      const qty =
+        Number(item.qty) || 1;
 
-      const price = Number(item.price) || 0;
+      const price =
+        Number(item.price) || 0;
 
-      const total = price * qty;
+      const total =
+        price * qty;
 
       return (
         `• ${name} × ${qty} — ${format(total)}`
       );
+
     })
     .join("\n");
 
 
-  // ====================================================
-  // ФОРМИРУЕМ СООБЩЕНИЕ ДЛЯ ГРУППЫ
-  // ====================================================
-
   let text = "";
 
-  text += "<b>🍰 НОВЫЙ ЗАКАЗ — МЕДОВЫЙ ДОМ</b>\n\n";
+  text +=
+    "<b>🍰 НОВЫЙ ЗАКАЗ — МЕДОВЫЙ ДОМ</b>\n\n";
 
   text += "<b>📦 Заказ:</b>\n";
+
   text += lines;
+
   text += "\n\n";
 
-  text += `<b>💰 Итого:</b> ${format(data.total)}\n\n`;
+  text +=
+    `<b>💰 Итого:</b> ${format(data.total)}\n\n`;
 
   text += "<b>👤 Клиент:</b>\n";
-  text += `${esc(data.name)}\n`;
+
+  text += esc(data.name);
+
+  text += "\n";
 
   text += "<b>📞 Телефон:</b>\n";
-  text += `${esc(data.phone)}\n\n`;
 
-  text += `<b>🚚 Получение:</b> ${esc(
-    data.method || "Самовывоз"
-  )}`;
+  text += esc(data.phone);
+
+  text += "\n\n";
+
+  text +=
+    `<b>🚚 Получение:</b> ${esc(
+      data.method || "Самовывоз"
+    )}`;
+
 
   if (data.address) {
-    text += `\n<b>📍 Адрес:</b> ${esc(data.address)}`;
+
+    text +=
+      `\n<b>📍 Адрес:</b> ${esc(
+        data.address
+      )}`;
+
   }
+
 
   if (data.date) {
-    text += `\n<b>📅 Дата:</b> ${esc(data.date)}`;
+
+    text +=
+      `\n<b>📅 Дата:</b> ${esc(
+        data.date
+      )}`;
+
   }
+
 
   if (data.comment) {
-    text += `\n<b>💬 Комментарий:</b> ${esc(data.comment)}`;
+
+    text +=
+      `\n<b>💬 Комментарий:</b> ${esc(
+        data.comment
+      )}`;
+
   }
 
 
-  // ====================================================
-  // ОТПРАВЛЯЕМ ИМЕННО В ГРУППУ
-  // ====================================================
+  await telegram(
+    env,
+    "sendMessage",
+    {
+      chat_id: env.GROUP_CHAT_ID,
+      text,
+      parse_mode: "HTML",
+    }
+  );
 
-  await telegram(env, "sendMessage", {
-    chat_id: env.GROUP_CHAT_ID,
-    text: text,
-    parse_mode: "HTML",
-  });
-
-
-  // ====================================================
-  // ОТВЕТ САЙТУ
-  // ====================================================
 
   return json({
     ok: true,
-    message: "Заказ отправлен в Telegram-группу",
+    message:
+      "Заказ отправлен в Telegram-группу",
   });
+
 }
 
 
 // ======================================================
-// TELEGRAM WEBHOOK
+// WEBHOOK
 // ======================================================
 
 async function webhook(request, env) {
@@ -252,50 +268,69 @@ async function webhook(request, env) {
   let update;
 
   try {
-    update = await request.json();
+
+    update =
+      await request.json();
+
   } catch {
+
     return json({
       ok: true,
     });
+
   }
 
-  const message = update.message;
+
+  const message =
+    update.message;
 
   if (!message) {
+
     return json({
       ok: true,
     });
+
   }
 
-  const chat = message.chat;
 
-  // Если написать /id в группе,
-  // бот отправит ID этой группы
+  const chat =
+    message.chat;
+
+
   if (
     message.text === "/id" ||
     message.text === "/start"
   ) {
 
-    await telegram(env, "sendMessage", {
-      chat_id: chat.id,
+    await telegram(
+      env,
+      "sendMessage",
+      {
+        chat_id: chat.id,
 
-      text:
-        `<b>Telegram Chat ID</b>\n\n` +
-        `<code>${chat.id}</code>\n\n` +
-        `Тип чата: <code>${esc(chat.type)}</code>`,
+        text:
+          `<b>Telegram Chat ID</b>\n\n` +
+          `<code>${chat.id}</code>\n\n` +
+          `Тип чата: <code>${esc(
+            chat.type
+          )}</code>`,
 
-      parse_mode: "HTML",
-    });
+        parse_mode: "HTML",
+      }
+    );
+
   }
+
 
   return json({
     ok: true,
   });
+
 }
 
 
 // ======================================================
-// MAIN WORKER
+// MAIN
 // ======================================================
 
 export default {
@@ -304,11 +339,10 @@ export default {
 
     try {
 
-      // =================================================
-      // CORS PREFLIGHT
-      // =================================================
-
-      if (request.method === "OPTIONS") {
+      // CORS
+      if (
+        request.method === "OPTIONS"
+      ) {
 
         return new Response(null, {
           status: 204,
@@ -318,13 +352,11 @@ export default {
       }
 
 
-      const url = new URL(request.url);
+      const url =
+        new URL(request.url);
 
 
-      // =================================================
-      // HEALTH CHECK
-      // =================================================
-
+      // HEALTH
       if (
         request.method === "GET" &&
         (
@@ -335,16 +367,14 @@ export default {
 
         return json({
           ok: true,
-          service: "Medovy Dom Telegram API",
+          service:
+            "Medovy Dom Telegram API",
         });
 
       }
 
 
-      // =================================================
-      // ЗАКАЗ С САЙТА
-      // =================================================
-
+      // ORDER
       if (
         request.method === "POST" &&
         (
@@ -353,28 +383,28 @@ export default {
         )
       ) {
 
-        return await order(request, env);
+        return await order(
+          request,
+          env
+        );
 
       }
 
 
-      // =================================================
-      // TELEGRAM WEBHOOK
-      // =================================================
-
+      // WEBHOOK
       if (
         request.method === "POST" &&
-        url.pathname === "/telegram-webhook"
+        url.pathname ===
+          "/telegram-webhook"
       ) {
 
-        return await webhook(request, env);
+        return await webhook(
+          request,
+          env
+        );
 
       }
 
-
-      // =================================================
-      // NOT FOUND
-      // =================================================
 
       return json(
         {
@@ -385,6 +415,7 @@ export default {
         },
         404
       );
+
 
     } catch (error) {
 
@@ -402,6 +433,9 @@ export default {
         },
         500
       );
+
     }
+
   },
+
 };
