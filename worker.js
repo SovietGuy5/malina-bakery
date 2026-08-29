@@ -1,4 +1,3 @@
-js
 const corsHeaders = {
   "Access-Control-Allow-Origin": "https://sovietguy5.github.io",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
