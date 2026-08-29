@@ -2,11 +2,24 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <title>Кондитерская — торты и десерты ручной работы</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
+  /* ---------- Telegram Web App ---------- */
+  :root{--tg-safe-top:env(safe-area-inset-top,0px);--tg-safe-bottom:env(safe-area-inset-bottom,0px)}
+  body.telegram-app{padding-top:var(--tg-safe-top);padding-bottom:var(--tg-safe-bottom)}
+  body.telegram-app header{top:0}
+  body.telegram-app .floating-cart{bottom:calc(16px + var(--tg-safe-bottom))}
+  body.telegram-app .cart-drawer{padding-top:calc(18px + var(--tg-safe-top));padding-bottom:calc(18px + var(--tg-safe-bottom))}
+  body.telegram-app .nav-cta{display:none}
+  body.telegram-app .hero{padding-top:46px}
+  .tg-user-chip{display:none;align-items:center;gap:8px;font-size:12px;font-weight:700;color:var(--espresso-70);max-width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .tg-user-chip .tg-avatar{width:28px;height:28px;border-radius:50%;background:var(--rose);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;flex:none}
+  body.telegram-app .tg-user-chip{display:flex}
+  @media(max-width:560px){body.telegram-app .wrap{padding-left:18px;padding-right:18px}body.telegram-app .nav{padding-left:18px;padding-right:18px}.tg-user-chip span{max-width:90px;overflow:hidden;text-overflow:ellipsis}}
   :root{
     --bg: #F8F4EF;
     --bg-2: #F1EAE1;
@@ -913,6 +926,59 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <script>
   /* ======================================================================
+     TELEGRAM WEB APP
+     ====================================================================== */
+  const tg = window.Telegram?.WebApp || null;
+  let tgMainButtonBound = false;
+  function initTelegramApp(){
+    if(!tg) return;
+    document.body.classList.add('telegram-app');
+    try{
+      tg.ready();
+      tg.expand();
+      tg.enableClosingConfirmation?.();
+      tg.setHeaderColor?.('bg_color');
+      tg.setBackgroundColor?.('bg_color');
+      const u=tg.initDataUnsafe?.user;
+      if(u){
+        const display=[u.first_name,u.last_name].filter(Boolean).join(' ') || (u.username ? '@'+u.username : '');
+        document.getElementById('tgUserName').textContent=display;
+        document.getElementById('tgAvatar').textContent=(u.first_name||u.username||'М').charAt(0).toUpperCase();
+      }
+      tg.BackButton?.onClick(()=>{
+        const drawer=document.getElementById('cartDrawer');
+        if(drawer?.classList.contains('open')) closeCart(); else window.scrollTo({top:0,behavior:'smooth'});
+      });
+      syncTelegramTheme();
+      tg.onEvent?.('themeChanged',syncTelegramTheme);
+      tg.onEvent?.('viewportChanged',()=>tg.expand());
+    }catch(e){ console.warn('Telegram Web App init:',e); }
+  }
+  function syncTelegramTheme(){
+    if(!tg) return;
+    const p=tg.themeParams||{};
+    if(p.bg_color) document.documentElement.style.setProperty('--bg',p.bg_color);
+    if(p.secondary_bg_color) document.documentElement.style.setProperty('--bg-2',p.secondary_bg_color);
+    if(p.text_color) document.documentElement.style.setProperty('--espresso',p.text_color);
+    if(p.hint_color) document.documentElement.style.setProperty('--espresso-45',p.hint_color);
+    if(p.button_color) document.documentElement.style.setProperty('--rose',p.button_color);
+    if(p.button_text_color) document.documentElement.style.setProperty('--tg-button-text',p.button_text_color);
+  }
+  function syncTelegramMainButton(){
+    if(!tg) return;
+    const mb=tg.MainButton;
+    if(!mb) return;
+    if(cart.length){
+      mb.setText(`Оформить заказ · ${formatMoney(cartTotal())}`);
+      mb.color=tg.themeParams?.button_color || '#C27B7B';
+      mb.textColor=tg.themeParams?.button_text_color || '#FFFFFF';
+      mb.show();
+      if(!tgMainButtonBound){ mb.onClick(()=>{ if(cart.length){ openCart(); document.getElementById('cartCheckoutBtn').click(); } }); tgMainButtonBound=true; }
+    }else mb.hide();
+  }
+  initTelegramApp();
+
+  /* ======================================================================
      КАТАЛОГ ИЗ GOOGLE SHEETS
      ----------------------------------------------------------------------
      1. Создайте Google-таблицу с листом, где первая строка — заголовки:
@@ -1157,6 +1223,7 @@
     else{ cart.push({ name:p.name, priceLabel:p.price, priceNum:parsePrice(p.price), image:p.image, qty:1 }); }
     renderCartBadge();
     renderCartItems();
+    syncTelegramMainButton();
     showCartAddToast(p);
   }
 
@@ -1185,11 +1252,13 @@
     if(item.qty <= 0) cart.splice(idx, 1);
     renderCartBadge();
     renderCartItems();
+    syncTelegramMainButton();
   }
   function removeItem(idx){
     cart.splice(idx, 1);
     renderCartBadge();
     renderCartItems();
+    syncTelegramMainButton();
   }
   function cartTotal(){ return cart.reduce((s, c) => s + c.priceNum * c.qty, 0); }
   function cartCountTotal(){ return cart.reduce((s, c) => s + c.qty, 0); }
@@ -1277,6 +1346,7 @@
     cart = [];
     renderCartBadge();
     renderCartItems();
+    syncTelegramMainButton();
     showCartView('items');
   });
 
@@ -1352,6 +1422,7 @@
       document.getElementById('ckAddressWrap').hidden = true;
       cart = [];
       renderCartBadge();
+      syncTelegramMainButton();
       status.textContent = '';
       showCartView('success');
     }catch(err){
@@ -1366,6 +1437,7 @@
 
   renderCartBadge();
   renderCartItems();
+  syncTelegramMainButton();
 
   /* Language switcher: Russian is the default. Product data from the external Google Sheet is left intact unless a translation is available locally. */
   let currentLang = localStorage.getItem('siteLanguage') || 'ru';
