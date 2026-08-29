@@ -1764,7 +1764,7 @@ const I18N = {
       "Отправляем заказ…",
 
     backendError:
-      "Backend ещё не подключён: укажите URL Supabase Function.",
+      "Backend ещё не подключён: вставьте URL Worker в ORDER_API_URL.",
 
     orderError:
       "Не удалось отправить заказ",
@@ -1959,7 +1959,7 @@ const I18N = {
       "Sending order…",
 
     backendError:
-      "Backend is not connected: add the Supabase Function URL.",
+      "Backend is not connected: add the Worker URL to ORDER_API_URL.",
 
     orderError:
       "Failed to send the order",
@@ -2421,8 +2421,7 @@ const CATALOG_CONFIG = {
 };
 
 
-const SUPABASE_FUNCTION_URL =
-  "https://xheusnpmmmhbwwfcozbr.supabase.co/functions/v1/hyper-processor";
+const ORDER_API_URL='https://xheusnpmmmhbwwfcozbr.supabase.co/functions/v1/hyper-processor';
 
 
 const FALLBACK_PRODUCTS = [
@@ -3550,6 +3549,8 @@ async function performSubmit(){
     "Самовывоз";
 
 
+  const telegramInitData = TG?.initData || "";
+
   const data = {
 
     name:
@@ -3574,12 +3575,11 @@ async function performSubmit(){
       cart.map(
         i => ({
           name:i.name,
-          qty:i.qty
+          qty:i.qty,
+          price:i.priceNum
         })
       ),
 
-    // Итоговая сумма НЕ считается доверенной:
-    // Supabase Function пересчитает её по актуальному Google Sheets.
     total:
       cart.reduce(
         (s,i) =>
@@ -3594,8 +3594,7 @@ async function performSubmit(){
       null,
 
     initData:
-      TG?.initData ||
-      "",
+      telegramInitData,
 
     language:
       currentLanguage
@@ -3621,10 +3620,15 @@ async function performSubmit(){
 
   try{
 
-    if(
-      !SUPABASE_FUNCTION_URL ||
-      SUPABASE_FUNCTION_URL.includes("YOUR_PROJECT_REF")
-    ){
+    if(!telegramInitData){
+
+      throw new Error(
+        "Telegram initData отсутствует. Откройте приложение через Telegram, а не напрямую в браузере."
+      );
+
+    }
+
+    if(!ORDER_API_URL || ORDER_API_URL.includes("YOUR_PROJECT_REF")){
 
       throw new Error(
         t("backendError")
@@ -3635,7 +3639,7 @@ async function performSubmit(){
 
     const r =
       await fetch(
-        SUPABASE_FUNCTION_URL,
+        ORDER_API_URL,
         {
           method:"POST",
 
