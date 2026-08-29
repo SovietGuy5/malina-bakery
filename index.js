@@ -11,8 +11,8 @@
  */
 
 const cors = {
-  "Access-Control-Allow-Origin": "https://sovietguy5.github.io",
-  "Access-Control-Allow-Headers": "content-type",
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "Content-Type",
   "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
 };
 
