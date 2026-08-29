@@ -572,38 +572,62 @@ a{
 }
 
 .cart-fab{
-  position:fixed;
-  right:18px;
-  bottom:calc(18px + env(safe-area-inset-bottom));
-  z-index:30;
-  min-width:58px;
-  height:58px;
-  border:0;
-  border-radius:19px;
-  background:var(--tg-text);
-  color:#fff;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:7px;
-  padding:0 13px;
-  box-shadow:0 14px 35px rgba(23,33,43,.24)
+    position:fixed;
+    right:18px;
+    bottom:calc(18px + env(safe-area-inset-bottom));
+    z-index:30;
+    min-width:58px;
+    height:58px;
+    border:0;
+    border-radius:19px;
+
+    /* Фиксированные цвета — не зависят от Telegram Dark Mode */
+    background:#F4F6F8 !important;
+    color:#536D8A !important;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+    padding:0 13px;
+
+    box-shadow:0 14px 35px rgba(0,0,0,.28);
+}
+
+.cart-fab svg{
+    width:22px;
+    height:22px;
+
+    stroke:#536D8A !important;
+    color:#536D8A !important;
+}
+
+.cart-fab svg path,
+.cart-fab svg circle{
+    stroke:#536D8A !important;
+    fill:none !important;
 }
 
 .cart-fab .count{
-  min-width:21px;
-  height:21px;
-  padding:0 6px;
-  border-radius:999px;
-  background:var(--tg-blue);
-  font-size:11px;
-  display:grid;
-  place-items:center
+    min-width:21px;
+    height:21px;
+    padding:0 6px;
+    border-radius:999px;
+
+    /* Фиксированный цвет счётчика */
+    background:#6F86A3 !important;
+    color:#FFFFFF !important;
+
+    font-size:11px;
+    font-weight:800;
+    display:grid;
+    place-items:center;
 }
 
 .cart-fab .total{
-  font-size:12px;
-  font-weight:800
+    color:#536D8A !important;
+    font-size:12px;
+    font-weight:800;
 }
 
 .sheet-backdrop{
