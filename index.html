@@ -838,6 +838,12 @@ a{
   resize:vertical
 }
 
+.form input.invalid,
+.form textarea.invalid{
+  border-color:#e53935;
+  box-shadow:0 0 0 1px #e53935
+}
+
 .method{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -1763,6 +1769,15 @@ const I18N = {
     orderError:
       "Не удалось отправить заказ",
 
+    requiredFields:
+      "Заполните имя и телефон",
+
+    phoneInvalid:
+      "Проверьте номер телефона",
+
+    timeoutError:
+      "Сервер не отвечает. Проверьте связь и попробуйте ещё раз",
+
     close:
       "Закрыть",
 
@@ -1948,6 +1963,15 @@ const I18N = {
 
     orderError:
       "Failed to send the order",
+
+    requiredFields:
+      "Please fill in your name and phone",
+
+    phoneInvalid:
+      "Please check the phone number",
+
+    timeoutError:
+      "The server isn't responding. Check your connection and try again",
 
     close:
       "Close",
@@ -2252,6 +2276,15 @@ if(TG){
   TG.ready();
 
   TG.expand();
+
+  // На мобильном Telegram свайз вниз по странице сворачивает/закрывает
+  // Mini App поверх любых наших обработчиков — это мешает скроллить
+  // и заполнять форму заказа. Отключаем это поведение внутри приложения.
+  TG.disableVerticalSwipes?.();
+
+  // Просим подтверждение закрытия, чтобы случайный свайп/кнопка "назад"
+  // не стирали уже заполненную форму или корзину.
+  TG.enableClosingConfirmation?.();
 
 
   if(TG.themeParams){
@@ -3146,23 +3179,7 @@ function renderCart(){
   }
 
 
-  if(TG?.MainButton){
-
-    if(n){
-
-      TG.MainButton.setText(
-        `${t("checkout")} · ${money(total)}`
-      );
-
-      TG.MainButton.show();
-
-    }else{
-
-      TG.MainButton.hide();
-
-    }
-
-  }
+  updateMainButton();
 
 }
 
@@ -3234,7 +3251,11 @@ function closeCart(){
 }
 
 
+let checkoutStep = "items";
+
 function showView(v){
+
+  checkoutStep = v;
 
   cartViewItems
     .classList
@@ -3283,6 +3304,8 @@ function showView(v){
     orderStatus.textContent = "";
 
   }
+
+  updateMainButton();
 
 }
 
@@ -3340,9 +3363,61 @@ document
   );
 
 
+/*
+ * Главная синяя кнопка Telegram (MainButton) — это то, чем реально
+ * пользуются на мобильном. Раньше она всегда открывала форму заказа
+ * и никогда не отправляла его, даже если пользователь уже был на
+ * экране формы, поэтому заказ было невозможно подтвердить.
+ * Теперь её текст и действие зависят от текущего шага.
+ */
+function updateMainButton(){
+
+  if(!TG?.MainButton){
+    return;
+  }
+
+  const total =
+    cart.reduce(
+      (s,i) => s + i.priceNum * i.qty,
+      0
+    );
+
+  if(checkoutStep === "form" && cart.length){
+
+    TG.MainButton.setText(
+      t("submitOrder")
+    );
+
+    TG.MainButton.show();
+    TG.MainButton.enable();
+
+  }else if(cart.length){
+
+    TG.MainButton.setText(
+      `${t("checkout")} · ${money(total)}`
+    );
+
+    TG.MainButton.show();
+    TG.MainButton.enable();
+
+  }else{
+
+    TG.MainButton.hide();
+
+  }
+
+}
+
+
 TG?.MainButton?.onClick(() => {
 
-  if(cart.length){
+  if(!cart.length){
+    return;
+  }
+
+  if(checkoutStep === "form"){
+    performSubmit();
+  }else{
     showView("form");
   }
 
@@ -3353,17 +3428,110 @@ TG?.MainButton?.onClick(() => {
    SUBMIT ORDER
 ===================================================== */
 
-async function submitOrder(e){
+let isSubmitting = false;
 
-  e.preventDefault();
+
+function markInvalid(el){
+
+  el?.classList?.add("invalid");
+
+}
+
+
+function clearInvalid(){
+
+  [ckName, ckPhone].forEach(
+    el =>
+      el?.classList?.remove("invalid")
+  );
+
+}
+
+
+/*
+ * Простая, не полагающаяся на нативную HTML5-валидацию проверка.
+ * В некоторых мобильных WebView (в т.ч. внутри Telegram) всплывающая
+ * подсказка "заполните поле" от required либо не показывается вовсе,
+ * либо перехватывается системным свайпом — и заказ просто "не уходит"
+ * без единой видимой причины. Поэтому проверяем поля сами и печатаем
+ * понятную ошибку прямо в форме.
+ */
+function validateOrder(){
+
+  clearInvalid();
 
   if(!cart.length){
+    return t("emptyCart") || "Корзина пуста";
+  }
+
+  const name = ckName.value.trim();
+  const phone = ckPhone.value.trim();
+
+  if(!name || !phone){
+
+    if(!name) markInvalid(ckName);
+    if(!phone) markInvalid(ckPhone);
+
+    return t("requiredFields");
+
+  }
+
+  const digits = phone.replace(/\D/g, "");
+
+  if(digits.length < 7){
+
+    markInvalid(ckPhone);
+
+    return t("phoneInvalid");
+
+  }
+
+  return null;
+
+}
+
+
+async function performSubmit(){
+
+  if(isSubmitting){
     return;
   }
 
+  const validationError =
+    validateOrder();
+
+  if(validationError){
+
+    orderStatus.className =
+      "status error";
+
+    orderStatus.textContent =
+      validationError;
+
+    TG?.HapticFeedback
+      ?.notificationOccurred?.(
+        "error"
+      );
+
+    if(checkoutStep !== "form"){
+      showView("form");
+    }
+
+    return;
+
+  }
+
+
+  isSubmitting = true;
 
   submitOrderButton.disabled =
     true;
+
+  TG?.MainButton?.showProgress?.(
+    false
+  );
+
+  TG?.MainButton?.disable?.();
 
   orderStatus.className =
     "status";
@@ -3433,6 +3601,22 @@ async function submitOrder(e){
   };
 
 
+  // Подстраховка от «зависшего» запроса без сети — иначе кнопка
+  // навсегда останется в состоянии "Отправляем заказ…".
+  const controller =
+    typeof AbortController !== "undefined" ?
+      new AbortController() :
+      null;
+
+  const timeoutId =
+    controller ?
+      setTimeout(
+        () => controller.abort(),
+        15000
+      ) :
+      null;
+
+
   try{
 
     if(!ORDER_API_URL){
@@ -3456,7 +3640,10 @@ async function submitOrder(e){
           },
 
           body:
-            JSON.stringify(data)
+            JSON.stringify(data),
+
+          signal:
+            controller?.signal
 
         }
       );
@@ -3470,7 +3657,7 @@ async function submitOrder(e){
         );
 
 
-    if(!r.ok){
+    if(!r.ok || j.ok === false){
 
       throw new Error(
         j.error ||
@@ -3486,23 +3673,59 @@ async function submitOrder(e){
 
     showView("success");
 
+    TG?.HapticFeedback
+      ?.notificationOccurred?.(
+        "success"
+      );
+
     TG?.MainButton?.hide();
+
+    TG?.disableClosingConfirmation?.();
 
 
   }catch(err){
+
+    const message =
+      err?.name === "AbortError" ?
+        t("timeoutError") :
+        err.message;
 
     orderStatus.className =
       "status error";
 
     orderStatus.textContent =
-      err.message;
+      message;
+
+    TG?.HapticFeedback
+      ?.notificationOccurred?.(
+        "error"
+      );
 
   }finally{
+
+    if(timeoutId){
+      clearTimeout(timeoutId);
+    }
+
+    isSubmitting = false;
 
     submitOrderButton.disabled =
       false;
 
+    TG?.MainButton?.hideProgress?.();
+
+    updateMainButton();
+
   }
+
+}
+
+
+function submitOrder(e){
+
+  e.preventDefault();
+
+  performSubmit();
 
 }
 
@@ -3510,6 +3733,16 @@ async function submitOrder(e){
 cartViewForm.addEventListener(
   "submit",
   submitOrder
+);
+
+
+[ckName, ckPhone].forEach(
+  el =>
+    el?.addEventListener(
+      "input",
+      () =>
+        el.classList.remove("invalid")
+    )
 );
 
 
