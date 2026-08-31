@@ -7,7 +7,6 @@
 <title>Медовый Дом — десерты</title>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
 <style>
 :root{
@@ -2396,84 +2395,26 @@ if(TG){
 
 
 /* =====================================================
-   CATALOG
+   CATALOG — SUPABASE
 ===================================================== */
 
-const CATALOG_CONFIG = {
+const SUPABASE_URL =
+  "https://xheusnpmmmhbwwfcozbr.supabase.co";
 
-  SHEET_ID:
-    "1J8hFErndX8rmt4Q6_lCvdSeAkuYL28cmvRKVMPA2Uuw",
-
-  SHEET_NAME:
-    "Каталог",
-
-  COLUMNS:{
-    name:"Название",
-    category:"Категория",
-    description:"Описание",
-    weight:"Вес",
-    price:"Цена",
-    image:"Картинка",
-    tag:"Метка",
-    inStock:"В наличии"
-  }
-
-};
+/*
+ * Вставь сюда Supabase Publishable / anon key.
+ * НЕ вставляй service_role key.
+ */
+const SUPABASE_ANON_KEY =
+  "sb_publishable_0xqHniA9S27iIoTwB3BCug_u9LpsQOu";
 
 
-const ORDER_API_URL='https://xheusnpmmmhbwwfcozbr.supabase.co/functions/v1/hyper-processor';
+const ORDER_API_URL =
+  "https://xheusnpmmmhbwwfcozbr.supabase.co/functions/v1/hyper-processor";
 
 const IS_TELEGRAM = !!TG;
-const ORDER_SOURCE = IS_TELEGRAM ? 'telegram' : 'website';
-
-
-const FALLBACK_PRODUCTS = [
-
-  {
-    name:"Медово-карамельный торт",
-    category:"Торты",
-    description:"Мёд, сметанный крем, карамель",
-    weight:"1.2 кг",
-    price:"2 900 ₽",
-    image:"assets/hero-cheesecake-1.png",
-    tag:"Хит",
-    inStock:"Да"
-  },
-
-  {
-    name:"Классический чизкейк Нью-Йорк",
-    category:"Чизкейки",
-    description:"Сливочный сыр, песочная основа",
-    weight:"900 г",
-    price:"2 200 ₽",
-    image:"assets/hero-cheesecake-2.png",
-    tag:"",
-    inStock:"Да"
-  },
-
-  {
-    name:"Меренговый рулет с малиной",
-    category:"Меренговые рулеты",
-    description:"Безе, сливки, малина",
-    weight:"600 г",
-    price:"1 850 ₽",
-    image:"assets/hero-cheesecake-2.png",
-    tag:"Новинка",
-    inStock:"Да"
-  },
-
-  {
-    name:"Набор мини-пирожных",
-    category:"Пирожные",
-    description:"6 видов начинок, набор 12 шт",
-    weight:"",
-    price:"1 650 ₽",
-    image:"assets/hero-cheesecake-1.png",
-    tag:"",
-    inStock:"Да"
-  }
-
-];
+const ORDER_SOURCE =
+  IS_TELEGRAM ? "telegram" : "website";
 
 
 let allProducts = [];
@@ -2491,88 +2432,150 @@ const fallbackIcon =
   '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="35" fill="#d8dde1"/><path d="M28 62c9-16 22-24 42-14 4 2 7 7 9 14H28z" fill="#8a5b46"/></svg>';
 
 
-function buildSheetUrl(){
-
-  return `
-    https://docs.google.com/spreadsheets/d/
-    ${CATALOG_CONFIG.SHEET_ID}
-    /gviz/tq?tqx=out:csv&sheet=
-    ${encodeURIComponent(CATALOG_CONFIG.SHEET_NAME)}
-  `.replace(/\s+/g,"");
-
-}
-
-
-function normalizeRow(r){
-
-  const c =
-    CATALOG_CONFIG.COLUMNS;
-
-  return {
-
-    name:
-      (r[c.name] || "").trim(),
-
-    category:
-      (r[c.category] || "").trim(),
-
-    description:
-      (r[c.description] || "").trim(),
-
-    weight:
-      (r[c.weight] || "").trim(),
-
-    price:
-      (r[c.price] || "").trim(),
-
-    image:
-      (r[c.image] || "").trim(),
-
-    tag:
-      (r[c.tag] || "").trim(),
-
-    inStock:
-      (r[c.inStock] || "Да").trim()
-
-  };
-
-}
-
+/* =====================================================
+   LOAD CATALOG FROM SUPABASE
+===================================================== */
 
 async function loadCatalog(){
 
-  try{
+  prodGrid.innerHTML = `
+    <div class="empty">
+      Загрузка каталога…
+    </div>
+  `;
 
-    const res =
-      await fetch(buildSheetUrl());
+  if(
+    !SUPABASE_ANON_KEY ||
+    SUPABASE_ANON_KEY === "YOUR_SUPABASE_ANON_KEY"
+  ){
 
-    if(!res.ok) throw 0;
+    console.error(
+      "SUPABASE_ANON_KEY is not configured"
+    );
 
-    const parsed =
-      Papa.parse(
-        await res.text(),
-        {
-          header:true,
-          skipEmptyLines:true
-        }
-      );
+    allProducts = [];
 
-    allProducts =
-      parsed.data
-        .map(normalizeRow)
-        .filter(p => p.name);
+    renderAll();
 
-    if(!allProducts.length) throw 0;
+    prodGrid.innerHTML = `
+      <div class="empty">
+        Не настроено подключение к каталогу.
+      </div>
+    `;
 
-  }catch(e){
-
-    allProducts =
-      FALLBACK_PRODUCTS;
+    return;
 
   }
 
-  renderAll();
 
+  try{
+
+    const url =
+      `${SUPABASE_URL}/rest/v1/products` +
+      `?select=id,name,category,description,weight,price,image_url,tag,in_stock,sort_order` +
+      `&order=sort_order.asc,name.asc`;
+
+
+    const res =
+      await fetch(
+        url,
+        {
+          method: "GET",
+
+          headers: {
+            "apikey": SUPABASE_ANON_KEY,
+            "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
+            "Content-Type": "application/json"
+          }
+        }
+      );
+
+
+    if(!res.ok){
+
+      const text =
+        await res.text();
+
+      throw new Error(
+        `Supabase ${res.status}: ${text}`
+      );
+
+    }
+
+
+    const data =
+      await res.json();
+
+
+    if(!Array.isArray(data)){
+
+      throw new Error(
+        "Supabase returned invalid catalog"
+      );
+
+    }
+
+
+    allProducts =
+      data
+        .map(product => ({
+
+          id:
+            product.id,
+
+          name:
+            String(product.name || "").trim(),
+
+          category:
+            String(product.category || "").trim(),
+
+          description:
+            String(product.description || "").trim(),
+
+          weight:
+            String(product.weight || "").trim(),
+
+          price:
+            money(product.price),
+
+          image:
+            String(product.image_url || "").trim(),
+
+          tag:
+            String(product.tag || "").trim(),
+
+          inStock:
+            product.in_stock !== false,
+
+          sortOrder:
+            Number(product.sort_order || 0)
+
+        }))
+        .filter(product => product.name);
+
+
+    renderAll();
+
+
+  }catch(error){
+
+    console.error(
+      "Supabase catalog error:",
+      error
+    );
+
+    allProducts = [];
+
+    renderAll();
+
+    prodGrid.innerHTML = `
+      <div class="empty">
+        Не удалось загрузить каталог.
+      </div>
+    `;
+
+  }
+ 
 }
 
 
