@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="ru">
+
 <head>
+
 <meta charset="utf-8">
 
 <meta
@@ -13,40 +15,64 @@
     content="#f2f4f7"
 >
 
-<title>Медовый Дом — управление каталогом</title>
+<title>Медовый Дом — управление</title>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
+
 :root {
-    --bg: var(--tg-theme-bg-color, #f2f4f7);
-    --card: var(--tg-theme-secondary-bg-color, #ffffff);
-    --text: var(--tg-theme-text-color, #18202a);
-    --muted: var(--tg-theme-hint-color, #7d8793);
 
-    --blue: var(--tg-theme-button-color, #536d8a);
-    --blue-text: var(--tg-theme-button-text-color, #ffffff);
+    --bg:
+        var(--tg-theme-bg-color, #f2f4f7);
 
-    --line: rgba(80, 100, 120, .14);
+    --card:
+        var(--tg-theme-secondary-bg-color, #ffffff);
 
-    --danger: #d9534f;
-    --success: #3a9d68;
+    --text:
+        var(--tg-theme-text-color, #18202a);
+
+    --muted:
+        var(--tg-theme-hint-color, #7d8793);
+
+    --blue:
+        var(--tg-theme-button-color, #536d8a);
+
+    --blue-text:
+        var(--tg-theme-button-text-color, #ffffff);
+
+    --line:
+        rgba(80,100,120,.14);
+
+    --danger:
+        #d9534f;
+
+    --success:
+        #3a9d68;
+
+    --warning:
+        #a87516;
 
     --shadow:
-        0 8px 30px rgba(40, 55, 70, .08);
+        0 8px 30px rgba(40,55,70,.08);
 
-    --radius: 18px;
+    --radius:
+        18px;
 }
+
 
 * {
     box-sizing: border-box;
 }
 
+
 html {
     background: var(--bg);
 }
 
+
 body {
+
     margin: 0;
 
     padding:
@@ -55,6 +81,7 @@ body {
         calc(24px + env(safe-area-inset-bottom));
 
     background: var(--bg);
+
     color: var(--text);
 
     font-family:
@@ -69,6 +96,7 @@ body {
     min-height: 100vh;
 }
 
+
 button,
 input,
 textarea,
@@ -76,13 +104,19 @@ select {
     font: inherit;
 }
 
+
 button {
+
     border: 0;
+
     cursor: pointer;
 }
 
+
 button:disabled {
+
     opacity: .5;
+
     cursor: default;
 }
 
@@ -92,8 +126,11 @@ button:disabled {
    ============================================================ */
 
 .header {
+
     display: flex;
+
     align-items: center;
+
     justify-content: space-between;
 
     gap: 12px;
@@ -101,21 +138,29 @@ button:disabled {
     margin-bottom: 16px;
 }
 
+
 .header-title {
+
     min-width: 0;
 }
 
+
 .header-title h1 {
+
     margin: 0;
 
     font-size: 22px;
+
     line-height: 1.15;
+
     font-weight: 800;
 
     letter-spacing: -.4px;
 }
 
+
 .header-title p {
+
     margin: 5px 0 0;
 
     color: var(--muted);
@@ -123,10 +168,13 @@ button:disabled {
     font-size: 13px;
 }
 
+
 .user-badge {
+
     flex: 0 0 auto;
 
     display: flex;
+
     align-items: center;
 
     gap: 7px;
@@ -140,13 +188,17 @@ button:disabled {
     border-radius: 999px;
 
     font-size: 12px;
+
     font-weight: 700;
 
     box-shadow: var(--shadow);
 }
 
+
 .user-dot {
+
     width: 7px;
+
     height: 7px;
 
     border-radius: 50%;
@@ -156,10 +208,78 @@ button:disabled {
 
 
 /* ============================================================
+   TABS
+   ============================================================ */
+
+.tabs {
+
+    display: flex;
+
+    gap: 8px;
+
+    margin-bottom: 16px;
+
+    overflow-x: auto;
+
+    scrollbar-width: none;
+}
+
+
+.tabs::-webkit-scrollbar {
+    display: none;
+}
+
+
+.tab {
+
+    flex: 0 0 auto;
+
+    padding: 10px 14px;
+
+    border-radius: 999px;
+
+    background: var(--card);
+
+    color: var(--muted);
+
+    border: 1px solid var(--line);
+
+    font-size: 13px;
+
+    font-weight: 800;
+}
+
+
+.tab.active {
+
+    background: var(--blue);
+
+    color: var(--blue-text);
+
+    border-color: var(--blue);
+}
+
+
+/* ============================================================
+   SECTIONS
+   ============================================================ */
+
+.page-section {
+    display: none;
+}
+
+
+.page-section.active {
+    display: block;
+}
+
+
+/* ============================================================
    TOOLBAR
    ============================================================ */
 
 .toolbar {
+
     display: flex;
 
     gap: 9px;
@@ -167,7 +287,9 @@ button:disabled {
     margin-bottom: 14px;
 }
 
+
 .search {
+
     flex: 1;
 
     min-width: 0;
@@ -187,11 +309,14 @@ button:disabled {
     outline: none;
 }
 
+
 .search:focus {
     border-color: var(--blue);
 }
 
+
 .add-button {
+
     flex: 0 0 auto;
 
     height: 46px;
@@ -215,6 +340,7 @@ button:disabled {
    ============================================================ */
 
 .filters {
+
     display: flex;
 
     gap: 8px;
@@ -226,11 +352,14 @@ button:disabled {
     scrollbar-width: none;
 }
 
+
 .filters::-webkit-scrollbar {
     display: none;
 }
 
+
 .filter {
+
     flex: 0 0 auto;
 
     padding: 9px 13px;
@@ -248,7 +377,9 @@ button:disabled {
     font-weight: 700;
 }
 
+
 .filter.active {
+
     background: var(--blue);
 
     color: var(--blue-text);
@@ -262,17 +393,20 @@ button:disabled {
    ============================================================ */
 
 .stats {
+
     display: grid;
 
     grid-template-columns:
-        repeat(3, minmax(0, 1fr));
+        repeat(3,minmax(0,1fr));
 
     gap: 9px;
 
     margin-bottom: 16px;
 }
 
+
 .stat {
+
     padding: 13px;
 
     background: var(--card);
@@ -284,13 +418,17 @@ button:disabled {
     box-shadow: var(--shadow);
 }
 
+
 .stat-value {
+
     font-size: 20px;
 
     font-weight: 800;
 }
 
+
 .stat-label {
+
     margin-top: 3px;
 
     color: var(--muted);
@@ -304,12 +442,15 @@ button:disabled {
    ============================================================ */
 
 .products {
+
     display: grid;
 
     gap: 12px;
 }
 
+
 .product {
+
     display: flex;
 
     gap: 12px;
@@ -325,10 +466,13 @@ button:disabled {
     box-shadow: var(--shadow);
 }
 
+
 .product-image {
+
     flex: 0 0 86px;
 
     width: 86px;
+
     height: 86px;
 
     overflow: hidden;
@@ -345,6 +489,7 @@ button:disabled {
     display: flex;
 
     align-items: center;
+
     justify-content: center;
 
     color: var(--muted);
@@ -352,8 +497,11 @@ button:disabled {
     font-size: 25px;
 }
 
+
 .product-image img {
+
     width: 100%;
+
     height: 100%;
 
     object-fit: cover;
@@ -361,13 +509,17 @@ button:disabled {
     display: block;
 }
 
+
 .product-content {
+
     flex: 1;
 
     min-width: 0;
 }
 
+
 .product-name {
+
     font-size: 16px;
 
     font-weight: 800;
@@ -377,7 +529,9 @@ button:disabled {
     margin-bottom: 4px;
 }
 
+
 .product-description {
+
     color: var(--muted);
 
     font-size: 12px;
@@ -395,7 +549,9 @@ button:disabled {
     margin-bottom: 8px;
 }
 
+
 .product-meta {
+
     display: flex;
 
     align-items: center;
@@ -405,13 +561,17 @@ button:disabled {
     gap: 6px;
 }
 
+
 .price {
+
     font-size: 15px;
 
     font-weight: 800;
 }
 
+
 .badge {
+
     padding: 4px 8px;
 
     border-radius: 999px;
@@ -421,31 +581,41 @@ button:disabled {
     font-weight: 800;
 }
 
+
 .badge-stock {
+
     background: rgba(58,157,104,.12);
 
     color: var(--success);
 }
 
+
 .badge-out {
+
     background: rgba(217,83,79,.12);
 
     color: var(--danger);
 }
 
+
 .badge-category {
+
     background: rgba(83,109,138,.1);
 
     color: var(--muted);
 }
 
+
 .badge-tag {
+
     background: rgba(224,168,64,.14);
 
-    color: #a87516;
+    color: var(--warning);
 }
 
+
 .product-actions {
+
     flex: 0 0 auto;
 
     display: flex;
@@ -455,8 +625,11 @@ button:disabled {
     gap: 7px;
 }
 
+
 .icon-button {
+
     width: 38px;
+
     height: 38px;
 
     border-radius: 12px;
@@ -470,16 +643,199 @@ button:disabled {
     font-size: 17px;
 }
 
+
 .icon-button.danger {
     color: var(--danger);
 }
 
 
 /* ============================================================
-   EMPTY / LOADING
+   ADMIN PANEL
+   ============================================================ */
+
+.admin-panel {
+
+    background: var(--card);
+
+    border: 1px solid var(--line);
+
+    border-radius: var(--radius);
+
+    box-shadow: var(--shadow);
+
+    overflow: hidden;
+}
+
+
+.admin-panel-header {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 12px;
+
+    padding: 16px;
+
+    border-bottom: 1px solid var(--line);
+}
+
+
+.admin-panel-title {
+
+    font-size: 18px;
+
+    font-weight: 800;
+}
+
+
+.admin-panel-subtitle {
+
+    margin-top: 4px;
+
+    color: var(--muted);
+
+    font-size: 12px;
+
+    line-height: 1.4;
+}
+
+
+.admin-list {
+
+    display: grid;
+}
+
+
+.admin-item {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 12px;
+
+    padding: 15px 16px;
+
+    border-bottom: 1px solid var(--line);
+}
+
+
+.admin-item:last-child {
+    border-bottom: 0;
+}
+
+
+.admin-info {
+
+    min-width: 0;
+}
+
+
+.admin-id {
+
+    font-size: 15px;
+
+    font-weight: 800;
+
+    word-break: break-all;
+}
+
+
+.admin-date {
+
+    margin-top: 4px;
+
+    color: var(--muted);
+
+    font-size: 11px;
+}
+
+
+.admin-role {
+
+    display: inline-flex;
+
+    margin-top: 7px;
+
+    padding: 4px 8px;
+
+    border-radius: 999px;
+
+    font-size: 10px;
+
+    font-weight: 800;
+}
+
+
+.admin-role.owner {
+
+    background: rgba(224,168,64,.15);
+
+    color: var(--warning);
+}
+
+
+.admin-role.admin {
+
+    background: rgba(83,109,138,.12);
+
+    color: var(--blue);
+}
+
+
+.admin-remove {
+
+    flex: 0 0 auto;
+
+    width: 40px;
+
+    height: 40px;
+
+    border-radius: 12px;
+
+    background: rgba(217,83,79,.1);
+
+    color: var(--danger);
+
+    font-size: 17px;
+}
+
+
+/* ============================================================
+   OWNER INFO
+   ============================================================ */
+
+.owner-info {
+
+    margin-bottom: 14px;
+
+    padding: 14px 15px;
+
+    background: rgba(224,168,64,.08);
+
+    border: 1px solid rgba(224,168,64,.2);
+
+    border-radius: 15px;
+
+    color: var(--text);
+
+    font-size: 12px;
+
+    line-height: 1.5;
+}
+
+
+/* ============================================================
+   STATE
    ============================================================ */
 
 .state {
+
     text-align: center;
 
     padding: 55px 20px;
@@ -487,13 +843,17 @@ button:disabled {
     color: var(--muted);
 }
 
+
 .state-icon {
+
     font-size: 38px;
 
     margin-bottom: 10px;
 }
 
+
 .state-title {
+
     color: var(--text);
 
     font-size: 16px;
@@ -502,6 +862,7 @@ button:disabled {
 
     margin-bottom: 5px;
 }
+
 
 .state-text {
     font-size: 13px;
@@ -513,6 +874,7 @@ button:disabled {
    ============================================================ */
 
 .modal {
+
     position: fixed;
 
     inset: 0;
@@ -528,11 +890,14 @@ button:disabled {
     backdrop-filter: blur(4px);
 }
 
+
 .modal.open {
     display: flex;
 }
 
+
 .modal-sheet {
+
     width: 100%;
 
     max-height: 92vh;
@@ -553,7 +918,9 @@ button:disabled {
         0;
 }
 
+
 .modal-header {
+
     display: flex;
 
     align-items: center;
@@ -563,14 +930,19 @@ button:disabled {
     margin-bottom: 18px;
 }
 
+
 .modal-title {
+
     font-size: 20px;
 
     font-weight: 800;
 }
 
+
 .close-button {
+
     width: 38px;
+
     height: 38px;
 
     border-radius: 50%;
@@ -588,18 +960,23 @@ button:disabled {
    ============================================================ */
 
 .form {
+
     display: grid;
 
     gap: 13px;
 }
 
+
 .field {
+
     display: grid;
 
     gap: 6px;
 }
 
+
 .field label {
+
     font-size: 12px;
 
     font-weight: 800;
@@ -607,9 +984,11 @@ button:disabled {
     color: var(--muted);
 }
 
+
 .field input,
 .field textarea,
 .field select {
+
     width: 100%;
 
     padding: 12px 13px;
@@ -625,19 +1004,25 @@ button:disabled {
     outline: none;
 }
 
+
 .field input:focus,
 .field textarea:focus,
 .field select:focus {
+
     border-color: var(--blue);
 }
 
+
 .field textarea {
+
     min-height: 90px;
 
     resize: vertical;
 }
 
+
 .form-row {
+
     display: grid;
 
     grid-template-columns:
@@ -652,6 +1037,7 @@ button:disabled {
    ============================================================ */
 
 .image-upload {
+
     position: relative;
 
     display: flex;
@@ -679,23 +1065,30 @@ button:disabled {
     transition: .2s ease;
 }
 
+
 .image-upload:hover {
     border-color: var(--blue);
 }
 
+
 .image-upload-icon {
+
     font-size: 34px;
 
     margin-bottom: 8px;
 }
 
+
 .image-upload-title {
+
     font-size: 14px;
 
     font-weight: 800;
 }
 
+
 .image-upload-subtitle {
+
     margin-top: 4px;
 
     color: var(--muted);
@@ -705,12 +1098,15 @@ button:disabled {
     text-align: center;
 }
 
+
 .image-upload input {
+
     position: absolute;
 
     inset: 0;
 
     width: 100%;
+
     height: 100%;
 
     opacity: 0;
@@ -718,7 +1114,9 @@ button:disabled {
     cursor: pointer;
 }
 
+
 .image-preview {
+
     display: none;
 
     width: 100%;
@@ -734,11 +1132,14 @@ button:disabled {
     background: var(--bg);
 }
 
+
 .image-preview.show {
     display: block;
 }
 
+
 .image-preview img {
+
     display: block;
 
     width: 100%;
@@ -748,17 +1149,22 @@ button:disabled {
     object-fit: cover;
 }
 
+
 .image-current {
+
     display: none;
 
     margin-bottom: 10px;
 }
 
+
 .image-current.show {
     display: block;
 }
 
+
 .image-current-label {
+
     margin-bottom: 6px;
 
     color: var(--muted);
@@ -768,7 +1174,9 @@ button:disabled {
     font-weight: 700;
 }
 
+
 .image-current img {
+
     display: block;
 
     width: 100%;
@@ -788,6 +1196,7 @@ button:disabled {
    ============================================================ */
 
 .switch-row {
+
     display: flex;
 
     align-items: center;
@@ -803,13 +1212,17 @@ button:disabled {
     border-radius: 13px;
 }
 
+
 .switch-text strong {
+
     display: block;
 
     font-size: 14px;
 }
 
+
 .switch-text span {
+
     display: block;
 
     margin-top: 3px;
@@ -819,18 +1232,24 @@ button:disabled {
     font-size: 11px;
 }
 
+
 .switch {
+
     position: relative;
 
     width: 48px;
+
     height: 28px;
 }
+
 
 .switch input {
     display: none;
 }
 
+
 .slider {
+
     position: absolute;
 
     inset: 0;
@@ -842,15 +1261,19 @@ button:disabled {
     transition: .2s;
 }
 
+
 .slider::before {
+
     content: "";
 
     position: absolute;
 
     width: 22px;
+
     height: 22px;
 
     left: 3px;
+
     top: 3px;
 
     border-radius: 50%;
@@ -860,12 +1283,17 @@ button:disabled {
     transition: .2s;
 }
 
+
 .switch input:checked + .slider {
+
     background: var(--success);
 }
 
+
 .switch input:checked + .slider::before {
-    transform: translateX(20px);
+
+    transform:
+        translateX(20px);
 }
 
 
@@ -874,6 +1302,7 @@ button:disabled {
    ============================================================ */
 
 .form-actions {
+
     display: grid;
 
     grid-template-columns:
@@ -884,8 +1313,10 @@ button:disabled {
     margin-top: 5px;
 }
 
+
 .cancel-button,
 .save-button {
+
     height: 48px;
 
     border-radius: 14px;
@@ -893,7 +1324,9 @@ button:disabled {
     font-weight: 800;
 }
 
+
 .cancel-button {
+
     background: var(--bg);
 
     color: var(--text);
@@ -901,7 +1334,9 @@ button:disabled {
     border: 1px solid var(--line);
 }
 
+
 .save-button {
+
     background: var(--blue);
 
     color: var(--blue-text);
@@ -913,9 +1348,11 @@ button:disabled {
    ============================================================ */
 
 .toast {
+
     position: fixed;
 
     left: 14px;
+
     right: 14px;
 
     bottom:
@@ -949,12 +1386,15 @@ button:disabled {
         .25s ease;
 }
 
+
 .toast.show {
+
     transform:
         translateY(0);
 
     opacity: 1;
 }
+
 
 .toast.error {
     background: #a63d39;
@@ -965,35 +1405,46 @@ button:disabled {
    DESKTOP
    ============================================================ */
 
-@media (min-width: 700px) {
+@media (min-width:700px) {
 
     body {
+
         max-width: 900px;
 
         margin: 0 auto;
 
         padding-left: 20px;
+
         padding-right: 20px;
     }
 
+
     .products {
+
         grid-template-columns:
-            repeat(2, minmax(0, 1fr));
+            repeat(2,minmax(0,1fr));
     }
 
+
     .modal {
+
         align-items: center;
 
         padding: 20px;
     }
 
+
     .modal-sheet {
+
         max-width: 560px;
 
         border-radius: 24px;
     }
+
 }
+
 </style>
+
 </head>
 
 
@@ -1009,7 +1460,7 @@ button:disabled {
     <div class="header-title">
 
         <h1>
-            🍯 Управление каталогом
+            🍯 Управление
         </h1>
 
         <p>
@@ -1033,90 +1484,197 @@ button:disabled {
 
 
 <!-- ==========================================================
-     SEARCH
+     TABS
      ========================================================== -->
 
-<section class="toolbar">
+<nav class="tabs">
 
-    <input
-        id="search"
-        class="search"
-        type="search"
-        placeholder="Поиск товара..."
-        autocomplete="off"
+    <button
+        type="button"
+        class="tab active"
+        data-tab="products"
     >
+        🍰 Каталог
+    </button>
 
 
     <button
-        id="addButton"
-        class="add-button"
         type="button"
+        class="tab"
+        data-tab="admins"
+        id="adminsTab"
+        style="display:none"
     >
-        + Добавить
+        👑 Администраторы
     </button>
 
+</nav>
+
+
+<!-- ==========================================================
+     PRODUCTS SECTION
+     ========================================================== -->
+
+<section
+    id="productsSection"
+    class="page-section active"
+>
+
+
+    <section class="toolbar">
+
+        <input
+            id="search"
+            class="search"
+            type="search"
+            placeholder="Поиск товара..."
+            autocomplete="off"
+        >
+
+
+        <button
+            id="addButton"
+            class="add-button"
+            type="button"
+        >
+            + Добавить
+        </button>
+
+    </section>
+
+
+    <div
+        id="filters"
+        class="filters"
+    ></div>
+
+
+    <section class="stats">
+
+        <div class="stat">
+
+            <div
+                id="totalCount"
+                class="stat-value"
+            >
+                0
+            </div>
+
+            <div class="stat-label">
+                Всего товаров
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div
+                id="stockCount"
+                class="stat-value"
+            >
+                0
+            </div>
+
+            <div class="stat-label">
+                В наличии
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div
+                id="outCount"
+                class="stat-value"
+            >
+                0
+            </div>
+
+            <div class="stat-label">
+                Нет в наличии
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <main
+        id="products"
+        class="products"
+    ></main>
+
 </section>
 
 
 <!-- ==========================================================
-     FILTERS
+     ADMINS SECTION
      ========================================================== -->
 
-<div
-    id="filters"
-    class="filters"
-></div>
+<section
+    id="adminsSection"
+    class="page-section"
+>
 
 
-<!-- ==========================================================
-     STATS
-     ========================================================== -->
+    <div class="owner-info">
 
-<section class="stats">
+        👑 <strong>Управление администраторами</strong><br>
 
-    <div class="stat">
-
-        <div
-            id="totalCount"
-            class="stat-value"
-        >
-            0
-        </div>
-
-        <div class="stat-label">
-            Всего товаров
-        </div>
+        Здесь можно добавить Telegram ID человека,
+        которому будет разрешено пользоваться админкой.
+        Только владелец может добавлять и удалять администраторов.
 
     </div>
 
 
-    <div class="stat">
+    <div class="admin-panel">
+
+        <div class="admin-panel-header">
+
+            <div>
+
+                <div class="admin-panel-title">
+                    Администраторы
+                </div>
+
+                <div class="admin-panel-subtitle">
+                    Пользователи, имеющие доступ к панели управления
+                </div>
+
+            </div>
+
+
+            <button
+                id="addAdminButton"
+                class="add-button"
+                type="button"
+            >
+                + Добавить
+            </button>
+
+        </div>
+
 
         <div
-            id="stockCount"
-            class="stat-value"
+            id="adminsList"
+            class="admin-list"
         >
-            0
-        </div>
 
-        <div class="stat-label">
-            В наличии
-        </div>
+            <div class="state">
 
-    </div>
+                <div class="state-icon">
+                    ⏳
+                </div>
 
+                <div class="state-title">
+                    Загружаем администраторов
+                </div>
 
-    <div class="stat">
+            </div>
 
-        <div
-            id="outCount"
-            class="stat-value"
-        >
-            0
-        </div>
-
-        <div class="stat-label">
-            Нет в наличии
         </div>
 
     </div>
@@ -1125,17 +1683,7 @@ button:disabled {
 
 
 <!-- ==========================================================
-     PRODUCTS
-     ========================================================== -->
-
-<main
-    id="products"
-    class="products"
-></main>
-
-
-<!-- ==========================================================
-     MODAL
+     PRODUCT MODAL
      ========================================================== -->
 
 <div
@@ -1179,8 +1727,6 @@ button:disabled {
             >
 
 
-            <!-- NAME -->
-
             <div class="field">
 
                 <label for="name">
@@ -1196,8 +1742,6 @@ button:disabled {
 
             </div>
 
-
-            <!-- CATEGORY / PRICE -->
 
             <div class="form-row">
 
@@ -1236,8 +1780,6 @@ button:disabled {
             </div>
 
 
-            <!-- WEIGHT -->
-
             <div class="field">
 
                 <label for="weight">
@@ -1253,8 +1795,6 @@ button:disabled {
             </div>
 
 
-            <!-- DESCRIPTION -->
-
             <div class="field">
 
                 <label for="description">
@@ -1268,8 +1808,6 @@ button:disabled {
 
             </div>
 
-
-            <!-- IMAGE -->
 
             <div class="field">
 
@@ -1343,8 +1881,6 @@ button:disabled {
             </div>
 
 
-            <!-- TAG -->
-
             <div class="field">
 
                 <label for="tag">
@@ -1359,8 +1895,6 @@ button:disabled {
 
             </div>
 
-
-            <!-- SORT -->
 
             <div class="field">
 
@@ -1377,8 +1911,6 @@ button:disabled {
 
             </div>
 
-
-            <!-- STOCK -->
 
             <div class="switch-row">
 
@@ -1410,8 +1942,6 @@ button:disabled {
             </div>
 
 
-            <!-- ACTIONS -->
-
             <div class="form-actions">
 
                 <button
@@ -1441,6 +1971,95 @@ button:disabled {
 
 
 <!-- ==========================================================
+     ADMIN MODAL
+     ========================================================== -->
+
+<div
+    id="adminModal"
+    class="modal"
+>
+
+    <div class="modal-sheet">
+
+        <div class="modal-header">
+
+            <div class="modal-title">
+                Новый администратор
+            </div>
+
+
+            <button
+                id="closeAdminButton"
+                class="close-button"
+                type="button"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <form
+            id="adminForm"
+            class="form"
+        >
+
+            <div class="field">
+
+                <label for="adminTelegramId">
+                    Telegram ID *
+                </label>
+
+                <input
+                    id="adminTelegramId"
+                    type="number"
+                    inputmode="numeric"
+                    required
+                    placeholder="Например: 123456789"
+                >
+
+            </div>
+
+
+            <div class="owner-info">
+
+                ℹ️ Telegram ID можно получить через бота,
+                который показывает ID пользователя.
+                Добавляемый пользователь должен указать именно
+                свой числовой Telegram ID.
+
+            </div>
+
+
+            <div class="form-actions">
+
+                <button
+                    id="cancelAdminButton"
+                    class="cancel-button"
+                    type="button"
+                >
+                    Отмена
+                </button>
+
+
+                <button
+                    id="saveAdminButton"
+                    class="save-button"
+                    type="submit"
+                >
+                    Добавить
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================================
      TOAST
      ========================================================== -->
 
@@ -1451,6 +2070,7 @@ button:disabled {
 
 
 <script>
+
 "use strict";
 
 
@@ -1461,8 +2081,13 @@ button:disabled {
 const ADMIN_API_URL =
     "https://xheusnpmmmhbwwfcozbr.supabase.co/functions/v1/admin-products";
 
+
 const ADMIN_UPLOAD_URL =
     "https://xheusnpmmmhbwwfcozbr.supabase.co/functions/v1/admin-upload";
+
+
+const ADMIN_ADMINS_URL =
+    "https://xheusnpmmmhbwwfcozbr.supabase.co/functions/v1/admin-admins";
 
 
 /* ============================================================
@@ -1488,11 +2113,15 @@ if (TG) {
 
 let products = [];
 
+let admins = [];
+
 let activeCategory = "Все";
 
 let editingId = null;
 
 let loading = false;
+
+let isOwner = false;
 
 
 /* ============================================================
@@ -1595,6 +2224,54 @@ const currentImageImg =
     );
 
 
+const adminsTab =
+    document.getElementById(
+        "adminsTab",
+    );
+
+
+const adminsSection =
+    document.getElementById(
+        "adminsSection",
+    );
+
+
+const adminsList =
+    document.getElementById(
+        "adminsList",
+    );
+
+
+const adminModal =
+    document.getElementById(
+        "adminModal",
+    );
+
+
+const adminForm =
+    document.getElementById(
+        "adminForm",
+    );
+
+
+const adminTelegramId =
+    document.getElementById(
+        "adminTelegramId",
+    );
+
+
+const addAdminButton =
+    document.getElementById(
+        "addAdminButton",
+    );
+
+
+const saveAdminButton =
+    document.getElementById(
+        "saveAdminButton",
+    );
+
+
 /* ============================================================
    TOAST
    ============================================================ */
@@ -1638,11 +2315,23 @@ function toast(
             },
             3000,
         );
+
 }
 
 
 /* ============================================================
-   API
+   TELEGRAM INIT DATA
+   ============================================================ */
+
+function getTelegramInitData() {
+
+    return TG?.initData || "";
+
+}
+
+
+/* ============================================================
+   PRODUCTS API
    ============================================================ */
 
 async function api(
@@ -1673,7 +2362,7 @@ async function api(
             "application/json",
 
         "X-Telegram-Init-Data":
-            TG?.initData || "",
+            getTelegramInitData(),
 
     };
 
@@ -1734,6 +2423,655 @@ async function api(
 
 
     return data;
+
+}
+
+
+/* ============================================================
+   ADMIN API
+   ============================================================ */
+
+async function adminApi(
+    method = "GET",
+    body = null,
+    telegramId = null,
+) {
+
+    const url =
+        new URL(
+            ADMIN_ADMINS_URL,
+        );
+
+
+    if (telegramId !== null) {
+
+        url.searchParams.set(
+            "telegram_id",
+            String(telegramId),
+        );
+
+    }
+
+
+    const headers = {
+
+        "Content-Type":
+            "application/json",
+
+        "X-Telegram-Init-Data":
+            getTelegramInitData(),
+
+    };
+
+
+    const response =
+        await fetch(
+            url.toString(),
+            {
+
+                method,
+
+                headers,
+
+                body:
+                    body !== null
+                        ? JSON.stringify(body)
+                        : undefined,
+
+            },
+        );
+
+
+    const text =
+        await response.text();
+
+
+    let data;
+
+
+    try {
+
+        data =
+            text
+                ? JSON.parse(text)
+                : {};
+
+    } catch {
+
+        throw new Error(
+            `Сервер вернул некорректный ответ: ${text}`,
+        );
+
+    }
+
+
+    if (
+        !response.ok ||
+        data.ok === false
+    ) {
+
+        throw new Error(
+            data.error ||
+            data.message ||
+            `HTTP ${response.status}`,
+        );
+
+    }
+
+
+    return data;
+
+}
+
+
+/* ============================================================
+   CHECK CURRENT ADMIN
+   ============================================================ */
+
+async function loadAdminAccess() {
+
+    try {
+
+        const result =
+            await adminApi(
+                "GET",
+            );
+
+
+        isOwner =
+            result.is_owner === true ||
+            result.isOwner === true;
+
+
+        if (isOwner) {
+
+            adminsTab.style.display =
+                "block";
+
+            await loadAdmins();
+
+        } else {
+
+            adminsTab.style.display =
+                "none";
+
+        }
+
+
+        return true;
+
+    } catch (error) {
+
+        console.error(
+            "Admin access:",
+            error,
+        );
+
+
+        return false;
+
+    }
+
+}
+
+
+/* ============================================================
+   LOAD ADMINS
+   ============================================================ */
+
+async function loadAdmins() {
+
+    if (!isOwner) {
+        return;
+    }
+
+
+    adminsList.innerHTML = `
+
+        <div class="state">
+
+            <div class="state-icon">
+                ⏳
+            </div>
+
+            <div class="state-title">
+                Загружаем администраторов
+            </div>
+
+            <div class="state-text">
+                Подождите немного...
+            </div>
+
+        </div>
+
+    `;
+
+
+    try {
+
+        const result =
+            await adminApi(
+                "GET",
+            );
+
+
+        admins =
+            Array.isArray(
+                result.admins,
+            )
+                ? result.admins
+                : [];
+
+
+        renderAdmins();
+
+
+    } catch (error) {
+
+        console.error(
+            error,
+        );
+
+
+        adminsList.innerHTML = `
+
+            <div class="state">
+
+                <div class="state-icon">
+                    ⚠️
+                </div>
+
+                <div class="state-title">
+                    Не удалось загрузить администраторов
+                </div>
+
+                <div class="state-text">
+                    ${escapeHtml(
+                        error.message,
+                    )}
+                </div>
+
+            </div>
+
+        `;
+
+
+        toast(
+            error.message,
+            true,
+        );
+
+    }
+
+}
+
+
+/* ============================================================
+   RENDER ADMINS
+   ============================================================ */
+
+function renderAdmins() {
+
+    if (!admins.length) {
+
+        adminsList.innerHTML = `
+
+            <div class="state">
+
+                <div class="state-icon">
+                    👤
+                </div>
+
+                <div class="state-title">
+                    Администраторов нет
+                </div>
+
+                <div class="state-text">
+                    Добавьте первого администратора.
+                </div>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    adminsList.innerHTML =
+        admins
+            .map(
+                admin =>
+                    adminCard(
+                        admin,
+                    ),
+            )
+            .join("");
+
+}
+
+
+/* ============================================================
+   ADMIN CARD
+   ============================================================ */
+
+function adminCard(
+    admin,
+) {
+
+    const telegramId =
+        admin.telegram_id;
+
+
+    const owner =
+        admin.is_owner === true;
+
+
+    let date = "";
+
+
+    if (admin.created_at) {
+
+        try {
+
+            date =
+                new Date(
+                    admin.created_at,
+                ).toLocaleString(
+                    "ru-RU",
+                    {
+                        dateStyle: "medium",
+                        timeStyle: "short",
+                    },
+                );
+
+        } catch {
+
+            date =
+                String(
+                    admin.created_at,
+                );
+
+        }
+
+    }
+
+
+    return `
+
+        <div
+            class="admin-item"
+            data-telegram-id="${escapeAttr(
+                telegramId,
+            )}"
+        >
+
+            <div class="admin-info">
+
+                <div class="admin-id">
+
+                    Telegram ID:
+                    ${escapeHtml(
+                        telegramId,
+                    )}
+
+                </div>
+
+
+                ${
+                    date
+                        ? `
+                            <div class="admin-date">
+                                Добавлен: ${escapeHtml(date)}
+                            </div>
+                          `
+                        : ""
+                }
+
+
+                <span
+                    class="admin-role ${
+                        owner
+                            ? "owner"
+                            : "admin"
+                    }"
+                >
+
+                    ${
+                        owner
+                            ? "👑 Владелец"
+                            : "🛡 Администратор"
+                    }
+
+                </span>
+
+            </div>
+
+
+            ${
+                owner
+                    ? ""
+                    : `
+                        <button
+                            type="button"
+                            class="admin-remove"
+                            title="Удалить администратора"
+                            data-admin-action="delete"
+                            data-telegram-id="${escapeAttr(
+                                telegramId,
+                            )}"
+                        >
+                            🗑
+                        </button>
+                      `
+            }
+
+        </div>
+
+    `;
+
+}
+
+
+/* ============================================================
+   ADD ADMIN
+   ============================================================ */
+
+function openAdminModal() {
+
+    if (!isOwner) {
+
+        toast(
+            "Только владелец может добавлять администраторов",
+            true,
+        );
+
+        return;
+
+    }
+
+
+    adminForm.reset();
+
+    adminModal.classList.add(
+        "open",
+    );
+
+
+    setTimeout(
+        () => {
+
+            adminTelegramId.focus();
+
+        },
+        100,
+    );
+
+}
+
+
+/* ============================================================
+   CLOSE ADMIN MODAL
+   ============================================================ */
+
+function closeAdminModal() {
+
+    adminModal.classList.remove(
+        "open",
+    );
+
+}
+
+
+/* ============================================================
+   SAVE ADMIN
+   ============================================================ */
+
+async function saveAdmin() {
+
+    if (!isOwner) {
+
+        toast(
+            "Недостаточно прав",
+            true,
+        );
+
+        return;
+
+    }
+
+
+    const telegramId =
+        adminTelegramId.value.trim();
+
+
+    if (!telegramId) {
+
+        toast(
+            "Введите Telegram ID",
+            true,
+        );
+
+        return;
+
+    }
+
+
+    if (!/^\d+$/.test(telegramId)) {
+
+        toast(
+            "Telegram ID должен содержать только цифры",
+            true,
+        );
+
+        return;
+
+    }
+
+
+    saveAdminButton.disabled =
+        true;
+
+    saveAdminButton.textContent =
+        "Добавление...";
+
+
+    try {
+
+        await adminApi(
+            "POST",
+            {
+                telegram_id:
+                    Number(telegramId),
+            },
+        );
+
+
+        closeAdminModal();
+
+
+        toast(
+            "Администратор добавлен",
+        );
+
+
+        await loadAdmins();
+
+
+    } catch (error) {
+
+        console.error(
+            error,
+        );
+
+
+        toast(
+            error.message ||
+            "Не удалось добавить администратора",
+            true,
+        );
+
+    } finally {
+
+        saveAdminButton.disabled =
+            false;
+
+        saveAdminButton.textContent =
+            "Добавить";
+
+    }
+
+}
+
+
+/* ============================================================
+   DELETE ADMIN
+   ============================================================ */
+
+async function deleteAdmin(
+    telegramId,
+) {
+
+    if (!isOwner) {
+
+        toast(
+            "Недостаточно прав",
+            true,
+        );
+
+        return;
+
+    }
+
+
+    const admin =
+        admins.find(
+            item =>
+                String(
+                    item.telegram_id,
+                ) ===
+                String(
+                    telegramId,
+                ),
+        );
+
+
+    if (admin?.is_owner) {
+
+        toast(
+            "Владельца удалить нельзя",
+            true,
+        );
+
+        return;
+
+    }
+
+
+    const confirmed =
+        confirm(
+            `Удалить администратора с Telegram ID ${telegramId}?\n\nОн больше не сможет открыть админку.`,
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    try {
+
+        await adminApi(
+            "DELETE",
+            null,
+            telegramId,
+        );
+
+
+        toast(
+            "Администратор удалён",
+        );
+
+
+        await loadAdmins();
+
+
+    } catch (error) {
+
+        console.error(
+            error,
+        );
+
+
+        toast(
+            error.message ||
+            "Не удалось удалить администратора",
+            true,
+        );
+
+    }
+
 }
 
 
@@ -1763,10 +3101,15 @@ async function uploadProductImage(
 
 
     const allowedTypes = [
+
         "image/jpeg",
+
         "image/png",
+
         "image/webp",
+
         "image/gif",
+
     ];
 
 
@@ -1783,9 +3126,7 @@ async function uploadProductImage(
     }
 
 
-    if (
-        !TG?.initData
-    ) {
+    if (!TG?.initData) {
 
         throw new Error(
             "Откройте админку внутри Telegram",
@@ -1874,6 +3215,7 @@ async function uploadProductImage(
 
 
     return data.image.url;
+
 }
 
 
@@ -1892,6 +3234,7 @@ async function loadProducts() {
 
 
     productsEl.innerHTML = `
+
         <div class="state">
 
             <div class="state-icon">
@@ -1907,6 +3250,7 @@ async function loadProducts() {
             </div>
 
         </div>
+
     `;
 
 
@@ -1932,6 +3276,7 @@ async function loadProducts() {
 
         renderProducts();
 
+
     } catch (error) {
 
         console.error(
@@ -1940,6 +3285,7 @@ async function loadProducts() {
 
 
         productsEl.innerHTML = `
+
             <div class="state">
 
                 <div class="state-icon">
@@ -1957,6 +3303,7 @@ async function loadProducts() {
                 </div>
 
             </div>
+
         `;
 
 
@@ -1970,6 +3317,7 @@ async function loadProducts() {
         loading = false;
 
     }
+
 }
 
 
@@ -1980,16 +3328,20 @@ async function loadProducts() {
 function renderFilters() {
 
     const categories = [
+
         "Все",
 
         ...new Set(
+
             products
                 .map(
                     product =>
                         product.category,
                 )
                 .filter(Boolean),
+
         ),
+
     ];
 
 
@@ -2009,6 +3361,7 @@ function renderFilters() {
         categories
             .map(
                 category => `
+
                     <button
                         type="button"
                         class="filter ${
@@ -2020,13 +3373,17 @@ function renderFilters() {
                             category,
                         )}"
                     >
+
                         ${escapeHtml(
                             category,
                         )}
+
                     </button>
+
                 `,
             )
             .join("");
+
 }
 
 
@@ -2061,6 +3418,7 @@ function renderStats() {
 
     outCountEl.textContent =
         out;
+
 }
 
 
@@ -2120,6 +3478,7 @@ function getFilteredProducts() {
 
         },
     );
+
 }
 
 
@@ -2136,6 +3495,7 @@ function renderProducts() {
     if (!filtered.length) {
 
         productsEl.innerHTML = `
+
             <div class="state">
 
                 <div class="state-icon">
@@ -2151,9 +3511,11 @@ function renderProducts() {
                 </div>
 
             </div>
+
         `;
 
         return;
+
     }
 
 
@@ -2166,6 +3528,7 @@ function renderProducts() {
                     ),
             )
             .join("");
+
 }
 
 
@@ -2180,6 +3543,7 @@ function productCard(
     const image =
         product.image_url
             ? `
+
                 <img
                     src="${escapeAttr(
                         product.image_url,
@@ -2190,6 +3554,7 @@ function productCard(
                         this.style.display='none';
                     "
                 >
+
               `
             : "🍰";
 
@@ -2197,25 +3562,33 @@ function productCard(
     const stockBadge =
         product.in_stock
             ? `
+
                 <span class="badge badge-stock">
                     ● В наличии
                 </span>
+
               `
             : `
+
                 <span class="badge badge-out">
                     ● Нет в наличии
                 </span>
+
               `;
 
 
     const category =
         product.category
             ? `
+
                 <span class="badge badge-category">
+
                     ${escapeHtml(
                         product.category,
                     )}
+
                 </span>
+
               `
             : "";
 
@@ -2223,11 +3596,15 @@ function productCard(
     const tag =
         product.tag
             ? `
+
                 <span class="badge badge-tag">
+
                     ${escapeHtml(
                         product.tag,
                     )}
+
                 </span>
+
               `
             : "";
 
@@ -2241,6 +3618,7 @@ function productCard(
 
 
     return `
+
         <article
             class="product"
             data-id="${escapeAttr(
@@ -2249,30 +3627,38 @@ function productCard(
         >
 
             <div class="product-image">
+
                 ${image}
+
             </div>
 
 
             <div class="product-content">
 
                 <div class="product-name">
+
                     ${escapeHtml(
                         product.name,
                     )}
+
                 </div>
 
 
                 <div class="product-description">
+
                     ${description}
+
                 </div>
 
 
                 <div class="product-meta">
 
                     <span class="price">
+
                         ${formatPrice(
                             product.price,
                         )}
+
                     </span>
 
                     ${stockBadge}
@@ -2314,11 +3700,13 @@ function productCard(
                         product.id,
                     )}"
                 >
+
                     ${
                         product.in_stock
                             ? "📦"
                             : "🔄"
                     }
+
                 </button>
 
 
@@ -2337,7 +3725,9 @@ function productCard(
             </div>
 
         </article>
+
     `;
+
 }
 
 
@@ -2401,6 +3791,7 @@ function openCreateModal() {
     modal.classList.add(
         "open",
     );
+
 }
 
 
@@ -2520,11 +3911,12 @@ function openEditModal(
     modal.classList.add(
         "open",
     );
+
 }
 
 
 /* ============================================================
-   CLOSE MODAL
+   CLOSE PRODUCT MODAL
    ============================================================ */
 
 function closeModal() {
@@ -2535,6 +3927,7 @@ function closeModal() {
 
 
     editingId = null;
+
 }
 
 
@@ -2572,6 +3965,7 @@ async function saveProduct() {
         );
 
         return;
+
     }
 
 
@@ -2586,6 +3980,7 @@ async function saveProduct() {
         );
 
         return;
+
     }
 
 
@@ -2594,10 +3989,6 @@ async function saveProduct() {
 
 
     try {
-
-        /* ======================================================
-           IMAGE
-           ====================================================== */
 
         const imageFile =
             imageFileEl.files?.[0];
@@ -2621,10 +4012,6 @@ async function saveProduct() {
         }
 
 
-        /* ======================================================
-           PRODUCT
-           ====================================================== */
-
         const oldImageUrl =
             document.getElementById(
                 "imageUrl",
@@ -2638,19 +4025,22 @@ async function saveProduct() {
             category:
                 document.getElementById(
                     "category",
-                ).value.trim() || null,
+                ).value.trim() ||
+                null,
 
             price,
 
             weight:
                 document.getElementById(
                     "weight",
-                ).value.trim() || null,
+                ).value.trim() ||
+                null,
 
             description:
                 document.getElementById(
                     "description",
-                ).value.trim() || null,
+                ).value.trim() ||
+                null,
 
             image_url:
                 uploadedImageUrl ||
@@ -2660,7 +4050,8 @@ async function saveProduct() {
             tag:
                 document.getElementById(
                     "tag",
-                ).value.trim() || null,
+                ).value.trim() ||
+                null,
 
             sort_order:
                 Number(
@@ -2676,10 +4067,6 @@ async function saveProduct() {
 
         };
 
-
-        /* ======================================================
-           SAVE
-           ====================================================== */
 
         saveButton.textContent =
             "Сохранение...";
@@ -2741,11 +4128,12 @@ async function saveProduct() {
             "Сохранить";
 
     }
+
 }
 
 
 /* ============================================================
-   DELETE
+   DELETE PRODUCT
    ============================================================ */
 
 async function deleteProduct(
@@ -2793,6 +4181,7 @@ async function deleteProduct(
         );
 
     }
+
 }
 
 
@@ -2875,6 +4264,7 @@ async function toggleStock(
         );
 
     }
+
 }
 
 
@@ -2900,6 +4290,7 @@ imageFileEl.addEventListener(
                 "";
 
             return;
+
         }
 
 
@@ -2924,14 +4315,20 @@ imageFileEl.addEventListener(
 
 
             return;
+
         }
 
 
         const allowedTypes = [
+
             "image/jpeg",
+
             "image/png",
+
             "image/webp",
+
             "image/gif",
+
         ];
 
 
@@ -2957,6 +4354,7 @@ imageFileEl.addEventListener(
 
 
             return;
+
         }
 
 
@@ -2979,7 +4377,71 @@ imageFileEl.addEventListener(
 
 
 /* ============================================================
-   EVENTS
+   TABS
+   ============================================================ */
+
+document
+    .querySelectorAll(
+        ".tab",
+    )
+    .forEach(
+        tab => {
+
+            tab.addEventListener(
+                "click",
+                () => {
+
+                    const target =
+                        tab.dataset.tab;
+
+
+                    document
+                        .querySelectorAll(
+                            ".tab",
+                        )
+                        .forEach(
+                            item =>
+                                item.classList.toggle(
+                                    "active",
+                                    item === tab,
+                                ),
+                        );
+
+
+                    document
+                        .querySelectorAll(
+                            ".page-section",
+                        )
+                        .forEach(
+                            section => {
+
+                                section.classList.toggle(
+                                    "active",
+                                    section.id ===
+                                    `${target}Section`,
+                                );
+
+                            },
+                        );
+
+
+                    if (
+                        target === "admins"
+                    ) {
+
+                        loadAdmins();
+
+                    }
+
+                },
+            );
+
+        },
+    );
+
+
+/* ============================================================
+   PRODUCT EVENTS
    ============================================================ */
 
 document
@@ -3131,7 +4593,86 @@ productsEl.addEventListener(
 
 
 /* ============================================================
-   MODAL BACKDROP
+   ADMIN EVENTS
+   ============================================================ */
+
+addAdminButton.addEventListener(
+    "click",
+    openAdminModal,
+);
+
+
+document
+    .getElementById(
+        "closeAdminButton",
+    )
+    .addEventListener(
+        "click",
+        closeAdminModal,
+    );
+
+
+document
+    .getElementById(
+        "cancelAdminButton",
+    )
+    .addEventListener(
+        "click",
+        closeAdminModal,
+    );
+
+
+adminForm.addEventListener(
+    "submit",
+    event => {
+
+        event.preventDefault();
+
+        saveAdmin();
+
+    },
+);
+
+
+adminsList.addEventListener(
+    "click",
+    event => {
+
+        const button =
+            event.target.closest(
+                "[data-admin-action]",
+            );
+
+
+        if (!button) {
+            return;
+        }
+
+
+        const action =
+            button.dataset.adminAction;
+
+
+        const telegramId =
+            button.dataset.telegramId;
+
+
+        if (
+            action === "delete"
+        ) {
+
+            deleteAdmin(
+                telegramId,
+            );
+
+        }
+
+    },
+);
+
+
+/* ============================================================
+   MODAL BACKDROPS
    ============================================================ */
 
 modal.addEventListener(
@@ -3150,6 +4691,22 @@ modal.addEventListener(
 );
 
 
+adminModal.addEventListener(
+    "click",
+    event => {
+
+        if (
+            event.target === adminModal
+        ) {
+
+            closeAdminModal();
+
+        }
+
+    },
+);
+
+
 /* ============================================================
    ESCAPE
    ============================================================ */
@@ -3159,13 +4716,30 @@ document.addEventListener(
     event => {
 
         if (
-            event.key === "Escape" &&
+            event.key !== "Escape"
+        ) {
+            return;
+        }
+
+
+        if (
             modal.classList.contains(
                 "open",
             )
         ) {
 
             closeModal();
+
+        }
+
+
+        if (
+            adminModal.classList.contains(
+                "open",
+            )
+        ) {
+
+            closeAdminModal();
 
         }
 
@@ -3182,6 +4756,7 @@ function formatPrice(
 ) {
 
     return (
+
         Number(
             value || 0,
         )
@@ -3190,9 +4765,12 @@ function formatPrice(
                 {
                     maximumFractionDigits: 2,
                 },
-            ) +
-        " ₽"
+            )
+
+        + " ₽"
+
     );
+
 }
 
 
@@ -3223,6 +4801,7 @@ function escapeHtml(
             /'/g,
             "&#039;",
         );
+
 }
 
 
@@ -3263,12 +4842,12 @@ function showTelegramUser() {
         userNameEl.textContent =
             name;
 
-
     } catch {
 
         // ignore
 
     }
+
 }
 
 
@@ -3276,12 +4855,42 @@ function showTelegramUser() {
    START
    ============================================================ */
 
-showTelegramUser();
+async function start() {
 
-loadProducts();
+    showTelegramUser();
+
+
+    if (!TG?.initData) {
+
+        toast(
+            "Откройте админку внутри Telegram",
+            true,
+        );
+
+    }
+
+
+    /*
+     * Сначала проверяем права текущего пользователя.
+     * Если он владелец — показываем раздел администраторов.
+     */
+
+    await loadAdminAccess();
+
+
+    /*
+     * После проверки доступа загружаем каталог.
+     */
+
+    await loadProducts();
+
+}
+
+
+start();
 
 </script>
 
 </body>
-</html>
 
+</html>
