@@ -580,7 +580,6 @@ a{
     border:0;
     border-radius:19px;
 
-    /* Фиксированные цвета — не зависят от Telegram Dark Mode */
     background:#F4F6F8 !important;
     color:#536D8A !important;
 
@@ -613,7 +612,6 @@ a{
     padding:0 6px;
     border-radius:999px;
 
-    /* Фиксированный цвет счётчика */
     background:#6F86A3 !important;
     color:#FFFFFF !important;
 
@@ -2005,11 +2003,6 @@ function detectLanguage(){
     return saved;
   }
 
-  /*
-   * Telegram language:
-   * en, en-US, ru, ru-RU и т.д.
-   */
-
   const telegramLanguage =
     TG?.initDataUnsafe?.user?.language_code || "";
 
@@ -2018,10 +2011,6 @@ function detectLanguage(){
   ){
     return "en";
   }
-
-  /*
-   * Язык браузера/устройства
-   */
 
   const browserLanguages =
     navigator.languages ||
@@ -2267,7 +2256,7 @@ setTheme(preferredTheme(), false);
 
 
 /* =====================================================
-   TELEGRAM
+   TELEGRAM SETUP
 ===================================================== */
 
 if(TG){
@@ -2276,13 +2265,8 @@ if(TG){
 
   TG.expand();
 
-  // На мобильном Telegram свайз вниз по странице сворачивает/закрывает
-  // Mini App поверх любых наших обработчиков — это мешает скроллить
-  // и заполнять форму заказа. Отключаем это поведение внутри приложения.
   TG.disableVerticalSwipes?.();
 
-  // Просим подтверждение закрытия, чтобы случайный свайп/кнопка "назад"
-  // не стирали уже заполненную форму или корзину.
   TG.enableClosingConfirmation?.();
 
 
@@ -2367,30 +2351,6 @@ if(TG){
 
   }
 
-
-  if(TG.BackButton){
-
-    TG.BackButton.onClick(() => {
-
-      if(
-        document
-          .getElementById("cartDrawer")
-          .classList
-          .contains("open")
-      ){
-
-        closeCart();
-
-      }else{
-
-        window.history.back();
-
-      }
-
-    });
-
-  }
-
 }
 
 
@@ -2401,10 +2361,6 @@ if(TG){
 const SUPABASE_URL =
   "https://xheusnpmmmhbwwfcozbr.supabase.co";
 
-/*
- * Вставь сюда Supabase Publishable / anon key.
- * НЕ вставляй service_role key.
- */
 const SUPABASE_ANON_KEY =
   "sb_publishable_0xqHniA9S27iIoTwB3BCug_u9LpsQOu";
 
@@ -2426,6 +2382,10 @@ let currentFiltered = [];
 let currentHits = [];
 
 let cart = [];
+
+let isCartOpen = false;
+
+let checkoutStep = "items"; // "items" | "form" | "success"
 
 
 const fallbackIcon =
@@ -2979,7 +2939,7 @@ hitsRow.addEventListener(
 
 
 /* =====================================================
-   CART
+   CART & TELEGRAM BUTTON LOGIC
 ===================================================== */
 
 let toastTimer;
@@ -3222,10 +3182,27 @@ function clearAll(){
 
 
 /* =====================================================
-   CART UI
+   CART UI & BACKBUTTON CONTROL
 ===================================================== */
 
+function updateBackButton(){
+
+  if(!TG?.BackButton){
+    return;
+  }
+
+  if(isCartOpen){
+    TG.BackButton.show();
+  }else{
+    TG.BackButton.hide();
+  }
+
+}
+
+
 function openCart(){
+
+  isCartOpen = true;
 
   cartDrawer
     .classList
@@ -3237,12 +3214,14 @@ function openCart(){
 
   showView("items");
 
-  TG?.BackButton?.show();
+  updateBackButton();
 
 }
 
 
 function closeCart(){
+
+  isCartOpen = false;
 
   cartDrawer
     .classList
@@ -3252,12 +3231,17 @@ function closeCart(){
     .classList
     .remove("open");
 
-  TG?.BackButton?.hide();
+  if(checkoutStep !== "success"){
+    checkoutStep = "items";
+    showView("items");
+  }
+
+  updateBackButton();
+
+  updateMainButton();
 
 }
 
-
-let checkoutStep = "items";
 
 function showView(v){
 
@@ -3342,8 +3326,6 @@ checkoutBtn.onclick = () => {
 
 ckNewOrder.onclick = () => {
 
-  showView("items");
-
   closeCart();
 
 };
@@ -3369,13 +3351,10 @@ document
   );
 
 
-/*
- * Главная синяя кнопка Telegram (MainButton) — это то, чем реально
- * пользуются на мобильном. Раньше она всегда открывала форму заказа
- * и никогда не отправляла его, даже если пользователь уже был на
- * экране формы, поэтому заказ было невозможно подтвердить.
- * Теперь её текст и действие зависят от текущего шага.
- */
+/* =====================================================
+   TELEGRAM MAIN BUTTON LOGIC
+===================================================== */
+
 function updateMainButton(){
 
   if(!TG?.MainButton){
@@ -3388,46 +3367,109 @@ function updateMainButton(){
       0
     );
 
-  if(checkoutStep === "form" && cart.length){
+  // 1. Cart is empty or in success view -> Hide button
+  if(!cart.length || checkoutStep === "success"){
+
+    TG.MainButton.hide();
+
+    return;
+
+  }
+
+  // 2. Cart drawer is OPEN and on the FORM step -> "Confirm Order"
+  if(isCartOpen && checkoutStep === "form"){
 
     TG.MainButton.setText(
       t("submitOrder")
     );
 
     TG.MainButton.show();
+
     TG.MainButton.enable();
 
-  }else if(cart.length){
+  }
+  // 3. Cart drawer is OPEN and on the ITEMS step -> "Checkout · Total"
+  else if(isCartOpen && checkoutStep === "items"){
 
     TG.MainButton.setText(
       `${t("checkout")} · ${money(total)}`
     );
 
     TG.MainButton.show();
+
     TG.MainButton.enable();
 
-  }else{
+  }
+  // 4. Cart drawer is CLOSED, but has items -> "Cart · Total"
+  else{
 
-    TG.MainButton.hide();
+    TG.MainButton.setText(
+      `${t("cart")} · ${money(total)}`
+    );
+
+    TG.MainButton.show();
+
+    TG.MainButton.enable();
 
   }
 
 }
 
 
-TG?.MainButton?.onClick(() => {
+// Single permanent handler for MainButton clicks
+if(TG?.MainButton){
 
-  if(!cart.length){
-    return;
-  }
+  TG.MainButton.onClick(() => {
 
-  if(checkoutStep === "form"){
-    performSubmit();
-  }else{
-    showView("form");
-  }
+    if(!cart.length){
+      return;
+    }
 
-});
+    if(!isCartOpen){
+
+      openCart();
+
+    }else if(checkoutStep === "items"){
+
+      showView("form");
+
+    }else if(checkoutStep === "form"){
+
+      performSubmit();
+
+    }
+
+  });
+
+}
+
+
+// Single permanent handler for Telegram BackButton
+if(TG?.BackButton){
+
+  TG.BackButton.onClick(() => {
+
+    if(!isCartOpen){
+
+      window.history.back();
+
+      return;
+
+    }
+
+    if(checkoutStep === "form"){
+
+      showView("items");
+
+    }else{
+
+      closeCart();
+
+    }
+
+  });
+
+}
 
 
 /* =====================================================
@@ -3454,14 +3496,6 @@ function clearInvalid(){
 }
 
 
-/*
- * Простая, не полагающаяся на нативную HTML5-валидацию проверка.
- * В некоторых мобильных WebView (в т.ч. внутри Telegram) всплывающая
- * подсказка "заполните поле" от required либо не показывается вовсе,
- * либо перехватывается системным свайпом — и заказ просто "не уходит"
- * без единой видимой причины. Поэтому проверяем поля сами и печатаем
- * понятную ошибку прямо в форме.
- */
 function validateOrder(){
 
   clearInvalid();
@@ -3610,8 +3644,6 @@ async function performSubmit(){
   };
 
 
-  // Подстраховка от «зависшего» запроса без сети — иначе кнопка
-  // навсегда останется в состоянии "Отправляем заказ…".
   const controller =
     typeof AbortController !== "undefined" ?
       new AbortController() :
@@ -3764,11 +3796,6 @@ const submitOrderButton =
     "submitOrder"
   );
 
-
-/*
- * Сначала применяем язык,
- * затем загружаем каталог.
- */
 
 applyLanguage();
 
