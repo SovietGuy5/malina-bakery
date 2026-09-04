@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#eef2f5">
-<title>Медовый Дом — десерты</title>
+<title>КофеЕдаВсе — десерты и кофе</title>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
@@ -46,6 +46,16 @@ html[data-theme="dark"] .hero-copy{
 
 html[data-theme="dark"] .card-img{
   background:linear-gradient(145deg,#2b3742,#202b36)
+}
+
+html[data-theme="dark"] .hit-card {
+  background:linear-gradient(135deg, var(--tg-card), var(--tg-soft));
+  border-color: var(--accent-dark);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+
+html[data-theme="dark"] .hit-img {
+  background: #2b3742;
 }
 
 html[data-theme="dark"] .feature-icon{
@@ -357,6 +367,86 @@ a{
   font-size:13px
 }
 
+/* Redesigned Hits */
+.hits-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
+
+.hit-card {
+  display: flex;
+  background: linear-gradient(135deg, var(--tg-card), var(--tg-soft));
+  border: 2px solid var(--accent);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(138, 91, 70, 0.15);
+  transition: 0.3s;
+}
+
+.hit-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(138, 91, 70, 0.25);
+}
+
+.hit-img {
+  width: 140px;
+  flex-shrink: 0;
+  background: #f5f6f7;
+  position: relative;
+}
+
+.hit-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hit-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-grow: 1;
+}
+
+.hit-body h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+  line-height: 1.2;
+  color: var(--tg-text);
+  letter-spacing:-.02em;
+}
+
+.hit-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.hit-tag {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: var(--accent);
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.hit-card.unavailable {
+  opacity: 0.8;
+  border-color: var(--tg-line);
+}
+
+.hit-card.unavailable .hit-img img {
+  filter: grayscale(.72) brightness(.72);
+}
+
 .filters{
   display:flex;
   gap:7px;
@@ -579,23 +669,19 @@ a{
     height:58px;
     border:0;
     border-radius:19px;
-
     background:#F4F6F8 !important;
     color:#536D8A !important;
-
     display:flex;
     align-items:center;
     justify-content:center;
     gap:7px;
     padding:0 13px;
-
     box-shadow:0 14px 35px rgba(0,0,0,.28);
 }
 
 .cart-fab svg{
     width:22px;
     height:22px;
-
     stroke:#536D8A !important;
     color:#536D8A !important;
 }
@@ -611,10 +697,8 @@ a{
     height:21px;
     padding:0 6px;
     border-radius:999px;
-
     background:#6F86A3 !important;
     color:#FFFFFF !important;
-
     font-size:11px;
     font-weight:800;
     display:grid;
@@ -1045,8 +1129,8 @@ a{
       </span>
 
       <span>
-        <span data-i18n="brand">Кондитерский Дом Малина</span>
-        <small data-i18n="brandSmall">торты · чизкейки · десерты</small>
+        <span data-i18n="brand">КофеЕдаВсе</span>
+        <small data-i18n="brandSmall">кофе · десерты · еда</small>
       </span>
 
     </a>
@@ -1090,7 +1174,7 @@ a{
       <div>
 
         <span class="eyebrow" data-i18n="eyebrow">
-          Домашняя кондитерская
+          Заведение со вкусом
         </span>
 
         <h1>
@@ -1098,13 +1182,13 @@ a{
         </h1>
 
         <p data-i18n="heroDescription">
-          Чизкейки, торты и меренговые рулеты — свежие, вкусные, а главное - натуральные
+          Чизкейки, торты и меренговые рулеты — свежие, вкусные, а главное — натуральные
         </p>
 
         <div class="hero-actions">
 
           <a class="primary" href="#catalog" data-i18n="viewDesserts">
-            Смотреть десерты
+            Смотреть меню
           </a>
 
           <button class="secondary" id="heroCart" data-i18n="cart">
@@ -1145,6 +1229,35 @@ a{
 </section>
 
 
+<!-- Moved Hits Section Higher -->
+<section class="section">
+
+  <div class="wrap">
+
+    <div class="section-head">
+
+      <div>
+
+        <h2 data-i18n="hits">
+          Хиты
+        </h2>
+
+        <p data-i18n="mostPopular">
+          То, что чаще всего выбирают.
+        </p>
+
+      </div>
+
+    </div>
+
+    <!-- Redesigned Hits Grid Container -->
+    <div class="hits-grid" id="hitsGrid"></div>
+
+  </div>
+
+</section>
+
+
 <section class="section" id="catalog">
 
   <div class="wrap">
@@ -1168,33 +1281,6 @@ a{
     <div class="filters" id="filtersContainer"></div>
 
     <div class="products" id="prodGrid"></div>
-
-  </div>
-
-</section>
-
-
-<section class="section">
-
-  <div class="wrap">
-
-    <div class="section-head">
-
-      <div>
-
-        <h2 data-i18n="hits">
-          Хиты
-        </h2>
-
-        <p data-i18n="mostPopular">
-          То, что чаще всего выбирают.
-        </p>
-
-      </div>
-
-    </div>
-
-    <div class="products" id="hitsRow"></div>
 
   </div>
 
@@ -1233,7 +1319,7 @@ a{
         </h3>
 
         <p data-i18n="step1Text">
-          Откройте каталог, выберите десерт и проверьте корзину.
+          Откройте каталог, выберите позицию и проверьте корзину.
         </p>
 
       </div>
@@ -1283,11 +1369,11 @@ a{
   <div class="wrap footer-inner">
 
     <span data-i18n="copyright">
-      © Медовый Дом
+      © КофеЕдаВсе
     </span>
 
     <span data-i18n="footerText">
-      Торты и десерты ручной работы
+      г. Екатеринбург, ул. Баумана, 13
     </span>
 
   </div>
@@ -1585,18 +1671,18 @@ const I18N = {
 
   ru: {
 
-    brand: "Кондитерский Дом Малина",
-    brandSmall: "торты · чизкейки · десерты",
+    brand: "КофеЕдаВсе",
+    brandSmall: "кофе · десерты · еда",
     shop: "Магазин",
 
-    eyebrow: "Домашняя кондитерская",
+    eyebrow: "Заведение со вкусом",
 
     heroTitle1: "С любовью к каждому кусочку",
 
     heroDescription:
-      "Чизкейки, торты и меренговые рулеты - свежие, вкусные, а главное - натуральные",
+      "Чизкейки, торты и меренговые рулеты — свежие, вкусные, а главное — натуральные",
 
-    viewDesserts: "Смотреть десерты",
+    viewDesserts: "Смотреть меню",
     cart: "Корзина",
 
     heroNote:
@@ -1625,10 +1711,10 @@ const I18N = {
       "Как это работает",
 
     threeSteps:
-      "Три шага - без лишней переписки.",
+      "Три шага — без лишней переписки.",
 
     step1Title:
-      "Выберите десерт",
+      "Выберите позицию",
 
     step1Text:
       "Откройте каталог, добавьте нужное количество и проверьте корзину.",
@@ -1643,7 +1729,7 @@ const I18N = {
       "Получите подтверждение",
 
     step3Text:
-      "Заказ сразу поступит в Telegram - мы свяжемся для подтверждения.",
+      "Заказ сразу поступит в Telegram — мы свяжемся для подтверждения.",
 
     step4Title:
       "Всё внутри Telegram",
@@ -1652,10 +1738,10 @@ const I18N = {
       "Никаких лишних страниц и регистрации: Mini App работает прямо в Telegram.",
 
     copyright:
-      "© Кондитерский Дом Малина",
+      "© КофеЕдаВсе",
 
     footerText:
-      "Торты и десерты ручной работы",
+      "г. Екатеринбург, ул. Баумана, 13",
 
     clearCart:
       "Очистить корзину",
@@ -1720,8 +1806,11 @@ const I18N = {
     continueShopping:
       "Продолжить покупки",
 
+    emptyCart:
+      "Корзина пуста",
+
     cartEmpty:
-      "Корзина пуста.<br>Добавьте любимый десерт из каталога.",
+      "Корзина пуста.<br>Добавьте любимую позицию из каталога.",
 
     categoryEmpty:
       "В этой категории пока пусто.",
@@ -1779,19 +1868,18 @@ const I18N = {
 
   en: {
 
-    brand: "Medovy Dom",
-    brandSmall: "cakes · cheesecakes · desserts",
+    brand: "KofeEdaVse",
+    brandSmall: "coffee · desserts · food",
     shop: "Shop",
 
-    eyebrow: "Home bakery",
+    eyebrow: "A place with taste",
 
-    heroTitle1: "Beautiful desserts.",
-    heroTitle2: "An easy choice.",
+    heroTitle1: "Beautiful desserts & coffee.",
 
     heroDescription:
       "Cheesecakes, cakes and meringue rolls — fresh, carefully made and crafted with attention to detail.",
 
-    viewDesserts: "View desserts",
+    viewDesserts: "View menu",
     cart: "Cart",
 
     heroNote:
@@ -1814,7 +1902,7 @@ const I18N = {
     hits: "Popular",
 
     mostPopular:
-      "Our most frequently chosen desserts.",
+      "Our most frequently chosen items.",
 
     howItWorks:
       "How it works",
@@ -1823,7 +1911,7 @@ const I18N = {
       "Three simple steps — no unnecessary messages.",
 
     step1Title:
-      "Choose a dessert",
+      "Choose an item",
 
     step1Text:
       "Browse the catalog, add the quantity you need and check your cart.",
@@ -1847,10 +1935,10 @@ const I18N = {
       "No extra pages or registration: the Mini App works right inside Telegram.",
 
     copyright:
-      "© Medovy Dom",
+      "© KofeEdaVse",
 
     footerText:
-      "Handmade cakes and desserts",
+      "Yekaterinburg, Baumana st. 13",
 
     clearCart:
       "Clear cart",
@@ -1915,14 +2003,17 @@ const I18N = {
     continueShopping:
       "Continue shopping",
 
+    emptyCart:
+      "Cart is empty",
+
     cartEmpty:
-      "Your cart is empty.<br>Add your favorite dessert from the catalog.",
+      "Your cart is empty.<br>Add your favorite item from the catalog.",
 
     categoryEmpty:
-      "There are no desserts in this category yet.",
+      "There are no items in this category yet.",
 
     hitsEmpty:
-      "Popular desserts will appear here.",
+      "Popular items will appear here.",
 
     addToCart:
       "Add",
@@ -2796,6 +2887,31 @@ function card(p,i){
 
 }
 
+function hitCard(p, i) {
+  const out = isOutOfStock(p);
+  return `
+    <article class="hit-card ${out ? "unavailable" : ""}">
+      <div class="hit-img">
+        ${p.tag ? `<span class="hit-tag">${escapeHtml(translatedTag(p.tag))}</span>` : ""}
+        ${out ? `<div class="unavailable-overlay">${t("unavailable")}</div>` : ""}
+        ${img(p)}
+      </div>
+      <div class="hit-body">
+        <div>
+          <h3>${escapeHtml(p.name)}</h3>
+          <div class="meta">${escapeHtml([p.description, p.weight].filter(Boolean).join(" · "))}</div>
+        </div>
+        <div class="hit-foot">
+          <span class="price">${escapeHtml(p.price)}</span>
+          <button class="add" data-add="${i}" ${out ? "disabled" : ""} aria-label="${out ? t("outOfStock") : t("addToCart")}">
+            ${out ? "×" : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>`}
+          </button>
+        </div>
+      </div>
+    </article>
+  `;
+}
+
 
 function renderCatalog(){
 
@@ -2837,9 +2953,9 @@ function renderHits(){
   currentHits =
     currentHits.slice(0,3);
 
-  hitsRow.innerHTML =
+  hitsGrid.innerHTML =
     currentHits
-      .map(card)
+      .map(hitCard)
       .join("")
 
     ||
@@ -2903,7 +3019,7 @@ prodGrid.addEventListener(
 );
 
 
-hitsRow.addEventListener(
+hitsGrid.addEventListener(
   "click",
   e => {
 
@@ -3485,7 +3601,7 @@ function validateOrder(){
   clearInvalid();
 
   if(!cart.length){
-    return t("emptyCart") || "Корзина пуста";
+    return t("emptyCart");
   }
 
   const name = ckName.value.trim();
