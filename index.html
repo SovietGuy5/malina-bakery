@@ -19,7 +19,6 @@
   --tg-card: #ffffff;
   --tg-text: #0f172a;
   --tg-muted: #475569;
-  /* Более премиальные и элегантные оттенки розового */
   --tg-blue: #b02a5c; 
   --tg-blue2: #911f47;
   --tg-line: #e2e8f0;
@@ -34,7 +33,6 @@
 
 body.dark-theme {
   color-scheme: dark;
-  /* Цвета, приближенные к оригинальной темной теме Telegram */
   --tg-bg: #18222d;
   --tg-card: #212d3b;
   --tg-text: #ffffff;
@@ -63,6 +61,10 @@ body{
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
   -webkit-font-smoothing:antialiased;
   transition: background 0.3s, color 0.3s;
+}
+
+[hidden] {
+  display: none !important;
 }
 
 button,input,textarea{
@@ -528,16 +530,16 @@ body.dark-theme .topbar {
 }
 
 .add{
-  width:40px;
-  height:40px;
+  width:32px;
+  height:32px;
   border:0;
-  border-radius:14px;
+  border-radius:50%;
   background:var(--tg-blue);
   color:#fff;
   display:grid;
   place-items:center;
   transition: 0.15s;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: bold;
 }
 
@@ -547,9 +549,10 @@ body.dark-theme .topbar {
 
 .add:disabled{
   cursor:not-allowed;
-  background:var(--tg-soft);
+  background:transparent;
   color:var(--tg-muted);
-  opacity:1
+  opacity:1;
+  font-size:24px;
 }
 
 .card.unavailable{
@@ -566,12 +569,7 @@ body.dark-theme .topbar {
   display:flex;
   align-items:center;
   justify-content:center;
-  background:rgba(15, 23, 42, 0.7);
-  color:#fff;
-  font-weight:800;
-  font-size:13px;
-  letter-spacing:.04em;
-  text-transform:uppercase;
+  background:rgba(15, 23, 42, 0.4);
   z-index: 1;
 }
 
@@ -580,13 +578,14 @@ body.dark-theme .topbar {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background:var(--tg-card);
-  color:var(--danger);
-  border:1px solid var(--danger);
-  border-radius:999px;
-  padding:8px 16px;
-  font-size:12px;
-  font-weight:800;
+  background:rgba(30, 41, 59, 0.6);
+  color:rgba(255, 255, 255, 0.95);
+  backdrop-filter:blur(4px);
+  border-radius:8px;
+  padding:6px 12px;
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:0.05em;
   z-index: 2;
   text-align: center;
   white-space: nowrap;
@@ -731,7 +730,8 @@ body.dark-theme .topbar {
   display:flex;
   flex-direction:column;
   padding-bottom:env(safe-area-inset-bottom);
-  box-shadow:0 -20px 50px rgba(0, 0, 0, 0.4)
+  box-shadow:0 -20px 50px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
 }
 
 .sheet.open{
@@ -742,7 +742,8 @@ body.dark-theme .topbar {
   padding:16px 20px 12px;
   display:flex;
   align-items:center;
-  justify-content:space-between
+  justify-content:space-between;
+  touch-action: none;
 }
 
 .grab{
@@ -753,7 +754,8 @@ body.dark-theme .topbar {
   width:40px;
   height:5px;
   border-radius:10px;
-  background:var(--tg-line)
+  background:var(--tg-line);
+  touch-action: none;
 }
 
 .sheet-title{
@@ -837,14 +839,14 @@ body.dark-theme .topbar {
 }
 
 .qty button{
-  width:30px;
-  height:30px;
+  width:26px;
+  height:26px;
   border:0;
-  border-radius:10px;
+  border-radius:50%;
   background:var(--tg-soft);
   color: var(--tg-text);
   font-weight:800;
-  font-size: 16px;
+  font-size: 14px;
   display: grid;
   place-items: center;
 }
@@ -1097,7 +1099,6 @@ body.dark-theme .topbar {
   transform:translate(-50%,0)
 }
 
-/* Modal specific */
 #pmImage {
   width: 100%;
   border-radius: 20px;
@@ -1105,6 +1106,38 @@ body.dark-theme .topbar {
   background: var(--tg-soft);
   object-fit: cover;
   max-height: 320px;
+}
+
+.qty-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid var(--tg-line);
+  padding: 2px;
+  border-radius: 99px;
+  background: transparent;
+}
+
+.qty-controls .qty-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--tg-text);
+  font-weight: 500;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qty-controls span {
+  min-width: 16px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--tg-text);
 }
 
 @media(max-width:850px){
@@ -1162,9 +1195,13 @@ body.dark-theme .topbar {
 
     <a class="brand" href="#top">
       <span class="brand-mark">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M5 10.5 12 5l7 5.5v7a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 5 17.5z"/>
-          <path d="M9 19v-5h6v5"/>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M7 6C7 4.5 8 3 12 3c4 0 5 1.5 5 3 0 1.5-1.5 3-5 3-3.5 0-5-1.5-5-3Z"/>
+          <path d="M7 6c-2 1.5-3 3.5-2 6 1 3 4 6 7 6s6-3 7-6c1-2.5 0-4.5-2-6"/>
+          <circle cx="12" cy="11" r="1.5"/>
+          <circle cx="9" cy="14" r="1.5"/>
+          <circle cx="15" cy="14" r="1.5"/>
+          <circle cx="12" cy="17" r="1.5"/>
         </svg>
       </span>
       <span data-i18n="brand">Кондитерский дом «Малина»</span>
@@ -1300,14 +1337,14 @@ body.dark-theme .topbar {
     <div class="sheet-title" id="pmTitle"></div>
     <button class="icon-btn" id="pmClose" aria-label="Закрыть">×</button>
   </div>
-  <div class="sheet-scroll" style="padding-top: 0;">
+  <div class="sheet-scroll" style="padding-top: 0; flex: 1;">
     <img id="pmImage" src="" alt="">
     <div id="pmDesc" style="color:var(--tg-muted); font-size:15px; margin-bottom:12px; line-height:1.5;"></div>
-    <div id="pmWeight" style="font-weight:600; font-size:14px; margin-bottom:24px; color:var(--tg-muted);"></div>
-    <div style="display:flex; justify-content:space-between; align-items:center;">
-      <span id="pmPrice" style="font-size:22px; font-weight:800; color:var(--tg-text);"></span>
-      <div id="pmControls"></div>
-    </div>
+    <div id="pmWeight" style="font-weight:600; font-size:14px; color:var(--tg-muted);"></div>
+  </div>
+  <div style="padding: 16px 20px; border-top: 1px solid var(--tg-line); display:flex; justify-content:space-between; align-items:center; position:sticky; bottom:0; background:var(--tg-bg); z-index: 10;">
+    <span id="pmPrice" style="font-size:22px; font-weight:800; color:var(--tg-text);"></span>
+    <div id="pmControls"></div>
   </div>
 </aside>
 
@@ -1353,8 +1390,8 @@ body.dark-theme .topbar {
       </div>
 
       <div id="ckAddressWrap">
-        <label data-i18n="addressLabel">Адрес доставки</label>
-        <input id="ckAddress" name="address" data-i18n-placeholder="addressPlaceholder" placeholder="Улица, дом, квартира">
+        <label data-i18n="addressLabel">Адрес доставки*</label>
+        <input id="ckAddress" name="address" required data-i18n-placeholder="addressPlaceholder" placeholder="Улица, дом, квартира">
       </div>
       
       <div id="pickupNotice" class="hint hidden" data-i18n="pickupNotice" style="color: var(--tg-blue); font-weight: 700;">
@@ -1413,6 +1450,40 @@ if (TG && TG.onEvent) {
 }
 
 /* =====================================================
+   SWIPE TO CLOSE SHEETS
+===================================================== */
+document.querySelectorAll('.grab, .sheet-head').forEach(el => {
+  let startY = 0;
+  let currentSheet = null;
+
+  el.addEventListener('touchstart', (e) => {
+      currentSheet = el.closest('.sheet');
+      startY = e.touches[0].clientY;
+      currentSheet.style.transition = 'none';
+  }, {passive: true});
+
+  el.addEventListener('touchmove', (e) => {
+      if (!currentSheet) return;
+      let delta = e.touches[0].clientY - startY;
+      if (delta > 0) {
+          currentSheet.style.transform = `translate(-50%, ${delta}px)`;
+      }
+  }, {passive: true});
+
+  el.addEventListener('touchend', (e) => {
+      if (!currentSheet) return;
+      currentSheet.style.transition = '';
+      let delta = e.changedTouches[0].clientY - startY;
+      currentSheet.style.transform = '';
+      if (delta > 80) {
+          if (currentSheet.id === 'cartDrawer') closeCart();
+          if (currentSheet.id === 'pmDrawer') closeProductModal();
+      }
+      currentSheet = null;
+  }, {passive: true});
+});
+
+/* =====================================================
    TRANSLATIONS
 ===================================================== */
 const I18N = {
@@ -1454,7 +1525,7 @@ const I18N = {
     methodLabel: "Способ получения",
     pickup: "Самовывоз",
     delivery: "Доставка",
-    addressLabel: "Адрес доставки",
+    addressLabel: "Адрес доставки*",
     addressPlaceholder: "Улица, дом, квартира",
     pickupNotice: "Адрес для получения заказа мы сообщим вам при подтверждении.",
     dateLabel: "Желаемая дата",
@@ -1483,7 +1554,7 @@ const I18N = {
     added: "добавлен в корзину",
     sending: "Отправляем заказ…",
     orderError: "Не удалось отправить заказ",
-    requiredFields: "Заполните имя, телефон и дату",
+    requiredFields: "Заполните имя, телефон, дату и адрес",
     phoneInvalid: "Проверьте номер телефона",
     addressRequired: "Введите адрес доставки",
     timeoutError: "Сервер не отвечает. Проверьте связь и попробуйте ещё раз",
@@ -1497,11 +1568,11 @@ const I18N = {
     collapse: "Свернуть"
   },
   en: {
-    brand: "PH «Malina»",
+    brand: "Confectionery House «Malina»",
     shop: "Shop",
     eyebrow: "A place with taste",
     heroTitle1: "With love for every bite",
-    heroDescription: "Cheesecakes, cakes and meringue rolls — fresh, delicious, and most importantly — natural",
+    heroDescription: "Cheesecakes, cakes and meringue rolls — fresh, delicious, and above all — natural",
     viewDesserts: "View menu",
     cart: "Cart",
     heroNote: "Order directly on the website or inside Telegram.",
@@ -1521,7 +1592,7 @@ const I18N = {
     step3Title: "Get confirmation",
     step3Text: "The order will immediately go to Telegram — we will contact you to confirm.",
     step4Title: "Delivery terms",
-    copyright: "© Pastry House «Malina»",
+    copyright: "© Confectionery House «Malina»",
     deliveryTiersTitle: "Delivery cost",
     deliveryTiersInfo: "Under 500 ₽ — 199 ₽ | Under 1000 ₽ — 149 ₽ | Under 2000 ₽ — 99 ₽ | From 2000 ₽ — free",
     clearCart: "Clear cart",
@@ -1534,7 +1605,7 @@ const I18N = {
     methodLabel: "Order method",
     pickup: "Pickup",
     delivery: "Delivery",
-    addressLabel: "Delivery address",
+    addressLabel: "Delivery address*",
     addressPlaceholder: "Street, building, apartment",
     pickupNotice: "We will inform you of the pickup address upon order confirmation.",
     dateLabel: "Preferred date",
@@ -1563,7 +1634,7 @@ const I18N = {
     added: "added to cart",
     sending: "Sending order…",
     orderError: "Failed to send the order",
-    requiredFields: "Please fill in your name, phone and date",
+    requiredFields: "Please fill in your name, phone, date and address",
     phoneInvalid: "Please check the phone number",
     addressRequired: "Please enter delivery address",
     timeoutError: "The server isn't responding. Check your connection and try again",
@@ -1649,8 +1720,24 @@ if(TG){
 ===================================================== */
 const dateInput = document.getElementById("ckDate");
 const todayDate = new Date();
-todayDate.setDate(todayDate.getDate() + 2); // Заказы от послезавтра (минимум 48 часов)
-dateInput.min = todayDate.toISOString().split("T")[0];
+const minDate = new Date();
+minDate.setDate(todayDate.getDate() + 2); // Заказы от послезавтра (минимум 48 часов)
+const minDateString = minDate.toISOString().split("T")[0];
+
+dateInput.min = minDateString;
+dateInput.value = minDateString; // Значение по умолчанию: послезавтра
+
+dateInput.addEventListener('change', (e) => {
+    const selectedDate = new Date(e.target.value);
+    const reqDate = new Date();
+    reqDate.setDate(reqDate.getDate() + 1); 
+    reqDate.setHours(23,59,59,999);
+    
+    if (selectedDate <= reqDate) {
+        alert(t("dateHint"));
+        e.target.value = minDateString; 
+    }
+});
 
 /* =====================================================
    CATALOG
@@ -1757,7 +1844,6 @@ function translatedTag(tag){
   return map[tag] || tag;
 }
 
-// Глобальная функция для развертывания описания
 window.toggleReadMore = function(btn) {
   const meta = btn.previousElementSibling;
   if (meta.style.webkitLineClamp === 'initial') {
@@ -1773,10 +1859,10 @@ function getQtyControlsHtml(name, out) {
   const qty = cart.find(c => c.name === name)?.qty || 0;
   if (qty > 0) {
     return `
-      <div style="display:flex; align-items:center; gap:8px; background:var(--tg-soft); padding:4px; border-radius:12px;">
-        <button class="qty-btn" data-qty-change="-1" data-name="${escapeHtml(name)}" style="width:32px; height:32px; border-radius:8px; border:none; background:var(--tg-card); color:var(--tg-text); font-weight:bold; font-size:16px;">−</button>
-        <span style="min-width:20px; text-align:center; font-weight:700; font-size:15px; color:var(--tg-text);">${qty}</span>
-        <button class="qty-btn" data-qty-change="1" data-name="${escapeHtml(name)}" style="width:32px; height:32px; border-radius:8px; border:none; background:var(--tg-card); color:var(--tg-text); font-weight:bold; font-size:16px;">+</button>
+      <div class="qty-controls">
+        <button class="qty-btn" data-qty-change="-1" data-name="${escapeHtml(name)}">−</button>
+        <span>${qty}</span>
+        <button class="qty-btn" data-qty-change="1" data-name="${escapeHtml(name)}">+</button>
       </div>
     `;
   }
@@ -1818,7 +1904,7 @@ function hitCard(p) {
     <article class="hit-card ${out ? "unavailable" : ""}" data-product-name="${escapeHtml(p.name)}">
       <div class="hit-img">
         ${p.tag ? `<span class="hit-tag">${escapeHtml(translatedTag(p.tag))}</span>` : ""}
-        ${out ? `<div class="unavailable-overlay"></div>` : ""}
+        ${out ? `<div class="unavailable-overlay"></div><div class="unavailable-badge">${t("outOfStock")}</div>` : ""}
         ${img(p)}
       </div>
       <div class="hit-body">
@@ -1874,12 +1960,10 @@ filtersContainer.addEventListener("click", e => {
   renderCatalog();
 });
 
-// Глобальный слушатель кликов (модалка + контролы)
 document.body.addEventListener('click', e => {
-  // Клик по + или -
   const qtyBtn = e.target.closest('.qty-btn, .add');
   if (qtyBtn && !qtyBtn.disabled) {
-    e.stopPropagation(); // Не открывать модалку
+    e.stopPropagation(); 
     const change = parseInt(qtyBtn.dataset.qtyChange);
     const name = qtyBtn.dataset.name;
     const p = allProducts.find(x => x.name === name);
@@ -1890,7 +1974,6 @@ document.body.addEventListener('click', e => {
     return;
   }
   
-  // Клик по карточке для открытия модалки
   const cardEl = e.target.closest('.card, .hit-card');
   if (cardEl && !e.target.closest('.read-more-btn')) {
     openProductModal(cardEl.dataset.productName);
@@ -1985,7 +2068,6 @@ function showDeliveryRules() {
 }
 
 function renderCart(){
-  // Исключаем доставку из счетчика товаров
   const n = cart.filter(i => i.name !== "Доставка").reduce((s,i) => s + i.qty, 0);
   const subtotal = cart.reduce((s,i) => s + i.priceNum * i.qty, 0);
   
@@ -2134,13 +2216,17 @@ ckNewOrder.onclick = () => { closeCart(); };
 
 document.querySelectorAll('input[name="method"]').forEach(r =>
   r.addEventListener("change", () => {
-    ckAddressWrap.classList.toggle("hidden", r.value !== "Доставка" || !r.checked);
+    const ckAddress = document.getElementById("ckAddress");
+    const isDelivery = r.value === "Доставка" && r.checked;
+    ckAddressWrap.classList.toggle("hidden", !isDelivery);
+    if(isDelivery) ckAddress.setAttribute("required", "required");
+    else ckAddress.removeAttribute("required");
+    
     document.getElementById("pickupNotice").classList.toggle("hidden", r.value !== "Самовывоз" || !r.checked);
     renderCart();
   })
 );
 
-// Promo apply logic
 const applyPromoBtn = document.getElementById("applyPromoBtn");
 const ckPromo = document.getElementById("ckPromo");
 const promoMessage = document.getElementById("promoMessage");
@@ -2235,29 +2321,24 @@ function validateOrder(){
   const addr = document.getElementById("ckAddress").value.trim();
   const method = document.querySelector('input[name="method"]:checked')?.value;
 
-  if(!name || !phone || !dateVal){
+  if(!name || !phone || !dateVal || (method === "Доставка" && !addr)){
     if(!name) markInvalid(ckName);
     if(!phone) markInvalid(ckPhone);
     if(!dateVal) markInvalid(document.getElementById("ckDate"));
+    if(method === "Доставка" && !addr) markInvalid(document.getElementById("ckAddress"));
     return t("requiredFields");
   }
 
-  // Проверка даты (минимум 48 часов)
   const selectedDate = new Date(dateVal);
-  const minDate = new Date();
-  minDate.setDate(minDate.getDate() + 1); // Блокируем сегодня и завтра
-  minDate.setHours(0,0,0,0);
+  const reqDate = new Date();
+  reqDate.setDate(reqDate.getDate() + 1); 
+  reqDate.setHours(23,59,59,999);
   
-  if (selectedDate <= minDate) {
+  if (selectedDate <= reqDate) {
       markInvalid(document.getElementById("ckDate"));
       return t("dateInvalid");
   }
   
-  if(method === "Доставка" && !addr) {
-    markInvalid(document.getElementById("ckAddress"));
-    return t("addressRequired");
-  }
-
   const digits = phone.replace(/\D/g, "");
   if(digits.length < 7){
     markInvalid(ckPhone);
@@ -2332,12 +2413,10 @@ async function performSubmit(){
     const j = await r.json().catch(() => ({}));
     if(!r.ok || j.ok === false) throw new Error(j.error || t("orderError"));
 
-    // Отмечаем промокод как использованный для данного аккаунта
     if(promoDiscount > 0) {
        localStorage.setItem(promoKey, 'true');
     }
 
-    // Обнуление корзины
     cart = [];
     renderCart();
     updateCardCounters();
