@@ -259,6 +259,53 @@ button:disabled {
 }
 
 
+
+/* ============================================================
+   MANAGEMENT PANELS
+   ============================================================ */
+.extra-panel {
+    margin-top: 18px;
+}
+.extra-panel[hidden] { display: none !important; }
+.panel-toolbar {
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    margin-bottom:14px;
+}
+.panel-title { font-size:18px; font-weight:850; }
+.panel-subtitle { color:var(--muted); font-size:12px; margin-top:4px; }
+.panel-action {
+    height:42px; padding:0 14px; border:0; border-radius:13px;
+    background:var(--blue); color:var(--blue-text); font-weight:800; cursor:pointer;
+}
+.panel-list { display:grid; gap:10px; }
+.promo-card, .order-card {
+    padding:14px; border:1px solid var(--line); border-radius:16px;
+    background:var(--card); box-shadow:var(--shadow);
+}
+.promo-card-head, .order-head { display:flex; justify-content:space-between; gap:12px; align-items:flex-start; }
+.promo-card-title, .order-number { font-weight:850; font-size:15px; }
+.promo-meta, .order-meta { margin-top:6px; color:var(--muted); font-size:11px; line-height:1.55; }
+.promo-actions { display:flex; gap:7px; flex-shrink:0; }
+.mini-button { width:36px; height:36px; border:1px solid var(--line); border-radius:11px; background:var(--bg); color:var(--text); cursor:pointer; }
+.mini-button.danger { color:#b84b45; }
+.discount-pill, .status-pill { display:inline-flex; align-items:center; padding:4px 8px; border-radius:999px; font-size:10px; font-weight:850; background:var(--blue-soft, var(--bg)); }
+.status-pill.off { opacity:.55; }
+.order-total { font-weight:900; white-space:nowrap; }
+.order-select { margin-top:10px; width:100%; padding:10px 12px; border-radius:11px; border:1px solid var(--line); background:var(--bg); color:var(--text); }
+.order-discount { font-weight:800; }
+.management-modal { position:fixed; inset:0; display:none; align-items:center; justify-content:center; padding:18px; background:rgba(0,0,0,.35); z-index:50; }
+.management-modal.open { display:flex; }
+.management-dialog { width:min(760px,100%); max-height:92vh; overflow:auto; background:var(--card); border:1px solid var(--line); border-radius:20px; box-shadow:0 20px 60px rgba(0,0,0,.2); padding:18px; }
+.management-dialog-head { display:flex; justify-content:space-between; gap:10px; align-items:center; margin-bottom:14px; }
+.management-dialog-title { font-size:18px; font-weight:850; }
+.management-close { width:38px; height:38px; border:1px solid var(--line); border-radius:50%; background:var(--bg); color:var(--text); cursor:pointer; font-size:20px; }
+.management-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.management-grid .full { grid-column:1/-1; }
+.management-form-actions { display:flex; justify-content:flex-end; gap:9px; margin-top:14px; }
+.management-secondary { height:42px; padding:0 14px; border:1px solid var(--line); border-radius:13px; background:var(--bg); color:var(--text); font-weight:800; cursor:pointer; }
+.management-danger { color:#b84b45; }
+@media(max-width:699px){ .management-grid{grid-template-columns:1fr}.management-grid .full{grid-column:auto}.panel-toolbar{align-items:flex-start;flex-direction:column}.panel-action{width:100%} }
+
 /* ============================================================
    ADMIN PANEL
    ============================================================ */
@@ -1496,6 +1543,85 @@ button:disabled {
 
 </section>
 
+
+<!-- ============================================================
+     MALINA MANAGEMENT PANELS
+     ============================================================ -->
+<section id="promotionsPanel" class="extra-panel" hidden>
+    <div class="panel-toolbar">
+        <div><div class="panel-title">🔥 Акции</div><div class="panel-subtitle">Автоматические скидки для клиентов Кондитерского дома «Малина»</div></div>
+        <button id="addPromotionButton" class="panel-action" type="button">+ Новая акция</button>
+    </div>
+    <div id="promotionsList" class="panel-list"></div>
+</section>
+
+<section id="promoCodesPanel" class="extra-panel" hidden>
+    <div class="panel-toolbar">
+        <div><div class="panel-title">🏷️ Промокоды</div><div class="panel-subtitle">Персональные и публичные коды скидок</div></div>
+        <button id="addPromoCodeButton" class="panel-action" type="button">+ Новый промокод</button>
+    </div>
+    <div id="promoCodesList" class="panel-list"></div>
+</section>
+
+<section id="ordersPanel" class="extra-panel" hidden>
+    <div class="panel-toolbar">
+        <div><div class="panel-title">📦 Заказы</div><div class="panel-subtitle">Последние заказы и изменение их статуса</div></div>
+        <button id="refreshOrdersButton" class="panel-action" type="button">↻ Обновить</button>
+    </div>
+    <div id="ordersList" class="panel-list"></div>
+</section>
+
+<div id="promotionModal" class="management-modal">
+    <div class="management-dialog">
+        <div class="management-dialog-head"><div id="promotionModalTitle" class="management-dialog-title">Новая акция</div><button id="closePromotionButton" class="management-close" type="button">×</button></div>
+        <form id="promotionForm" class="form">
+            <input id="promotionId" type="hidden">
+            <div class="management-grid">
+                <div class="field full"><label for="promotionName">Название *</label><input id="promotionName" required placeholder="Например: Скидка на чизкейки"></div>
+                <div class="field full"><label for="promotionDescription">Описание</label><textarea id="promotionDescription" placeholder="Текст акции для команды"></textarea></div>
+                <div class="field"><label for="promotionType">Тип акции</label><select id="promotionType"><option value="product_discount">Скидка на товар</option><option value="category_discount">Скидка на категорию</option><option value="order_discount">Скидка на заказ</option><option value="bogo">2+1 / подарок</option><option value="second_item_discount">Скидка на второй товар</option><option value="free_delivery">Бесплатная доставка</option></select></div>
+                <div class="field"><label for="promotionDiscountType">Тип скидки</label><select id="promotionDiscountType"><option value="percent">Процент</option><option value="fixed">Фиксированная сумма</option></select></div>
+                <div class="field"><label for="promotionValue">Размер скидки</label><input id="promotionValue" type="number" min="0" step="0.01" value="20"></div>
+                <div class="field"><label for="promotionProduct">Товар</label><select id="promotionProduct"><option value="">Любой / не выбран</option></select></div>
+                <div class="field"><label for="promotionCategory">Категория</label><input id="promotionCategory" placeholder="Чизкейки"></div>
+                <div class="field"><label for="promotionMinOrder">Минимальная сумма заказа</label><input id="promotionMinOrder" type="number" min="0" step="1" value="0"></div>
+                <div class="field"><label for="promotionMaxDiscount">Максимальная скидка</label><input id="promotionMaxDiscount" type="number" min="0" step="1" placeholder="Без ограничения"></div>
+                <div class="field"><label for="promotionBuyQty">Купить (для 2+1)</label><input id="promotionBuyQty" type="number" min="1" step="1"></div>
+                <div class="field"><label for="promotionRewardQty">Получить (для 2+1)</label><input id="promotionRewardQty" type="number" min="1" step="1"></div>
+                <div class="field"><label for="promotionRewardDiscount">Скидка на подарок, %</label><input id="promotionRewardDiscount" type="number" min="0" max="100" step="1" placeholder="100"></div>
+                <div class="field"><label for="promotionPriority">Приоритет</label><input id="promotionPriority" type="number" step="1" value="100"></div>
+                <div class="field"><label for="promotionStartsAt">Начало</label><input id="promotionStartsAt" type="datetime-local"></div>
+                <div class="field"><label for="promotionExpiresAt">Окончание</label><input id="promotionExpiresAt" type="datetime-local"></div>
+                <div class="field full"><label for="promotionBadge">Метка</label><input id="promotionBadge" placeholder="🔥 АКЦИЯ"></div>
+                <label class="switch-row full"><div class="switch-text"><strong>Акция активна</strong><span>Показывать и применять автоматически</span></div><span class="switch"><input id="promotionActive" type="checkbox" checked><span class="slider"></span></span></label>
+                <label class="switch-row full"><div class="switch-text"><strong>Можно вместе с промокодом</strong><span>Настройка сохранится в акции</span></div><span class="switch"><input id="promotionStackable" type="checkbox"><span class="slider"></span></span></label>
+            </div>
+            <div class="management-form-actions"><button id="cancelPromotionButton" class="management-secondary" type="button">Отмена</button><button class="panel-action" type="submit">Сохранить</button></div>
+        </form>
+    </div>
+</div>
+
+<div id="promoCodeModal" class="management-modal">
+    <div class="management-dialog">
+        <div class="management-dialog-head"><div id="promoCodeModalTitle" class="management-dialog-title">Новый промокод</div><button id="closePromoCodeButton" class="management-close" type="button">×</button></div>
+        <form id="promoCodeForm" class="form">
+            <input id="promoCodeId" type="hidden">
+            <div class="management-grid">
+                <div class="field full"><label for="promoCodeValue">Промокод *</label><input id="promoCodeValue" required placeholder="MALINA10"></div>
+                <div class="field"><label for="promoCodeDiscountType">Тип скидки</label><select id="promoCodeDiscountType"><option value="percent">Процент</option><option value="fixed">Фиксированная сумма</option></select></div>
+                <div class="field"><label for="promoCodeDiscountValue">Размер скидки</label><input id="promoCodeDiscountValue" type="number" min="0" step="0.01" value="10"></div>
+                <div class="field"><label for="promoCodeMinOrder">Минимальный заказ</label><input id="promoCodeMinOrder" type="number" min="0" step="1" value="0"></div>
+                <div class="field"><label for="promoCodeMaxDiscount">Максимальная скидка</label><input id="promoCodeMaxDiscount" type="number" min="0" step="1" placeholder="Без ограничения"></div>
+                <div class="field"><label for="promoCodeUsageLimit">Лимит использований</label><input id="promoCodeUsageLimit" type="number" min="1" step="1" placeholder="Без лимита"></div>
+                <div class="field"><label for="promoCodeStartsAt">Начало</label><input id="promoCodeStartsAt" type="datetime-local"></div>
+                <div class="field"><label for="promoCodeExpiresAt">Окончание</label><input id="promoCodeExpiresAt" type="datetime-local"></div>
+                <label class="switch-row full"><div class="switch-text"><strong>Промокод активен</strong></div><span class="switch"><input id="promoCodeActive" type="checkbox" checked><span class="slider"></span></span></label>
+                <label class="switch-row full"><div class="switch-text"><strong>Один раз на пользователя</strong></div><span class="switch"><input id="promoCodeOneUse" type="checkbox"><span class="slider"></span></span></label>
+            </div>
+            <div class="management-form-actions"><button id="cancelPromoCodeButton" class="management-secondary" type="button">Отмена</button><button class="panel-action" type="submit">Сохранить</button></div>
+        </form>
+    </div>
+</div>
 
 <!-- ============================================================
      ADMIN PANEL
@@ -4082,18 +4208,6 @@ imageFileEl.addEventListener(
 /* ============================================================
    NAV EVENTS
    ============================================================ */
-
-catalogNavButton.addEventListener(
-    "click",
-    showCatalog,
-);
-
-
-adminsNavButton.addEventListener(
-    "click",
-    showAdmins,
-);
-
 
 /* ============================================================
    ADMIN FORM
