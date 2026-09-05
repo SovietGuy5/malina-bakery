@@ -1576,6 +1576,252 @@ body{background:var(--bg);font-family:'Inter',-apple-system,BlinkMacSystemFont,"
 .soft-toggle{padding:10px;border-radius:13px}.soft-toggle strong{font-size:11px}.soft-toggle small{font-size:9px}.soft-toggle-track{width:36px;height:21px}.soft-toggle input:checked + .soft-toggle-track:after{left:18px}
 @media(max-width:699px){body{padding:calc(9px + env(safe-area-inset-top)) 11px calc(18px + env(safe-area-inset-bottom));max-width:none}.header{position:relative}.header-title h1{font-size:17px}.header-title p{max-width:230px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.user-badge span:last-child{max-width:82px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.toolbar{position:sticky;top:48px;z-index:20;background:linear-gradient(var(--bg),rgba(248,250,252,0));padding-top:4px}.admin-nav{top:0}.management-page-head{flex-direction:row;align-items:center}.management-page-head>div{min-width:0}.management-page-head .panel-action{width:auto;white-space:nowrap}.choice-grid{grid-template-columns:1fr 1fr}.form-row{grid-template-columns:1fr}.add-admin-form{grid-template-columns:1fr}.add-admin-button{width:100%}}
 @media(min-width:700px){body{max-width:1060px}.admin-nav{justify-content:flex-start}.nav-button{height:42px}.management-modal{align-items:center;padding:20px}.management-dialog{border-radius:24px;width:min(720px,100%)}}
+
+/* ============================================================
+   MALINA FINAL UI — COMPACT TELEGRAM / MOBILE FIRST
+   Palette synced with main site index.html
+   ============================================================ */
+:root{
+  --bg:#f8fafc;
+  --card:#ffffff;
+  --text:#0f172a;
+  --muted:#64748b;
+  --accent:#d81b60;
+  --accent-dark:#ad144b;
+  --accent-soft:rgba(216,27,96,.10);
+  --line:#e2e8f0;
+  --success:#16a34a;
+  --danger:#dc2626;
+  --warning:#d97706;
+  --shadow:0 8px 24px rgba(15,23,42,.06);
+}
+body.dark-theme{
+  --bg:#0f172a;
+  --card:#1e293b;
+  --text:#f8fafc;
+  --muted:#94a3b8;
+  --accent:#ec4899;
+  --accent-dark:#db2777;
+  --accent-soft:rgba(236,72,153,.14);
+  --line:#334155;
+  --shadow:0 12px 30px rgba(0,0,0,.20);
+}
+html,body{background:var(--bg)!important;color:var(--text)!important}
+body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif!important}
+
+/* Compact header */
+.header{padding:14px 14px 8px!important;max-width:1120px!important;margin:0 auto!important}
+.header-title h1{font-size:20px!important;letter-spacing:-.04em!important}
+.header-title p{font-size:10px!important;margin-top:3px!important}
+.user-badge{height:34px!important;padding:0 10px!important;border-radius:999px!important;background:var(--card)!important;border:1px solid var(--line)!important}
+
+/* Top navigation: one compact horizontal rail */
+.admin-nav{
+  position:sticky!important;top:0!important;z-index:40!important;
+  width:calc(100% - 20px)!important;max-width:1120px!important;margin:0 auto 10px!important;
+  padding:5px!important;display:flex!important;gap:5px!important;overflow-x:auto!important;
+  border:1px solid var(--line)!important;border-radius:15px!important;
+  background:color-mix(in srgb,var(--card) 90%,transparent)!important;
+  backdrop-filter:blur(16px)!important;box-shadow:0 4px 18px rgba(15,23,42,.05)!important;
+}
+.admin-nav:before{display:none!important;content:none!important}
+.nav-button{
+  flex:1 0 0!important;min-width:0!important;height:38px!important;min-height:38px!important;
+  padding:0 9px!important;border:0!important;border-radius:11px!important;
+  background:transparent!important;color:var(--muted)!important;box-shadow:none!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;gap:6px!important;
+  font-size:11px!important;font-weight:800!important;white-space:nowrap!important;
+}
+.nav-button span{font-size:14px!important}
+.nav-button b{font-size:11px!important}
+.nav-button.active{background:var(--accent-soft)!important;color:var(--accent)!important;box-shadow:none!important}
+.nav-button:active{transform:scale(.98)}
+
+/* Content */
+.catalog-panel,.extra-panel,.admin-panel.open{max-width:1120px!important;margin:0 auto!important;padding:6px 14px 24px!important}
+.management-page-head{padding:6px 2px 12px!important;margin-bottom:10px!important;border-bottom:1px solid var(--line)!important}
+.management-page-head .panel-title{font-size:22px!important;line-height:1.1!important;color:var(--text)!important}
+.panel-subtitle{font-size:10px!important}
+.panel-action,.add-button,.add-admin-button,.save-button{background:var(--accent)!important;color:#fff!important;box-shadow:none!important}
+
+/* Cards */
+.promo-card,.order-card,.admin-panel-card,.admin-item,.product,.stat{background:var(--card)!important;border-color:var(--line)!important;box-shadow:none!important}
+.promo-card,.order-card{border-radius:16px!important;padding:13px!important}
+.product{border-radius:17px!important}
+.stat{border-radius:15px!important}
+
+/* Promotion / promo form */
+.management-modal{padding:0!important;background:rgba(15,23,42,.52)!important;backdrop-filter:blur(5px)!important}
+.management-dialog{
+  width:min(640px,100%)!important;max-height:94vh!important;
+  padding:14px!important;border:1px solid var(--line)!important;
+  border-radius:22px 22px 0 0!important;background:var(--card)!important;
+  color:var(--text)!important;box-shadow:0 -16px 60px rgba(15,23,42,.18)!important;
+}
+.management-dialog-head{margin-bottom:2px!important}
+.management-dialog-title{font-size:19px!important;color:var(--text)!important}
+.management-dialog-subtitle{font-size:10px!important;color:var(--muted)!important}
+.management-close{width:36px!important;height:36px!important;background:var(--bg)!important;color:var(--text)!important;border:1px solid var(--line)!important}
+.simple-section{padding:11px 0!important}
+.simple-label{font-size:9px!important;margin-bottom:7px!important;letter-spacing:.09em!important;color:var(--muted)!important}
+.promo-choice-group-label{font-size:10px;color:#8b9bb4;margin:7px 0 5px;font-weight:700;}
+.delivery-choice-label{margin-top:10px;}
+.quick-choice-row{display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:7px!important}
+.quick-choice{
+  min-height:60px!important;padding:9px!important;border-radius:13px!important;
+  background:var(--bg)!important;color:var(--text)!important;border:1px solid var(--line)!important;
+  display:flex!important;flex-direction:column!important;justify-content:center!important;
+}
+.quick-choice span{font-size:17px!important;margin-bottom:4px!important}
+.quick-choice strong{font-size:10px!important;line-height:1.2!important}
+.quick-choice.active{border-color:var(--accent)!important;background:var(--accent-soft)!important;color:var(--accent)!important;box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 12%,transparent)!important}
+.management-grid{gap:8px!important}
+.field label{font-size:9px!important;color:var(--muted)!important}
+.field input,.field textarea,.field select{
+  background:var(--bg)!important;color:var(--text)!important;border-color:var(--line)!important;
+  border-radius:11px!important;padding:10px 11px!important;font-size:12px!important;
+}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--accent)!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 12%,transparent)!important}
+.date-row.compact-date-row{grid-template-columns:1fr auto 1fr!important;gap:7px!important}
+.date-arrow{padding-bottom:9px!important}
+.simple-bottom-row{padding:10px 0!important}
+.soft-toggle{padding:9px 10px!important;border-radius:12px!important;background:var(--bg)!important;border-color:var(--line)!important}
+.soft-toggle strong{font-size:10px!important}.soft-toggle small{font-size:8px!important;color:var(--muted)!important}
+.management-form-actions{padding-top:10px!important;margin-top:2px!important;background:var(--card)!important}
+.management-secondary{background:var(--bg)!important;color:var(--text)!important;border-color:var(--line)!important}
+
+/* Mobile */
+@media(max-width:700px){
+  body{padding:0 0 calc(12px + env(safe-area-inset-bottom))!important}
+  .header{padding:12px 12px 7px!important}
+  .header-title h1{font-size:17px!important}
+  .header-title p{max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .admin-nav{width:calc(100% - 16px)!important;margin-bottom:8px!important}
+  .nav-button{flex:0 0 44px!important;width:44px!important;height:36px!important;min-height:36px!important;padding:0!important}
+  .nav-button b{display:none!important}
+  .nav-button span{font-size:16px!important}
+  .catalog-panel,.extra-panel,.admin-panel.open{padding:5px 12px 22px!important}
+  .management-page-head{display:flex!important;align-items:center!important;gap:10px!important}
+  .management-page-head>div{min-width:0!important;flex:1!important}
+  .management-page-head .panel-action{width:auto!important;flex:0 0 auto!important;height:38px!important;padding:0 11px!important;font-size:11px!important}
+  .quick-choice-row{grid-template-columns:repeat(2,1fr)!important}
+  .quick-choice{min-height:56px!important}
+  .management-grid{grid-template-columns:1fr!important}
+  .management-grid .full{grid-column:auto!important}
+  .date-row.compact-date-row{grid-template-columns:1fr 1fr!important}
+  .date-arrow{display:none!important}
+  .management-dialog{padding:13px 13px calc(13px + env(safe-area-inset-bottom))!important}
+  .management-form-actions{position:sticky!important;bottom:0!important}
+}
+@media(min-width:701px){
+  .management-dialog{align-self:center!important;border-radius:22px!important}
+}
+
+/* ============================================================
+   MALINA COMPACT UI OVERRIDES
+   ============================================================ */
+:root{
+  --bg:#18222d; --card:#212d3b; --text:#ffffff; --muted:#8b9bb4;
+  --blue:#c94b7a; --blue-text:#fff; --accent:#c94b7a; --accent-dark:#e05e8e;
+  --soft:#2b3a4a; --line:#2b3a4a; --danger:#ef6b82; --success:#42c98a;
+  --shadow:0 8px 28px rgba(0,0,0,.20); --radius:16px;
+}
+html,body{background:#18222d!important;color:#fff;}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
+.header{margin-bottom:10px;gap:8px;}
+.header-title h1{font-size:20px;letter-spacing:-.5px;}
+.header-title p{font-size:12px;margin-top:3px;}
+
+.admin-nav{
+  display:flex; gap:5px; margin:0 -2px 12px; padding:4px;
+  overflow-x:auto; overscroll-behavior-x:contain; scrollbar-width:none;
+  background:rgba(43,58,74,.72); border:1px solid rgba(255,255,255,.05);
+  border-radius:15px; position:sticky; top:6px; z-index:20; backdrop-filter:blur(16px);
+}
+.admin-nav::-webkit-scrollbar{display:none;}
+.nav-button{
+  flex:0 0 auto; min-height:36px; height:36px; padding:0 11px;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  border:0; border-radius:11px; background:transparent; color:var(--muted);
+  box-shadow:none; font-size:12px; font-weight:750; white-space:nowrap;
+}
+.nav-button span{font-size:14px;line-height:1;}
+.nav-button b{font-weight:750;}
+.nav-button.active{background:var(--accent);color:#fff;box-shadow:0 4px 14px rgba(201,75,122,.28);}
+.nav-button:active{transform:scale(.97);}
+
+.toolbar{gap:7px;margin-bottom:10px;}
+.search{height:42px;border-radius:12px;background:var(--card);border-color:var(--line);color:var(--text);}
+.add-button{height:42px;border-radius:12px;padding:0 13px;box-shadow:none;}
+
+.management-page-head{gap:10px;margin-bottom:12px;}
+.panel-kicker{font-size:10px!important;text-transform:uppercase;letter-spacing:.08em;opacity:.65;}
+.panel-title{font-size:20px;letter-spacing:-.35px;}
+.panel-subtitle{font-size:11px;line-height:1.4;}
+.panel-action{height:40px;border-radius:11px;padding:0 12px;box-shadow:none;font-size:12px;}
+.promo-card,.order-card{padding:12px;border-radius:14px;background:#212d3b;border-color:#2b3a4a;box-shadow:none;}
+
+.management-modal{padding:8px!important;background:rgba(5,9,14,.72)!important;backdrop-filter:blur(8px);}
+.management-dialog{width:min(560px,100%);max-height:calc(100dvh - 16px);border-radius:20px!important;background:#18222d!important;border:1px solid #2b3a4a!important;box-shadow:0 24px 70px rgba(0,0,0,.45)!important;overflow:auto;}
+.management-dialog-head{position:sticky;top:0;z-index:3;padding:16px 16px 12px!important;background:rgba(24,34,45,.96);backdrop-filter:blur(14px);border-bottom:1px solid #2b3a4a;}
+.management-dialog-title{font-size:18px!important;}
+.management-dialog-subtitle{font-size:11px!important;line-height:1.4;}
+.management-close{width:32px!important;height:32px!important;border-radius:10px!important;background:#2b3a4a!important;color:#fff!important;}
+.form{padding:12px 14px 14px!important;}
+.simple-section{padding:0!important;margin:0 0 14px!important;border:0!important;background:transparent!important;}
+.simple-label{font-size:11px!important;text-transform:uppercase;letter-spacing:.07em;color:#8b9bb4!important;margin:0 0 7px!important;}
+.management-grid{gap:8px!important;}
+.field label{font-size:11px!important;color:#8b9bb4!important;margin-bottom:5px!important;}
+.field input,.field select,.field textarea,.search{min-height:42px;border-radius:11px!important;background:#212d3b!important;border:1px solid #2b3a4a!important;color:#fff!important;outline:none;}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:#c94b7a!important;box-shadow:0 0 0 3px rgba(201,75,122,.12);}
+.promo-choice-group-label{font-size:10px;color:#8b9bb4;margin:7px 0 5px;font-weight:700;}
+.delivery-choice-label{margin-top:10px;}
+.quick-choice-row{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px!important;}
+.quick-choice{min-height:48px!important;padding:8px 9px!important;border-radius:12px!important;background:#212d3b!important;border:1px solid #2b3a4a!important;color:#fff!important;display:flex!important;align-items:center!important;gap:8px!important;text-align:left!important;}
+.quick-choice span{font-size:16px;min-width:24px;text-align:center;}
+.quick-choice strong{font-size:11px!important;line-height:1.15;}
+.quick-choice.active{background:rgba(201,75,122,.14)!important;border-color:#c94b7a!important;box-shadow:inset 0 0 0 1px rgba(201,75,122,.16);}
+.inline-control.compact{gap:6px!important;}
+.inline-control.compact select{flex:0 0 70px!important;}
+.suffix-control{background:#212d3b!important;border-color:#2b3a4a!important;border-radius:11px!important;}
+.suffix-control input{background:transparent!important;border:0!important;}
+.date-row.compact-date-row{display:grid!important;grid-template-columns:1fr 20px 1fr!important;gap:6px!important;align-items:end;}
+.date-row.compact-date-row .badge-field{grid-column:1/-1;}
+.date-arrow{color:#8b9bb4;padding-bottom:12px;text-align:center;font-size:13px;}
+.simple-bottom-row{margin-top:2px!important;padding-top:2px!important;border-top:1px solid #2b3a4a;}
+.soft-toggle{padding:11px 0!important;background:transparent!important;}
+.soft-toggle strong{font-size:12px!important;}
+.soft-toggle small{font-size:10px!important;color:#8b9bb4!important;}
+.soft-toggle-track{background:#2b3a4a!important;}
+.soft-toggle input:checked + .soft-toggle-track{background:#c94b7a!important;}
+.management-form-actions{position:sticky;bottom:0;margin:0 -14px -14px;padding:10px 14px calc(10px + env(safe-area-inset-bottom));background:rgba(24,34,45,.96);backdrop-filter:blur(14px);border-top:1px solid #2b3a4a;display:grid!important;grid-template-columns:1fr 1.4fr;gap:7px;}
+.management-secondary{height:42px;border-radius:11px;background:#2b3a4a;color:#fff!important;}
+.management-form-actions .panel-action{height:42px;}
+
+/* compact promo/code cards */
+.promo-card-head,.order-head{align-items:center!important;}
+.promo-card-title,.order-number{font-size:14px!important;}
+.promo-meta,.order-meta{font-size:10px!important;color:#8b9bb4!important;}
+.mini-button{border-radius:9px!important;background:#2b3a4a!important;color:#fff!important;}
+
+@media(max-width:520px){
+  body{padding:8px 10px calc(16px + env(safe-area-inset-bottom));}
+  .header-title h1{font-size:18px;}
+  .user-badge{padding:7px 8px!important;}
+  .admin-nav{top:4px;margin-left:-1px;margin-right:-1px;}
+  .nav-button{padding:0 10px;}
+  .nav-button b{display:none;}
+  .nav-button span{font-size:16px;}
+  .management-dialog{border-radius:18px!important;}
+  .quick-choice-row{grid-template-columns:1fr 1fr!important;}
+  .date-row.compact-date-row{grid-template-columns:1fr 16px 1fr!important;}
+}
+@media(min-width:700px){
+  .quick-choice-row{grid-template-columns:repeat(4,minmax(0,1fr))!important;}
+  .date-row.compact-date-row .badge-field{grid-column:auto;}
+  .date-row.compact-date-row{grid-template-columns:1fr 20px 1fr 1fr!important;}
+}
+
 </style>
 </head>
 
@@ -1794,15 +2040,19 @@ body{background:var(--bg);font-family:'Inter',-apple-system,BlinkMacSystemFont,"
 
       <div class="simple-section">
         <div class="simple-label">Что даём клиенту?</div>
+        <div class="promo-choice-group-label">На десерты и заказ</div>
         <div class="quick-choice-row">
-          <button type="button" class="quick-choice active" data-promo-type="product_discount"><span>🍰</span><strong>Скидка на товар</strong></button>
-          <button type="button" class="quick-choice" data-promo-type="category_discount"><span>🧁</span><strong>Скидка на категорию</strong></button>
-          <button type="button" class="quick-choice" data-promo-type="order_discount"><span>🛍️</span><strong>Скидка на заказ</strong></button>
-          <button type="button" class="quick-choice" data-promo-type="second_item_discount"><span>🍰🍰</span><strong>Скидка на второй</strong></button>
+          <button type="button" class="quick-choice active" data-promo-type="product_discount"><span>🍰</span><strong>Товар</strong></button>
+          <button type="button" class="quick-choice" data-promo-type="category_discount"><span>🧁</span><strong>Категория</strong></button>
+          <button type="button" class="quick-choice" data-promo-type="order_discount"><span>🛍️</span><strong>Весь заказ</strong></button>
+          <button type="button" class="quick-choice" data-promo-type="second_item_discount"><span>🍰×2</span><strong>Второй товар</strong></button>
           <button type="button" class="quick-choice" data-promo-type="bogo"><span>2+1</span><strong>Третий бесплатно</strong></button>
-          <button type="button" class="quick-choice" data-promo-type="free_delivery"><span>🚚</span><strong>Доставка бесплатно</strong></button>
-          <button type="button" class="quick-choice" data-promo-type="delivery_discount"><span>−🚚</span><strong>Скидка на доставку</strong></button>
-          <button type="button" class="quick-choice" data-promo-type="delivery_price"><span>💳</span><strong>Доставка за X ₽</strong></button>
+        </div>
+        <div class="promo-choice-group-label delivery-choice-label">На доставку</div>
+        <div class="quick-choice-row delivery-choice-row">
+          <button type="button" class="quick-choice" data-promo-type="free_delivery"><span>🚚</span><strong>Бесплатно</strong></button>
+          <button type="button" class="quick-choice" data-promo-type="delivery_discount"><span>−</span><strong>Скидка</strong></button>
+          <button type="button" class="quick-choice" data-promo-type="delivery_price"><span>₽</span><strong>Цена доставки</strong></button>
         </div>
         <select id="promotionType" class="visually-hidden" aria-hidden="true" tabindex="-1">
           <option value="product_discount">product_discount</option>
@@ -1865,16 +2115,16 @@ body{background:var(--bg);font-family:'Inter',-apple-system,BlinkMacSystemFont,"
       <input id="promoCodeId" type="hidden">
 
       <div class="simple-section">
-        <div class="simple-label">Код и скидка</div>
+        <div class="simple-label">Код и размер скидки</div>
         <div class="management-grid">
-          <div class="field full"><label for="promoCodeValue">Промокод</label><input id="promoCodeValue" required placeholder="MALINA10" autocapitalize="characters"></div>
+          <div class="field full"><label for="promoCodeValue">Промокод</label><input id="promoCodeValue" required placeholder="Например, MALINA10" autocapitalize="characters"></div>
           <div class="field"><label for="promoCodeDiscountType">Тип скидки</label><select id="promoCodeDiscountType"><option value="percent">Проценты</option><option value="fixed">Рубли</option></select></div>
           <div class="field"><label for="promoCodeDiscountValue">Размер скидки</label><input id="promoCodeDiscountValue" type="number" min="0" step="0.01" value="10"></div>
         </div>
       </div>
 
       <div class="simple-section">
-        <div class="simple-label">Условия</div>
+        <div class="simple-label">Когда и как можно использовать</div>
         <div class="management-grid">
           <div class="field"><label for="promoCodeMinOrder">Минимальная сумма заказа</label><div class="suffix-control"><input id="promoCodeMinOrder" type="number" min="0" step="1" value="0"><span>₽</span></div></div>
           <div class="field"><label for="promoCodeMaxDiscount">Максимальная скидка</label><div class="suffix-control"><input id="promoCodeMaxDiscount" type="number" min="0" step="1" placeholder="Без лимита"><span>₽</span></div></div>
