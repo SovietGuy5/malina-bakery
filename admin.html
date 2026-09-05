@@ -18,42 +18,2132 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
-:root{--bg:#fbf7f8;--card:#fff;--soft:#f7eef2;--text:#231b20;--muted:#806f77;--line:#eadde3;--accent:#b02a5c;--accent-dark:#911f47;--success:#16a06b;--danger:#e54b4f;--warning:#cc8a19;--shadow:0 14px 38px rgba(93,38,59,.07)}
-body.dark-theme{--bg:#171319;--card:#211a20;--soft:#2a2027;--text:#fff;--muted:#bbaab2;--line:#3c2e37;--accent:#d45a83;--accent-dark:#ed7aa2;--shadow:0 14px 38px rgba(0,0,0,.28)}
-*{box-sizing:border-box}html,body{min-height:100%;background:var(--bg)}body{margin:0;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased}button,input,textarea,select{font:inherit}button{cursor:pointer}button:disabled{cursor:default;opacity:.55}[hidden]{display:none!important}
-.page{width:min(1180px,100%);margin:auto;padding:18px 18px calc(30px + env(safe-area-inset-bottom))}.topbar{position:sticky;top:0;z-index:20;margin:-18px -18px 18px;padding:calc(12px + env(safe-area-inset-top)) 18px 12px;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}.topbar-inner{width:min(1180px,100%);margin:auto;display:flex;align-items:center;justify-content:space-between;gap:14px}.brand{display:flex;align-items:center;gap:11px;min-width:0}.brand-mark{width:42px;height:42px;display:grid;place-items:center;border-radius:14px;background:linear-gradient(135deg,var(--accent),var(--accent-dark));box-shadow:0 10px 22px rgba(176,42,92,.2);color:#fff;font-size:21px}.brand strong{display:block;font-size:15px;letter-spacing:-.025em}.brand small{display:block;margin-top:2px;color:var(--muted);font-size:10px}.user{display:flex;align-items:center;gap:7px;padding:8px 11px;border:1px solid var(--line);border-radius:999px;background:var(--card);font-size:11px;font-weight:800;box-shadow:var(--shadow)}.dot{width:8px;height:8px;border-radius:50%;background:var(--success)}
-.layout{display:grid;grid-template-columns:210px minmax(0,1fr);gap:18px;align-items:start}.sidebar{position:sticky;top:82px;padding:9px;border:1px solid var(--line);border-radius:22px;background:var(--card);box-shadow:var(--shadow)}.nav{display:grid;gap:4px}.nav-btn{display:flex;align-items:center;gap:9px;width:100%;padding:12px 13px;border-radius:14px;background:transparent;color:var(--text);font-size:13px;font-weight:850;text-align:left;transition:.18s}.nav-btn:hover{background:var(--soft)}.nav-btn.active{background:var(--accent);color:#fff;box-shadow:0 8px 18px rgba(176,42,92,.18)}
-.content{min-width:0}.page-head{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;margin:2px 0 15px}.eyebrow{color:var(--accent);font-size:9px;font-weight:900;letter-spacing:.1em;text-transform:uppercase}.page-title{margin:4px 0 0;font-size:30px;line-height:1;font-weight:950;letter-spacing:-.05em}.page-subtitle{margin:7px 0 0;color:var(--muted);font-size:11px;line-height:1.45}.primary-btn,.panel-action,.save-button{height:44px;padding:0 15px;border-radius:14px;background:var(--accent);color:#fff;font-weight:900;box-shadow:0 9px 20px rgba(176,42,92,.14);transition:.18s}.primary-btn:hover,.panel-action:hover,.save-button:hover{background:var(--accent-dark)}.secondary-btn,.cancel-button{height:44px;padding:0 15px;border-radius:14px;background:var(--soft);color:var(--text);font-weight:850;border:1px solid var(--line)}
-.toolbar{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px;margin-bottom:12px}.search{width:100%;height:44px;padding:0 14px;border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--text);outline:none}.search:focus,.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(176,42,92,.08)}.filters{display:flex;gap:7px;overflow:auto;margin-bottom:14px;scrollbar-width:none}.filters::-webkit-scrollbar{display:none}.filter{padding:8px 11px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--muted);font-size:11px;font-weight:800;white-space:nowrap}.filter.active{color:var(--accent);background:var(--soft);border-color:rgba(176,42,92,.22)}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:13px}.stat{padding:13px 14px;border:1px solid var(--line);border-radius:17px;background:var(--card);box-shadow:var(--shadow)}.stat-value{font-size:22px;font-weight:950;letter-spacing:-.03em}.stat-label{margin-top:2px;color:var(--muted);font-size:9px;font-weight:800}
-.products,.panel-list{display:grid;gap:10px}.product{display:grid;grid-template-columns:76px minmax(0,1fr) auto;gap:12px;padding:11px;background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}.product-image{width:76px;height:76px;border-radius:14px;overflow:hidden;display:grid;place-items:center;background:var(--soft);color:var(--muted);font-size:24px}.product-image img{width:100%;height:100%;object-fit:cover}.product-name{font-size:15px;font-weight:900;line-height:1.2}.product-description{margin-top:4px;color:var(--muted);font-size:11px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.product-meta{display:flex;align-items:center;flex-wrap:wrap;gap:5px;margin-top:8px}.price{font-size:15px;font-weight:950}.badge,.status-pill,.discount-pill{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;font-size:9px;font-weight:850}.badge-stock,.status-pill{background:rgba(22,160,107,.11);color:var(--success)}.badge-out,.status-pill.off{background:rgba(229,75,79,.1);color:var(--danger)}.badge-category{background:var(--soft);color:var(--muted)}.badge-tag,.discount-pill{background:rgba(176,42,92,.1);color:var(--accent)}.product-actions,.promo-actions{display:flex;gap:6px}.icon-button,.mini-button{width:36px;height:36px;border-radius:11px;border:1px solid var(--line);background:var(--soft);color:var(--text)}.icon-button.danger,.mini-button.danger{color:var(--danger)}
-.panel-shell{padding:17px;border:1px solid var(--line);border-radius:22px;background:var(--card);box-shadow:var(--shadow)}.promo-card,.order-card{padding:15px;border:1px solid var(--line);border-radius:18px;background:var(--card)}.promo-card-head,.order-head{display:flex;justify-content:space-between;align-items:flex-start;gap:11px}.promo-card-title,.order-number{font-size:15px;font-weight:900}.promo-meta,.order-meta{margin-top:6px;color:var(--muted);font-size:10px;line-height:1.55}.order-total{font-size:18px;font-weight:950;white-space:nowrap}.order-facts{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:10px}.fact{padding:9px 10px;border-radius:12px;background:var(--soft)}.fact span{display:block;color:var(--muted);font-size:8px;font-weight:800}.fact strong{display:block;margin-top:2px;font-size:11px}.order-discount{color:var(--accent);font-weight:850}.order-select{width:100%;height:40px;margin-top:10px;padding:0 11px;border:1px solid var(--line);border-radius:12px;background:var(--soft);color:var(--text);font-size:12px;font-weight:850}
-.modal,.management-modal{position:fixed;inset:0;z-index:100;display:none;align-items:flex-end;background:rgba(31,19,25,.3);backdrop-filter:blur(7px)}.modal.open,.management-modal.open{display:flex}.modal-sheet,.management-dialog{width:100%;max-height:94vh;overflow:auto;padding:18px;background:var(--card);border-radius:26px 26px 0 0;box-shadow:0 -20px 70px rgba(30,16,24,.16)}.management-dialog{padding-bottom:22px}.modal-header,.management-dialog-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:13px}.modal-title,.management-dialog-title{font-size:22px;font-weight:950;letter-spacing:-.04em}.management-dialog-subtitle{margin-top:4px;color:var(--muted);font-size:10px;line-height:1.45}.close-button,.management-close{width:38px;height:38px;flex:none;border-radius:50%;border:1px solid var(--line);background:var(--soft);color:var(--text);font-size:20px}.form{display:grid;gap:11px}.field{display:grid;gap:6px}.field label{font-size:10px;font-weight:850;color:var(--muted)}.field input,.field textarea,.field select{width:100%;padding:12px 13px;border:1px solid var(--line);border-radius:13px;background:var(--soft);color:var(--text);outline:none}.field textarea{min-height:86px;resize:vertical}.form-row{display:grid;grid-template-columns:1fr 1fr;gap:9px}.switch-row,.soft-toggle{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 12px;border:1px solid var(--line);border-radius:14px;background:var(--soft)}.switch-text strong,.soft-toggle strong{display:block;font-size:12px}.switch-text span,.soft-toggle small{display:block;margin-top:2px;color:var(--muted);font-size:9px}.switch{position:relative;width:45px;height:25px;flex:none}.switch input,.soft-toggle input{position:absolute;opacity:0;pointer-events:none}.slider{position:absolute;inset:0;border-radius:999px;background:#b9adb3}.slider:before{content:"";position:absolute;left:3px;top:3px;width:19px;height:19px;border-radius:50%;background:#fff;transition:.18s}.switch input:checked+.slider{background:var(--accent)}.switch input:checked+.slider:before{transform:translateX(20px)}.image-upload{position:relative;display:grid;place-items:center;gap:4px;min-height:126px;padding:17px;border:1.5px dashed var(--line);border-radius:16px;background:var(--soft);text-align:center}.image-upload input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}.image-preview,.image-current{display:none}.image-preview.show,.image-current.show{display:block}.image-preview img,.image-current img{width:100%;max-height:220px;object-fit:cover;border-radius:14px;border:1px solid var(--line);margin-top:8px}.image-current-label{font-size:9px;color:var(--muted);font-weight:800}.form-actions,.management-form-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:5px}
-.simple-section{padding:14px 0;border-top:1px solid var(--line)}.simple-section:first-of-type{border-top:0}.simple-label{margin-bottom:10px;color:var(--muted);font-size:9px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}.quick-choice-row{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.quick-choice{min-height:68px;padding:10px;border:1px solid var(--line);border-radius:14px;background:var(--soft);color:var(--text);text-align:left;transition:.16s}.quick-choice span{display:block;margin-bottom:5px;font-size:18px}.quick-choice strong{font-size:10px;line-height:1.25}.quick-choice.active{border-color:var(--accent);box-shadow:0 0 0 2px rgba(176,42,92,.08);background:rgba(176,42,92,.045)}.management-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.full{grid-column:1/-1}.inline-control{display:grid;grid-template-columns:70px 1fr;gap:7px}.suffix-control{position:relative}.suffix-control input{padding-right:36px}.suffix-control span{position:absolute;right:11px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:11px;font-weight:850}.date-row{display:grid;grid-template-columns:1fr auto 1fr 1fr;gap:8px;align-items:end}.date-arrow{padding-bottom:10px;color:var(--muted);font-weight:900}.hidden-field,.visually-hidden{display:none!important}
-.state{text-align:center;padding:50px 20px;color:var(--muted)}.state-icon{font-size:34px}.state-title{margin-top:8px;color:var(--text);font-size:15px;font-weight:900}.state-text{margin-top:5px;font-size:11px;line-height:1.45}.toast{position:fixed;left:14px;right:14px;bottom:calc(14px + env(safe-area-inset-bottom));z-index:250;padding:13px 14px;border-radius:14px;background:#2d2429;color:#fff;font-size:12px;font-weight:800;box-shadow:0 18px 45px rgba(0,0,0,.2);transform:translateY(14px);opacity:0;pointer-events:none;transition:.22s}.toast.show{transform:none;opacity:1}.toast.error{background:#9f353c}
-.access-screen{min-height:100vh;display:grid;place-items:center;padding:22px}.access-card{width:min(420px,100%);padding:28px 22px;border:1px solid var(--line);border-radius:26px;background:var(--card);box-shadow:var(--shadow);text-align:center}.access-icon{width:64px;height:64px;margin:0 auto 14px;display:grid;place-items:center;border-radius:20px;background:var(--soft);font-size:29px}.access-card h1{margin:0;font-size:24px;letter-spacing:-.04em}.access-card p{margin:8px 0 0;color:var(--muted);font-size:12px;line-height:1.5}
-@media(min-width:700px){.modal,.management-modal{align-items:center;padding:18px}.modal-sheet,.management-dialog{width:min(620px,100%);border-radius:25px}.management-dialog{width:min(780px,100%)}}
-@media(max-width:820px){.layout{grid-template-columns:1fr}.sidebar{top:0;padding:6px;overflow:auto}.nav{grid-template-columns:repeat(5,minmax(108px,1fr));gap:4px}.nav-btn{justify-content:center;text-align:center;padding:10px 8px;font-size:11px}.nav-btn span{white-space:nowrap}}
-@media(max-width:620px){.page{padding:12px 12px 26px}.topbar{margin:-12px -12px 14px;padding-left:12px;padding-right:12px}.brand strong{font-size:13px}.brand small{font-size:9px}.user{padding:7px 9px;font-size:10px}.page-head{flex-direction:column;align-items:flex-start}.page-title{font-size:27px}.page-head .primary-btn,.page-head .panel-action{width:100%}.toolbar{grid-template-columns:1fr}.stats{gap:6px}.stat{padding:10px 9px}.stat-value{font-size:18px}.product{grid-template-columns:62px minmax(0,1fr) auto;gap:9px;padding:9px}.product-image{width:62px;height:62px}.product-actions{flex-direction:column}.order-facts{grid-template-columns:1fr 1fr 1fr}.quick-choice-row{grid-template-columns:1fr 1fr}.management-grid,.form-row{grid-template-columns:1fr}.full{grid-column:auto}.date-row{grid-template-columns:1fr}.date-arrow{display:none}.form-actions,.management-form-actions{grid-template-columns:1fr 1fr}}
+
+:root {
+    --bg: var(--tg-theme-bg-color, #f2f4f7);
+    --card: var(--tg-theme-secondary-bg-color, #ffffff);
+    --text: var(--tg-theme-text-color, #18202a);
+    --muted: var(--tg-theme-hint-color, #7d8793);
+
+    --blue: var(--tg-theme-button-color, #536d8a);
+    --blue-text: var(--tg-theme-button-text-color, #ffffff);
+
+    --line: rgba(80, 100, 120, .14);
+
+    --danger: #d9534f;
+    --success: #3a9d68;
+    --warning: #d79a28;
+
+    --shadow:
+        0 8px 30px rgba(40, 55, 70, .08);
+
+    --radius: 18px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    background: var(--bg);
+}
+
+body {
+    margin: 0;
+
+    padding:
+        calc(12px + env(safe-area-inset-top))
+        14px
+        calc(24px + env(safe-area-inset-bottom));
+
+    background: var(--bg);
+    color: var(--text);
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Helvetica,
+        Arial,
+        sans-serif;
+
+    min-height: 100vh;
+}
+
+button,
+input,
+textarea,
+select {
+    font: inherit;
+}
+
+button {
+    border: 0;
+    cursor: pointer;
+}
+
+button:disabled {
+    opacity: .5;
+    cursor: default;
+}
+
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 12px;
+
+    margin-bottom: 16px;
+}
+
+.header-title {
+    min-width: 0;
+}
+
+.header-title h1 {
+    margin: 0;
+
+    font-size: 22px;
+    line-height: 1.15;
+    font-weight: 800;
+
+    letter-spacing: -.4px;
+}
+
+.header-title p {
+    margin: 5px 0 0;
+
+    color: var(--muted);
+
+    font-size: 13px;
+}
+
+.user-badge {
+    flex: 0 0 auto;
+
+    display: flex;
+    align-items: center;
+
+    gap: 7px;
+
+    padding: 8px 11px;
+
+    background: var(--card);
+
+    border: 1px solid var(--line);
+
+    border-radius: 999px;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    box-shadow: var(--shadow);
+}
+
+.user-dot {
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: var(--success);
+}
+
+
+/* ============================================================
+   MAIN NAV
+   ============================================================ */
+
+.admin-nav {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 9px;
+
+    margin-bottom: 14px;
+}
+
+.nav-button {
+    min-height: 48px;
+
+    padding: 0 13px;
+
+    border-radius: 14px;
+
+    background: var(--card);
+
+    color: var(--text);
+
+    border: 1px solid var(--line);
+
+    font-weight: 800;
+
+    box-shadow: var(--shadow);
+
+    transition: .18s ease;
+}
+
+.nav-button.active {
+    background: var(--blue);
+
+    color: var(--blue-text);
+
+    border-color: var(--blue);
+}
+
+.nav-button:active {
+    transform: scale(.98);
+}
+
+
+/* ============================================================
+   TOOLBAR
+   ============================================================ */
+
+.toolbar {
+    display: flex;
+
+    gap: 9px;
+
+    margin-bottom: 14px;
+}
+
+.search {
+    flex: 1;
+
+    min-width: 0;
+
+    height: 46px;
+
+    padding: 0 15px;
+
+    color: var(--text);
+
+    background: var(--card);
+
+    border: 1px solid var(--line);
+
+    border-radius: 14px;
+
+    outline: none;
+}
+
+.search:focus {
+    border-color: var(--blue);
+}
+
+.add-button {
+    flex: 0 0 auto;
+
+    height: 46px;
+
+    padding: 0 16px;
+
+    border-radius: 14px;
+
+    background: var(--blue);
+
+    color: var(--blue-text);
+
+    font-weight: 800;
+
+    box-shadow: var(--shadow);
+}
+
+
+
+/* ============================================================
+   MANAGEMENT PANELS
+   ============================================================ */
+.extra-panel {
+    margin-top: 18px;
+}
+.extra-panel[hidden] { display: none !important; }
+.panel-toolbar {
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    margin-bottom:14px;
+}
+.panel-title { font-size:18px; font-weight:850; }
+.panel-subtitle { color:var(--muted); font-size:12px; margin-top:4px; }
+.panel-action {
+    height:42px; padding:0 14px; border:0; border-radius:13px;
+    background:var(--blue); color:var(--blue-text); font-weight:800; cursor:pointer;
+}
+.panel-list { display:grid; gap:10px; }
+.promo-card, .order-card {
+    padding:14px; border:1px solid var(--line); border-radius:16px;
+    background:var(--card); box-shadow:var(--shadow);
+}
+.promo-card-head, .order-head { display:flex; justify-content:space-between; gap:12px; align-items:flex-start; }
+.promo-card-title, .order-number { font-weight:850; font-size:15px; }
+.promo-meta, .order-meta { margin-top:6px; color:var(--muted); font-size:11px; line-height:1.55; }
+.promo-actions { display:flex; gap:7px; flex-shrink:0; }
+.mini-button { width:36px; height:36px; border:1px solid var(--line); border-radius:11px; background:var(--bg); color:var(--text); cursor:pointer; }
+.mini-button.danger { color:#b84b45; }
+.discount-pill, .status-pill { display:inline-flex; align-items:center; padding:4px 8px; border-radius:999px; font-size:10px; font-weight:850; background:var(--blue-soft, var(--bg)); }
+.status-pill.off { opacity:.55; }
+.order-total { font-weight:900; white-space:nowrap; }
+.order-select { margin-top:10px; width:100%; padding:10px 12px; border-radius:11px; border:1px solid var(--line); background:var(--bg); color:var(--text); }
+.order-discount { font-weight:800; }
+.management-modal { position:fixed; inset:0; display:none; align-items:center; justify-content:center; padding:18px; background:rgba(0,0,0,.35); z-index:50; }
+.management-modal.open { display:flex; }
+.management-dialog { width:min(760px,100%); max-height:92vh; overflow:auto; background:var(--card); border:1px solid var(--line); border-radius:20px; box-shadow:0 20px 60px rgba(0,0,0,.2); padding:18px; }
+.management-dialog-head { display:flex; justify-content:space-between; gap:10px; align-items:center; margin-bottom:14px; }
+.management-dialog-title { font-size:18px; font-weight:850; }
+.management-close { width:38px; height:38px; border:1px solid var(--line); border-radius:50%; background:var(--bg); color:var(--text); cursor:pointer; font-size:20px; }
+.management-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.management-grid .full { grid-column:1/-1; }
+.management-form-actions { display:flex; justify-content:flex-end; gap:9px; margin-top:14px; }
+.management-secondary { height:42px; padding:0 14px; border:1px solid var(--line); border-radius:13px; background:var(--bg); color:var(--text); font-weight:800; cursor:pointer; }
+.management-danger { color:#b84b45; }
+@media(max-width:699px){ .management-grid{grid-template-columns:1fr}.management-grid .full{grid-column:auto}.panel-toolbar{align-items:flex-start;flex-direction:column}.panel-action{width:100%} }
+
+/* ============================================================
+   ADMIN PANEL
+   ============================================================ */
+
+.admin-panel {
+    display: none;
+}
+
+.admin-panel.open {
+    display: block;
+}
+
+.catalog-panel.hidden {
+    display: none;
+}
+
+
+/* ============================================================
+   ADMIN PANEL HEADER
+   ============================================================ */
+
+.admin-panel-card {
+    padding: 16px;
+
+    background: var(--card);
+
+    border: 1px solid var(--line);
+
+    border-radius: var(--radius);
+
+    box-shadow: var(--shadow);
+
+    margin-bottom: 12px;
+}
+
+.admin-panel-title-row {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 12px;
+
+    margin-bottom: 5px;
+}
+
+.admin-panel-title {
+    font-size: 19px;
+
+    font-weight: 800;
+}
+
+.owner-badge {
+    flex: 0 0 auto;
+
+    padding: 5px 9px;
+
+    border-radius: 999px;
+
+    background: rgba(215,154,40,.14);
+
+    color: var(--warning);
+
+    font-size: 10px;
+
+    font-weight: 800;
+}
+
+.admin-panel-description {
+    color: var(--muted);
+
+    font-size: 12px;
+
+    line-height: 1.4;
+}
+
+
+/* ============================================================
+   ADD ADMIN
+   ============================================================ */
+
+.add-admin-form {
+    display: grid;
+
+    grid-template-columns: 1fr auto;
+
+    gap: 9px;
+
+    margin-top: 15px;
+}
+
+.admin-id-input {
+    width: 100%;
+
+    height: 46px;
+
+    padding: 0 13px;
+
+    color: var(--text);
+
+    background: var(--bg);
+
+    border: 1px solid var(--line);
+
+    border-radius: 13px;
+
+    outline: none;
+}
+
+.admin-id-input:focus {
+    border-color: var(--blue);
+}
+
+.add-admin-button {
+    height: 46px;
+
+    padding: 0 15px;
+
+    border-radius: 13px;
+
+    background: var(--blue);
+
+    color: var(--blue-text);
+
+    font-weight: 800;
+}
+
+
+/* ============================================================
+   ADMIN LIST
+   ============================================================ */
+
+.admin-list {
+    display: grid;
+
+    gap: 9px;
+}
+
+.admin-list-header {
+    margin: 18px 2px 8px;
+
+    color: var(--muted);
+
+    font-size: 12px;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    letter-spacing: .4px;
+}
+
+.admin-item {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 12px;
+
+    padding: 13px;
+
+    background: var(--card);
+
+    border: 1px solid var(--line);
+
+    border-radius: 15px;
+
+    box-shadow: var(--shadow);
+}
+
+.admin-info {
+    min-width: 0;
+}
+
+.admin-name {
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    font-size: 14px;
+
+    font-weight: 800;
+}
+
+.admin-telegram-id {
+    margin-top: 4px;
+
+    color: var(--muted);
+
+    font-size: 11px;
+
+    word-break: break-all;
+}
+
+.admin-created {
+    margin-top: 3px;
+
+    color: var(--muted);
+
+    font-size: 10px;
+}
+
+.admin-role {
+    display: inline-flex;
+
+    align-items: center;
+
+    padding: 4px 7px;
+
+    border-radius: 999px;
+
+    font-size: 9px;
+
+    font-weight: 800;
+
+    background: rgba(58,157,104,.12);
+
+    color: var(--success);
+}
+
+.admin-role.owner {
+    background: rgba(215,154,40,.14);
+
+    color: var(--warning);
+}
+
+.remove-admin-button {
+    flex: 0 0 auto;
+
+    width: 38px;
+    height: 38px;
+
+    border-radius: 11px;
+
+    background: var(--bg);
+
+    color: var(--danger);
+
+    border: 1px solid var(--line);
+
+    font-size: 17px;
+}
+
+.remove-admin-button:disabled {
+    opacity: .35;
+}
+
+
+/* ============================================================
+   ADMIN EMPTY
+   ============================================================ */
+
+.admin-empty {
+    text-align: center;
+
+    padding: 40px 20px;
+
+    color: var(--muted);
+}
+
+.admin-empty-icon {
+    font-size: 35px;
+
+    margin-bottom: 9px;
+}
+
+.admin-empty-title {
+    color: var(--text);
+
+    font-size: 15px;
+
+    font-weight: 800;
+
+    margin-bottom: 5px;
+}
+
+.admin-empty-text {
+    font-size: 12px;
+
+    line-height: 1.4;
+}
+
+
+/* ============================================================
+   FILTERS
+   ============================================================ */
+
+.filters {
+    display: flex;
+
+    gap: 8px;
+
+    overflow-x: auto;
+
+    margin-bottom: 16px;
+
+    scrollbar-width: none;
+}
+
+.filters::-webkit-scrollbar {
+    display: none;
+}
+
+.filter {
+    flex: 0 0 auto;
+
+    padding: 9px 13px;
+
+    border-radius: 999px;
+
+    background: var(--card);
+
+    border: 1px solid var(--line);
+
+    color: var(--muted);
+
+    font-size: 13px;
+
+    font-weight: 700;
+}
+
+.filter.active {
+    background: var(--blue);
+
+    color: var(--blue-text);
+
+    border-color: var(--blue);
+}
+
+
+/* ============================================================
+   STATS
+   ============================================================ */
+
+.stats {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 9px;
+
+    margin-bottom: 16px;
+}
+
+.stat {
+    padding: 13px;
+
+    background: var(--card);
+
+    border: 1px solid var(--line);
+
+    border-radius: 16px;
+
+    box-shadow: var(--shadow);
+}
+
+.stat-value {
+    font-size: 20px;
+
+    font-weight: 800;
+}
+
+.stat-label {
+    margin-top: 3px;
+
+    color: var(--muted);
+
+    font-size: 11px;
+}
+
+
+/* ============================================================
+   PRODUCTS
+   ============================================================ */
+
+.products {
+    display: grid;
+
+    gap: 12px;
+}
+
+.product {
+    display: flex;
+
+    gap: 12px;
+
+    padding: 12px;
+
+    background: var(--card);
+
+    border: 1px solid var(--line);
+
+    border-radius: var(--radius);
+
+    box-shadow: var(--shadow);
+}
+
+.product-image {
+    flex: 0 0 86px;
+
+    width: 86px;
+    height: 86px;
+
+    overflow: hidden;
+
+    border-radius: 14px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(83,109,138,.08),
+            rgba(83,109,138,.16)
+        );
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    color: var(--muted);
+
+    font-size: 25px;
+}
+
+.product-image img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    display: block;
+}
+
+.product-content {
+    flex: 1;
+
+    min-width: 0;
+}
+
+.product-name {
+    font-size: 16px;
+
+    font-weight: 800;
+
+    line-height: 1.2;
+
+    margin-bottom: 4px;
+}
+
+.product-description {
+    color: var(--muted);
+
+    font-size: 12px;
+
+    line-height: 1.35;
+
+    display: -webkit-box;
+
+    -webkit-line-clamp: 2;
+
+    -webkit-box-orient: vertical;
+
+    overflow: hidden;
+
+    margin-bottom: 8px;
+}
+
+.product-meta {
+    display: flex;
+
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    gap: 6px;
+}
+
+.price {
+    font-size: 15px;
+
+    font-weight: 800;
+}
+
+.badge {
+    padding: 4px 8px;
+
+    border-radius: 999px;
+
+    font-size: 10px;
+
+    font-weight: 800;
+}
+
+.badge-stock {
+    background: rgba(58,157,104,.12);
+
+    color: var(--success);
+}
+
+.badge-out {
+    background: rgba(217,83,79,.12);
+
+    color: var(--danger);
+}
+
+.badge-category {
+    background: rgba(83,109,138,.1);
+
+    color: var(--muted);
+}
+
+.badge-tag {
+    background: rgba(224,168,64,.14);
+
+    color: #a87516;
+}
+
+.product-actions {
+    flex: 0 0 auto;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+}
+
+.icon-button {
+    width: 38px;
+    height: 38px;
+
+    border-radius: 12px;
+
+    background: var(--bg);
+
+    color: var(--text);
+
+    border: 1px solid var(--line);
+
+    font-size: 17px;
+}
+
+.icon-button.danger {
+    color: var(--danger);
+}
+
+
+/* ============================================================
+   EMPTY / LOADING
+   ============================================================ */
+
+.state {
+    text-align: center;
+
+    padding: 55px 20px;
+
+    color: var(--muted);
+}
+
+.state-icon {
+    font-size: 38px;
+
+    margin-bottom: 10px;
+}
+
+.state-title {
+    color: var(--text);
+
+    font-size: 16px;
+
+    font-weight: 800;
+
+    margin-bottom: 5px;
+}
+
+.state-text {
+    font-size: 13px;
+}
+
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+
+.modal {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 100;
+
+    display: none;
+
+    align-items: flex-end;
+
+    background: rgba(0,0,0,.42);
+
+    backdrop-filter: blur(4px);
+}
+
+.modal.open {
+    display: flex;
+}
+
+.modal-sheet {
+    width: 100%;
+
+    max-height: 92vh;
+
+    overflow-y: auto;
+
+    padding:
+        18px
+        16px
+        calc(20px + env(safe-area-inset-bottom));
+
+    background: var(--card);
+
+    border-radius:
+        24px
+        24px
+        0
+        0;
+}
+
+.modal-header {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 18px;
+}
+
+.modal-title {
+    font-size: 20px;
+
+    font-weight: 800;
+}
+
+.close-button {
+    width: 38px;
+    height: 38px;
+
+    border-radius: 50%;
+
+    background: var(--bg);
+
+    color: var(--text);
+
+    font-size: 18px;
+}
+
+
+/* ============================================================
+   FORM
+   ============================================================ */
+
+.form {
+    display: grid;
+
+    gap: 13px;
+}
+
+.field {
+    display: grid;
+
+    gap: 6px;
+}
+
+.field label {
+    font-size: 12px;
+
+    font-weight: 800;
+
+    color: var(--muted);
+}
+
+.field input,
+.field textarea,
+.field select {
+    width: 100%;
+
+    padding: 12px 13px;
+
+    color: var(--text);
+
+    background: var(--bg);
+
+    border: 1px solid var(--line);
+
+    border-radius: 13px;
+
+    outline: none;
+}
+
+.field input:focus,
+.field textarea:focus,
+.field select:focus {
+    border-color: var(--blue);
+}
+
+.field textarea {
+    min-height: 90px;
+
+    resize: vertical;
+}
+
+.form-row {
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 10px;
+}
+
+
+/* ============================================================
+   IMAGE UPLOAD
+   ============================================================ */
+
+.image-upload {
+    position: relative;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    min-height: 150px;
+
+    padding: 20px;
+
+    border: 2px dashed var(--line);
+
+    border-radius: 16px;
+
+    background: var(--bg);
+
+    cursor: pointer;
+
+    overflow: hidden;
+
+    transition: .2s ease;
+}
+
+.image-upload:hover {
+    border-color: var(--blue);
+}
+
+.image-upload-icon {
+    font-size: 34px;
+
+    margin-bottom: 8px;
+}
+
+.image-upload-title {
+    font-size: 14px;
+
+    font-weight: 800;
+}
+
+.image-upload-subtitle {
+    margin-top: 4px;
+
+    color: var(--muted);
+
+    font-size: 11px;
+
+    text-align: center;
+}
+
+.image-upload input {
+    position: absolute;
+
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    opacity: 0;
+
+    cursor: pointer;
+}
+
+.image-preview {
+    display: none;
+
+    width: 100%;
+
+    margin-top: 10px;
+
+    overflow: hidden;
+
+    border-radius: 14px;
+
+    border: 1px solid var(--line);
+
+    background: var(--bg);
+}
+
+.image-preview.show {
+    display: block;
+}
+
+.image-preview img {
+    display: block;
+
+    width: 100%;
+
+    max-height: 240px;
+
+    object-fit: cover;
+}
+
+.image-current {
+    display: none;
+
+    margin-bottom: 10px;
+}
+
+.image-current.show {
+    display: block;
+}
+
+.image-current-label {
+    margin-bottom: 6px;
+
+    color: var(--muted);
+
+    font-size: 11px;
+
+    font-weight: 700;
+}
+
+.image-current img {
+    display: block;
+
+    width: 100%;
+
+    max-height: 180px;
+
+    object-fit: cover;
+
+    border-radius: 14px;
+
+    border: 1px solid var(--line);
+}
+
+
+/* ============================================================
+   SWITCH
+   ============================================================ */
+
+.switch-row {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 13px;
+
+    background: var(--bg);
+
+    border: 1px solid var(--line);
+
+    border-radius: 13px;
+}
+
+.switch-text strong {
+    display: block;
+
+    font-size: 14px;
+}
+
+.switch-text span {
+    display: block;
+
+    margin-top: 3px;
+
+    color: var(--muted);
+
+    font-size: 11px;
+}
+
+.switch {
+    position: relative;
+
+    width: 48px;
+    height: 28px;
+}
+
+.switch input {
+    display: none;
+}
+
+.slider {
+    position: absolute;
+
+    inset: 0;
+
+    background: #aab2bb;
+
+    border-radius: 999px;
+
+    transition: .2s;
+}
+
+.slider::before {
+    content: "";
+
+    position: absolute;
+
+    width: 22px;
+    height: 22px;
+
+    left: 3px;
+    top: 3px;
+
+    border-radius: 50%;
+
+    background: white;
+
+    transition: .2s;
+}
+
+.switch input:checked + .slider {
+    background: var(--success);
+}
+
+.switch input:checked + .slider::before {
+    transform: translateX(20px);
+}
+
+
+/* ============================================================
+   FORM BUTTONS
+   ============================================================ */
+
+.form-actions {
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 9px;
+
+    margin-top: 5px;
+}
+
+.cancel-button,
+.save-button {
+    height: 48px;
+
+    border-radius: 14px;
+
+    font-weight: 800;
+}
+
+.cancel-button {
+    background: var(--bg);
+
+    color: var(--text);
+
+    border: 1px solid var(--line);
+}
+
+.save-button {
+    background: var(--blue);
+
+    color: var(--blue-text);
+}
+
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+
+.toast {
+    position: fixed;
+
+    left: 14px;
+    right: 14px;
+
+    bottom:
+        calc(15px + env(safe-area-inset-bottom));
+
+    z-index: 200;
+
+    padding: 13px 15px;
+
+    background: #222b35;
+
+    color: white;
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 12px 40px rgba(0,0,0,.25);
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    transform:
+        translateY(20px);
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    transition:
+        .25s ease;
+}
+
+.toast.show {
+    transform:
+        translateY(0);
+
+    opacity: 1;
+}
+
+.toast.error {
+    background: #a63d39;
+}
+
+
+/* ============================================================
+   DESKTOP
+   ============================================================ */
+
+@media (min-width: 700px) {
+
+    body {
+        max-width: 900px;
+
+        margin: 0 auto;
+
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .products {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+    .modal {
+        align-items: center;
+
+        padding: 20px;
+    }
+
+    .modal-sheet {
+        max-width: 560px;
+
+        border-radius: 24px;
+    }
+
+    .admin-nav {
+        grid-template-columns: 1fr 1fr;
+    }
+
+}
+
+
+.extra-panel{display:block}.extra-panel[hidden]{display:none!important}
+.nav-button{min-width:0}.admin-nav{grid-template-columns:repeat(5,1fr)}
+.promo-card,.order-card{padding:14px;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}
+.promo-card-head,.order-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.promo-card-title,.order-number{font-weight:800;font-size:15px}.promo-meta,.order-meta{margin-top:6px;color:var(--muted);font-size:11px;line-height:1.55}.promo-actions{display:flex;gap:6px}.mini-button{width:36px;height:36px;border-radius:10px;background:var(--bg);color:var(--text);border:1px solid var(--line)}.mini-button.danger{color:var(--danger)}.status-pill{display:inline-flex;padding:4px 8px;border-radius:999px;font-size:10px;font-weight:800;background:rgba(58,157,104,.12);color:var(--success)}.status-pill.off{background:rgba(217,83,79,.12);color:var(--danger)}.discount-pill{display:inline-flex;padding:4px 8px;border-radius:999px;background:rgba(176,42,92,.12);color:var(--accent);font-size:10px;font-weight:800}.price-old{text-decoration:line-through;color:var(--muted);margin-right:5px}.order-total{font-weight:900;font-size:16px}.order-discount{color:var(--accent);font-weight:800}.order-select{height:36px;padding:0 8px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text);font-size:12px}
+@media(max-width:699px){.admin-nav{grid-template-columns:repeat(2,1fr)}.admin-nav .nav-button:nth-child(5){grid-column:span 2}.form-row{grid-template-columns:1fr}}
+.management-page-head{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:16px}
+.panel-title{font-size:24px;font-weight:900;letter-spacing:-.03em}.panel-subtitle{margin-top:5px;color:var(--muted);font-size:12px;line-height:1.45}
+.panel-list{display:grid;gap:10px}.promo-card,.order-card{padding:16px;background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
+.promo-card:hover,.order-card:hover{transform:translateY(-1px)}.promo-card-head,.order-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.promo-card-title,.order-number{font-weight:900;font-size:16px}.promo-meta,.order-meta{margin-top:7px;color:var(--muted);font-size:11px;line-height:1.6}.promo-actions{display:flex;gap:6px}.mini-button{width:36px;height:36px;border-radius:11px;background:var(--bg);color:var(--text);border:1px solid var(--line);cursor:pointer}.mini-button.danger{color:var(--danger)}.status-pill{display:inline-flex;padding:5px 9px;border-radius:999px;font-size:10px;font-weight:850;background:rgba(58,157,104,.12);color:var(--success)}.status-pill.off{background:rgba(217,83,79,.12);color:var(--danger)}.discount-pill{display:inline-flex;padding:5px 9px;border-radius:999px;background:rgba(176,42,92,.10);color:var(--accent);font-size:10px;font-weight:850}.order-total{font-weight:950;font-size:17px}.order-discount{color:var(--accent);font-weight:850}.order-select{height:40px;padding:0 11px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--text);font-size:12px;width:100%;cursor:pointer}
+.management-modal{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(31,19,25,.24);backdrop-filter:blur(6px)}.management-modal.open{display:flex}.management-dialog{width:min(690px,100%);max-height:92vh;overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:24px;box-shadow:0 28px 80px rgba(52,30,40,.22);padding:20px}.management-dialog-small{width:min(650px,100%)}.management-dialog-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px}.management-dialog-title{font-size:22px;font-weight:950;letter-spacing:-.03em}.management-dialog-subtitle{margin-top:4px;color:var(--muted);font-size:11px}.management-close{width:40px;height:40px;border:1px solid var(--line);border-radius:50%;background:var(--bg);color:var(--text);cursor:pointer;font-size:21px;flex:none}.offer-step{padding:16px 0;border-top:1px solid var(--line)}.offer-step:first-of-type{border-top:0}.offer-step-label{text-transform:uppercase;letter-spacing:.08em;font-size:10px;font-weight:900;color:var(--muted);margin-bottom:11px}.choice-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.choice-card{border:1px solid var(--line);background:var(--bg);border-radius:15px;padding:12px;text-align:left;cursor:pointer;color:var(--text);transition:.18s}.choice-card span{display:block;font-size:20px;margin-bottom:7px}.choice-card strong{display:block;font-size:12px}.choice-card small{display:block;margin-top:3px;color:var(--muted);font-size:10px;line-height:1.3}.choice-card.active{border-color:var(--accent);box-shadow:0 0 0 2px rgba(176,42,92,.12);background:rgba(176,42,92,.04)}.visually-hidden{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}.management-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.management-grid .full{grid-column:1/-1}.inline-control{display:grid;grid-template-columns:86px 1fr;gap:7px}.suffix-control{position:relative}.suffix-control input{padding-right:38px;width:100%}.suffix-control span{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-weight:850;color:var(--muted);font-size:12px}.date-row{display:grid;grid-template-columns:1fr auto 1fr;align-items:end;gap:8px}.date-arrow{padding:0 1px 11px;color:var(--muted);font-weight:900}.compact-field{margin-top:10px}.compact-field label span{color:var(--muted);font-weight:500;font-size:10px}.offer-bottom-row{padding:14px 0}.offer-bottom-stack{display:grid;gap:8px;padding:4px 0 8px}.soft-toggle{display:grid;grid-template-columns:auto auto 1fr;align-items:center;gap:9px;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:var(--bg);cursor:pointer}.soft-toggle input{position:absolute;opacity:0;pointer-events:none}.soft-toggle-track{width:38px;height:22px;border-radius:999px;background:#c8c2c6;position:relative;transition:.18s}.soft-toggle-track:after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.16);transition:.18s}.soft-toggle input:checked + .soft-toggle-track{background:var(--accent)}.soft-toggle input:checked + .soft-toggle-track:after{left:19px}.soft-toggle strong{display:block;font-size:12px}.soft-toggle small{display:block;margin-top:2px;color:var(--muted);font-size:10px}.management-form-actions{display:flex;justify-content:flex-end;gap:8px;padding-top:14px;border-top:1px solid var(--line)}.hidden-field{display:none!important}
+@media(max-width:699px){.admin-nav{grid-template-columns:repeat(2,1fr)}.admin-nav .nav-button:nth-child(5){grid-column:span 2}.form-row{grid-template-columns:1fr}.management-page-head{align-items:flex-start}.management-page-head .panel-action{white-space:nowrap}.choice-grid{grid-template-columns:repeat(2,1fr)}.management-grid{grid-template-columns:1fr}.management-grid .full{grid-column:auto}.date-row{grid-template-columns:1fr}.date-arrow{display:none}}
+
+
+/* ============================================================
+   MALINA MANAGEMENT — SIMPLE / LIGHT UI OVERRIDES
+   ============================================================ */
+.panel-kicker{font-size:10px;font-weight:850;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:3px;opacity:.8}
+.management-page-head{margin-bottom:16px;padding:16px 0 12px;border-bottom:1px solid var(--line)}
+.management-page-head .panel-title{font-size:27px;line-height:1.05;letter-spacing:-.04em}
+.management-page-head .panel-subtitle{max-width:680px;margin-top:6px;line-height:1.5}
+.management-page-head .panel-action{margin-top:12px}
+.extra-panel{padding-bottom:30px}
+.panel-list{display:grid;gap:10px}
+.promo-card,.order-card{border:1px solid var(--line);background:var(--card);border-radius:18px;padding:15px 16px;box-shadow:0 8px 26px rgba(52,30,40,.06)}
+.promo-card-head,.order-head{align-items:center}
+.promo-card-title,.order-number{font-size:15px}
+.promo-meta,.order-meta{font-size:11px;line-height:1.55}
+.promo-actions{flex:none}
+.mini-button{width:34px;height:34px;border-radius:10px}
+.management-dialog{width:min(760px,100%);max-height:94vh;padding:18px;border-radius:24px}
+.management-dialog-title{font-size:23px}
+.simple-section{padding:15px 0;border-top:1px solid var(--line)}
+.simple-section:first-of-type{border-top:0}
+.simple-label{font-size:10px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:11px}
+.quick-choice-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.quick-choice{min-height:72px;padding:10px 11px;text-align:left;border:1px solid var(--line);border-radius:15px;background:var(--bg);color:var(--text);cursor:pointer;transition:.16s}
+.quick-choice span{display:block;font-size:19px;margin-bottom:5px}.quick-choice strong{font-size:11px;line-height:1.25;display:block}
+.quick-choice.active{border-color:var(--accent);background:rgba(176,42,92,.055);box-shadow:0 0 0 2px rgba(176,42,92,.09)}
+.management-grid{gap:10px}.inline-control.compact{grid-template-columns:70px 1fr}
+.date-row.compact-date-row{grid-template-columns:1fr auto 1fr 1fr;gap:8px}.date-row.compact-date-row.two-fields{grid-template-columns:1fr auto 1fr}.date-arrow{padding-bottom:10px}
+.badge-field{min-width:0}.inline-toggle{height:100%;min-height:44px;align-self:end}
+.simple-bottom-row{padding:13px 0}.soft-toggle{background:var(--bg)}
+.management-form-actions{padding-top:13px}
+@media(max-width:699px){.quick-choice-row{grid-template-columns:1fr 1fr}.date-row.compact-date-row,.date-row.compact-date-row.two-fields{grid-template-columns:1fr}.date-arrow{display:none}.inline-toggle{min-height:auto}.management-page-head .panel-action{width:100%}}
 </style>
 </head>
 
 <body>
-<div id="accessScreen" class="access-screen"><div class="access-card"><div class="access-icon">🔒</div><h1>Доступ ограничен</h1><p id="accessReason">Проверяем права доступа…</p><p>Панель управления «Малины» доступна только администраторам.</p></div></div>
-<div id="appShell" class="page" hidden>
-<header class="topbar"><div class="topbar-inner"><div class="brand"><div class="brand-mark">🍰</div><div><strong>Кондитерский дом «Малина»</strong><small>Панель управления · @MalinaBakeryBot</small></div></div><div class="user"><span class="dot"></span><span id="userName">Администратор</span></div></div></header>
-<div class="layout"><aside class="sidebar"><nav class="nav"><button id="catalogNavButton" class="nav-btn active" type="button">🍰 <span>Каталог</span></button><button id="promotionsNavButton" class="nav-btn" type="button">🔥 <span>Акции</span></button><button id="promoCodesNavButton" class="nav-btn" type="button">🏷️ <span>Промокоды</span></button><button id="ordersNavButton" class="nav-btn" type="button">📦 <span>Заказы</span></button><button id="adminsNavButton" class="nav-btn" type="button">👥 <span>Администраторы</span></button></nav></aside>
-<main class="content">
-<section id="catalogPanel"><div class="page-head"><div><div class="eyebrow">Малина · ассортимент</div><h1 class="page-title">Каталог</h1><p class="page-subtitle">Управляйте десертами, ценами, фотографиями и наличием в одном месте.</p></div><button id="addButton" class="primary-btn" type="button">＋ Товар</button></div><div class="toolbar"><input id="search" class="search" type="search" placeholder="Поиск товара…" autocomplete="off"><span></span></div><div id="filters" class="filters"></div><div class="stats"><div class="stat"><div id="totalCount" class="stat-value">0</div><div class="stat-label">ВСЕГО</div></div><div class="stat"><div id="stockCount" class="stat-value">0</div><div class="stat-label">В НАЛИЧИИ</div></div><div class="stat"><div id="outCount" class="stat-value">0</div><div class="stat-label">НЕТ В НАЛИЧИИ</div></div></div><main id="products" class="products"></main></section>
-<section id="promotionsPanel" class="extra-panel" hidden><div class="panel-shell"><div class="page-head"><div><div class="eyebrow">Малина · автоматические предложения</div><h1 class="page-title">Акции</h1><p class="page-subtitle">Создавайте предложения, которые применяются автоматически.</p></div><button id="addPromotionButton" class="panel-action" type="button">＋ Акция</button></div><div id="promotionsList" class="panel-list"></div></div></section>
-<section id="promoCodesPanel" class="extra-panel" hidden><div class="panel-shell"><div class="page-head"><div><div class="eyebrow">Малина · ручные скидки</div><h1 class="page-title">Промокоды</h1><p class="page-subtitle">Код, скидка, условия и срок действия — без лишнего.</p></div><button id="addPromoCodeButton" class="panel-action" type="button">＋ Промокод</button></div><div id="promoCodesList" class="panel-list"></div></div></section>
-<section id="ordersPanel" class="extra-panel" hidden><div class="panel-shell"><div class="page-head"><div><div class="eyebrow">Малина · контроль заказов</div><h1 class="page-title">Заказы</h1><p class="page-subtitle">Меняйте статус — клиент получает уведомление в Telegram.</p></div><button id="refreshOrdersButton" class="panel-action" type="button">↻ Обновить</button></div><div id="ordersList" class="panel-list"></div></div></section>
-<section id="adminPanel" class="extra-panel" hidden><div class="panel-shell"><div class="page-head"><div><div class="eyebrow">Малина · доступ</div><h1 class="page-title">Администраторы</h1><p class="page-subtitle">Только владелец может добавлять и удалять администраторов.</p></div></div><form id="addAdminForm" class="toolbar"><input id="adminTelegramId" class="search" type="text" inputmode="numeric" placeholder="Telegram ID"><button id="addAdminButton" class="primary-btn" type="submit">＋ Добавить</button></form><div id="adminsList" class="panel-list"><div class="state"><div class="state-icon">⏳</div><div class="state-title">Загружаем администраторов</div></div></div></div></section>
-</main></div></div>
-<div id="modal" class="modal"><div class="modal-sheet"><div class="modal-header"><div id="modalTitle" class="modal-title">Новый товар</div><button id="closeButton" class="close-button" type="button">×</button></div><form id="productForm" class="form"><input id="productId" type="hidden"><div class="field"><label for="name">Название *</label><input id="name" required placeholder="Например: Медовик"></div><div class="form-row"><div class="field"><label for="category">Категория</label><input id="category" placeholder="Торты"></div><div class="field"><label for="price">Цена *</label><input id="price" type="number" min="0" step="0.01" required placeholder="1900"></div></div><div class="form-row"><div class="field"><label for="weight">Вес</label><input id="weight" placeholder="1 кг"></div><div class="field"><label for="tag">Метка</label><input id="tag" placeholder="Хит"></div></div><div class="field"><label for="description">Описание</label><textarea id="description" placeholder="Коротко о десерте…"></textarea></div><div class="field"><label>Фотография</label><div id="currentImage" class="image-current"><div class="image-current-label">Текущая фотография</div><img id="currentImageImg" src="" alt=""></div><div class="image-upload"><div style="font-size:30px">📷</div><strong>Выбрать фотографию</strong><span style="font-size:9px;color:var(--muted)">JPG, PNG, WEBP или GIF · до 10 MB</span><input id="imageFile" type="file" accept="image/jpeg,image/png,image/webp,image/gif"></div><div id="imagePreview" class="image-preview"><img id="imagePreviewImg" src="" alt=""></div><input id="imageUrl" type="hidden"></div><div class="form-row"><div class="field"><label for="sortOrder">Порядок</label><input id="sortOrder" type="number" step="1" value="0"></div><div class="switch-row"><div class="switch-text"><strong>В наличии</strong><span>Товар можно заказать</span></div><label class="switch"><input id="inStock" type="checkbox" checked><span class="slider"></span></label></div></div><div class="form-actions"><button id="cancelButton" class="cancel-button" type="button">Отмена</button><button id="saveButton" class="save-button" type="submit">Сохранить</button></div></form></div></div>
-<div id="promotionModal" class="management-modal"><div class="management-dialog"><div class="management-dialog-head"><div><div id="promotionModalTitle" class="management-dialog-title">Новая акция</div><div class="management-dialog-subtitle">Выберите результат для клиента — остальные поля покажутся автоматически.</div></div><button id="closePromotionButton" class="management-close" type="button">×</button></div><form id="promotionForm" class="form"><input id="promotionId" type="hidden"><div class="simple-section"><div class="simple-label">Что получает клиент</div><div class="quick-choice-row"><button type="button" class="quick-choice active" data-promo-type="product_discount"><span>🍰</span><strong>На товар</strong></button><button type="button" class="quick-choice" data-promo-type="category_discount"><span>🧁</span><strong>На категорию</strong></button><button type="button" class="quick-choice" data-promo-type="order_discount"><span>🛍️</span><strong>На заказ</strong></button><button type="button" class="quick-choice" data-promo-type="second_item_discount"><span>🍰🍰</span><strong>На второй</strong></button><button type="button" class="quick-choice" data-promo-type="bogo"><span>2+1</span><strong>Третий бесплатно</strong></button><button type="button" class="quick-choice" data-promo-type="free_delivery"><span>🚚</span><strong>Доставка бесплатно</strong></button><button type="button" class="quick-choice" data-promo-type="delivery_discount"><span>🚚%</span><strong>Скидка на доставку</strong></button><button type="button" class="quick-choice" data-promo-type="delivery_price"><span>🚚₽</span><strong>Доставка по цене</strong></button></div><select id="promotionType" class="visually-hidden"><option value="product_discount">product_discount</option><option value="category_discount">category_discount</option><option value="order_discount">order_discount</option><option value="second_item_discount">second_item_discount</option><option value="bogo">bogo</option><option value="free_delivery">free_delivery</option><option value="delivery_discount">delivery_discount</option><option value="delivery_price">delivery_price</option></select></div><div class="simple-section"><div class="simple-label">Настройка</div><div class="management-grid"><div class="field full"><label for="promotionName">Название</label><input id="promotionName" required placeholder="Например: Доставка за 50 ₽ от 1500 ₽"></div><div class="field hidden-field" id="promotionProductField"><label for="promotionProduct">Товар</label><select id="promotionProduct"><option value="">Выберите товар</option></select></div><div class="field hidden-field" id="promotionCategoryField"><label for="promotionCategory">Категория</label><input id="promotionCategory" placeholder="Чизкейки"></div><div class="field" id="promotionDiscountTypeField"><label for="promotionDiscountType">Тип и размер</label><div class="inline-control"><select id="promotionDiscountType"><option value="percent">%</option><option value="fixed">₽</option></select><input id="promotionValue" type="number" min="0" step="0.01" value="20"></div></div><div class="field hidden-field" id="promotionBuyField"><label for="promotionBuyQty">Купи</label><input id="promotionBuyQty" type="number" min="1" value="2"></div><div class="field hidden-field" id="promotionRewardField"><label for="promotionRewardQty">В подарок</label><input id="promotionRewardQty" type="number" min="1" value="1"></div><div class="field hidden-field" id="promotionRewardDiscountField"><label for="promotionRewardDiscount">Скидка на второй</label><div class="suffix-control"><input id="promotionRewardDiscount" type="number" min="0" max="100" value="50"><span>%</span></div></div><div class="field"><label for="promotionMinOrder">Минимальная сумма заказа</label><div class="suffix-control"><input id="promotionMinOrder" type="number" min="0" value="0"><span>₽</span></div></div><div class="field hidden-field" id="promotionMaxDiscountField"><label for="promotionMaxDiscount">Максимальная скидка</label><div class="suffix-control"><input id="promotionMaxDiscount" type="number" min="0" placeholder="Без лимита"><span>₽</span></div></div><div class="field full"><label id="promotionValueLabel">Размер скидки</label></div></div></div><div class="simple-section"><div class="simple-label">Срок и оформление</div><div class="date-row"><div class="field"><label for="promotionStartsAt">С</label><input id="promotionStartsAt" type="datetime-local"></div><div class="date-arrow">→</div><div class="field"><label for="promotionExpiresAt">До</label><input id="promotionExpiresAt" type="datetime-local"></div><div class="field"><label for="promotionBadge">Метка</label><input id="promotionBadge" placeholder="🔥 АКЦИЯ"></div></div></div><label class="soft-toggle"><input id="promotionActive" type="checkbox" checked><span><strong>Акция включена</strong><small>Будет применяться автоматически</small></span></label><div class="management-form-actions"><button id="cancelPromotionButton" class="secondary-btn" type="button">Отмена</button><button class="panel-action" type="submit">Сохранить</button></div></form></div></div>
-<div id="promoCodeModal" class="management-modal"><div class="management-dialog"><div class="management-dialog-head"><div><div id="promoCodeModalTitle" class="management-dialog-title">Новый промокод</div><div class="management-dialog-subtitle">Коротко и понятно: код, скидка, условия и период.</div></div><button id="closePromoCodeButton" class="management-close" type="button">×</button></div><form id="promoCodeForm" class="form"><input id="promoCodeId" type="hidden"><div class="simple-section"><div class="simple-label">Код и скидка</div><div class="management-grid"><div class="field full"><label for="promoCodeValue">Промокод</label><input id="promoCodeValue" required placeholder="MALINA10" autocapitalize="characters"></div><div class="field"><label for="promoCodeDiscountType">Тип</label><select id="promoCodeDiscountType"><option value="percent">Проценты</option><option value="fixed">Рубли</option></select></div><div class="field"><label for="promoCodeDiscountValue">Размер</label><input id="promoCodeDiscountValue" type="number" min="0" step="0.01" value="10"></div></div></div><div class="simple-section"><div class="simple-label">Условия</div><div class="management-grid"><div class="field"><label for="promoCodeMinOrder">Минимальная сумма</label><div class="suffix-control"><input id="promoCodeMinOrder" type="number" min="0" value="0"><span>₽</span></div></div><div class="field"><label for="promoCodeMaxDiscount">Максимальная скидка</label><div class="suffix-control"><input id="promoCodeMaxDiscount" type="number" min="0" placeholder="Без лимита"><span>₽</span></div></div><div class="field"><label for="promoCodeUsageLimit">Лимит использований</label><input id="promoCodeUsageLimit" type="number" min="1" placeholder="Без лимита"></div><label class="soft-toggle"><input id="promoCodeOneUse" type="checkbox"><span><strong>1 раз на пользователя</strong><small>Одно применение на аккаунт</small></span></label></div></div><div class="simple-section"><div class="simple-label">Период</div><div class="date-row"><div class="field"><label for="promoCodeStartsAt">С</label><input id="promoCodeStartsAt" type="datetime-local"></div><div class="date-arrow">→</div><div class="field"><label for="promoCodeExpiresAt">До</label><input id="promoCodeExpiresAt" type="datetime-local"></div></div></div><label class="soft-toggle"><input id="promoCodeActive" type="checkbox" checked><span><strong>Промокод включён</strong><small>Клиент сможет его применить</small></span></label><div class="management-form-actions"><button id="cancelPromoCodeButton" class="secondary-btn" type="button">Отмена</button><button class="panel-action" type="submit">Сохранить</button></div></form></div></div>
-<div id="toast" class="toast"></div>
+
+
+<!-- ============================================================
+     HEADER
+     ============================================================ -->
+
+<header class="header">
+
+    <div class="header-title">
+
+        <h1>
+            🍰 Управление
+        </h1>
+
+        <p>
+            Кондитерский дом «Малина» · @MalinaBakeryBot
+        </p>
+
+    </div>
+
+    <div class="user-badge">
+
+        <span class="user-dot"></span>
+
+        <span id="userName">
+            Администратор
+        </span>
+
+    </div>
+
+</header>
+
+
+<!-- ============================================================
+     NAVIGATION
+     ============================================================ -->
+
+<nav class="admin-nav">
+    <button id="catalogNavButton" class="nav-button active" type="button">🍰 Каталог</button>
+    <button id="promotionsNavButton" class="nav-button" type="button">🔥 Акции</button>
+    <button id="promoCodesNavButton" class="nav-button" type="button">🏷️ Промокоды</button>
+    <button id="ordersNavButton" class="nav-button" type="button">📦 Заказы</button>
+    <button id="adminsNavButton" class="nav-button" type="button">👥 Администраторы</button>
+</nav>
+
+
+<!-- ============================================================
+     CATALOG PANEL
+     ============================================================ -->
+
+<section
+    id="catalogPanel"
+    class="catalog-panel"
+>
+
+
+    <!-- TOOLBAR -->
+
+    <section class="toolbar">
+
+        <input
+            id="search"
+            class="search"
+            type="search"
+            placeholder="Поиск товара..."
+            autocomplete="off"
+        >
+
+        <button
+            id="addButton"
+            class="add-button"
+            type="button"
+        >
+            + Добавить
+        </button>
+
+    </section>
+
+
+    <!-- FILTERS -->
+
+    <div
+        id="filters"
+        class="filters"
+    ></div>
+
+
+    <!-- STATS -->
+
+    <section class="stats">
+
+        <div class="stat">
+
+            <div
+                id="totalCount"
+                class="stat-value"
+            >
+                0
+            </div>
+
+            <div class="stat-label">
+                Всего товаров
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div
+                id="stockCount"
+                class="stat-value"
+            >
+                0
+            </div>
+
+            <div class="stat-label">
+                В наличии
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div
+                id="outCount"
+                class="stat-value"
+            >
+                0
+            </div>
+
+            <div class="stat-label">
+                Нет в наличии
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- PRODUCTS -->
+
+    <main
+        id="products"
+        class="products"
+    ></main>
+
+</section>
+
+
+<!-- ============================================================
+     MALINA MANAGEMENT PANELS
+     ============================================================ -->
+<section id="promotionsPanel" class="extra-panel" hidden>
+  <div class="management-page-head">
+    <div>
+      <div class="panel-kicker">Малина · автоматические предложения</div>
+      <div class="panel-title">🔥 Акции</div>
+      <div class="panel-subtitle">Создайте акцию за несколько понятных шагов. Всё лишнее спрятано.</div>
+    </div>
+    <button id="addPromotionButton" class="panel-action" type="button">＋ Новая акция</button>
+  </div>
+  <div id="promotionsList" class="panel-list"></div>
+</section>
+
+<section id="promoCodesPanel" class="extra-panel" hidden>
+  <div class="management-page-head">
+    <div>
+      <div class="panel-kicker">Малина · специальные предложения</div>
+      <div class="panel-title">🏷️ Промокоды</div>
+      <div class="panel-subtitle">Код, размер скидки, минимальная сумма и срок действия — больше ничего не нужно.</div>
+    </div>
+    <button id="addPromoCodeButton" class="panel-action" type="button">＋ Новый промокод</button>
+  </div>
+  <div id="promoCodesList" class="panel-list"></div>
+</section>
+
+<section id="ordersPanel" class="extra-panel" hidden>
+  <div class="management-page-head">
+    <div>
+      <div class="panel-kicker">Малина · контроль заказов</div>
+      <div class="panel-title">📦 Заказы</div>
+      <div class="panel-subtitle">Меняйте статус заказа — клиент получит уведомление в Telegram.</div>
+    </div>
+    <button id="refreshOrdersButton" class="panel-action" type="button">↻ Обновить</button>
+  </div>
+  <div id="ordersList" class="panel-list"></div>
+</section>
+
+<div id="promotionModal" class="management-modal">
+  <div class="management-dialog">
+    <div class="management-dialog-head">
+      <div>
+        <div id="promotionModalTitle" class="management-dialog-title">Новая акция</div>
+        <div class="management-dialog-subtitle">Сначала выберите, что получает клиент. Остальные поля появятся сами.</div>
+      </div>
+      <button id="closePromotionButton" class="management-close" type="button">×</button>
+    </div>
+
+    <form id="promotionForm" class="form">
+      <input id="promotionId" type="hidden">
+
+      <div class="simple-section">
+        <div class="simple-label">Что даём клиенту?</div>
+        <div class="quick-choice-row">
+          <button type="button" class="quick-choice active" data-promo-type="product_discount"><span>🍰</span><strong>Скидка на товар</strong></button>
+          <button type="button" class="quick-choice" data-promo-type="category_discount"><span>🧁</span><strong>Скидка на категорию</strong></button>
+          <button type="button" class="quick-choice" data-promo-type="order_discount"><span>🛍️</span><strong>Скидка на заказ</strong></button>
+          <button type="button" class="quick-choice" data-promo-type="second_item_discount"><span>🍰🍰</span><strong>Скидка на второй</strong></button>
+          <button type="button" class="quick-choice" data-promo-type="bogo"><span>2+1</span><strong>Третий бесплатно</strong></button>
+          <button type="button" class="quick-choice" data-promo-type="free_delivery"><span>🚚</span><strong>Доставка бесплатно</strong></button>
+        </div>
+        <select id="promotionType" class="visually-hidden" aria-hidden="true" tabindex="-1">
+          <option value="product_discount">product_discount</option>
+          <option value="category_discount">category_discount</option>
+          <option value="order_discount">order_discount</option>
+          <option value="second_item_discount">second_item_discount</option>
+          <option value="bogo">bogo</option>
+          <option value="free_delivery">free_delivery</option>
+        </select>
+      </div>
+
+      <div class="simple-section">
+        <div class="simple-label">Настройка</div>
+        <div class="management-grid">
+          <div class="field full"><label for="promotionName">Название</label><input id="promotionName" required placeholder="Например: 20% на чизкейки"></div>
+          <div class="field hidden-field" id="promotionProductField"><label for="promotionProduct">Товар</label><select id="promotionProduct"><option value="">Выберите товар</option></select></div>
+          <div class="field hidden-field" id="promotionCategoryField"><label for="promotionCategory">Категория</label><input id="promotionCategory" placeholder="Чизкейки"></div>
+          <div class="field" id="promotionDiscountTypeField"><label for="promotionDiscountType">Размер скидки</label><div class="inline-control compact"><select id="promotionDiscountType"><option value="percent">%</option><option value="fixed">₽</option></select><input id="promotionValue" type="number" min="0" step="0.01" value="20" placeholder="20"></div></div>
+          <div class="field hidden-field" id="promotionBuyField"><label for="promotionBuyQty">Количество для покупки</label><input id="promotionBuyQty" type="number" min="1" step="1" value="2"></div>
+          <div class="field hidden-field" id="promotionRewardField"><label for="promotionRewardQty">Количество в подарок</label><input id="promotionRewardQty" type="number" min="1" step="1" value="1"></div>
+          <div class="field hidden-field" id="promotionRewardDiscountField"><label for="promotionRewardDiscount">Скидка на второй</label><div class="suffix-control"><input id="promotionRewardDiscount" type="number" min="0" max="100" step="1" value="50"><span>%</span></div></div>
+          <div class="field" id="promotionMinOrderField"><label for="promotionMinOrder">Минимальная сумма заказа</label><div class="suffix-control"><input id="promotionMinOrder" type="number" min="0" step="1" value="0"><span>₽</span></div></div>
+          <div class="field hidden-field" id="promotionMaxDiscountField"><label for="promotionMaxDiscount">Максимальная скидка</label><div class="suffix-control"><input id="promotionMaxDiscount" type="number" min="0" step="1" placeholder="Без лимита"><span>₽</span></div></div>
+        </div>
+      </div>
+
+      <div class="simple-section">
+        <div class="simple-label">Период и вид на сайте</div>
+        <div class="date-row compact-date-row">
+          <div class="field"><label for="promotionStartsAt">С</label><input id="promotionStartsAt" type="datetime-local"></div>
+          <div class="date-arrow">→</div>
+          <div class="field"><label for="promotionExpiresAt">До</label><input id="promotionExpiresAt" type="datetime-local"></div>
+          <div class="field badge-field"><label for="promotionBadge">Метка</label><input id="promotionBadge" placeholder="🔥 АКЦИЯ"></div>
+        </div>
+      </div>
+
+      <div class="simple-bottom-row">
+        <label class="soft-toggle"><input id="promotionActive" type="checkbox" checked><span class="soft-toggle-track"></span><span><strong>Акция включена</strong><small>Начнёт применяться автоматически</small></span></label>
+      </div>
+
+      <div class="management-form-actions"><button id="cancelPromotionButton" class="management-secondary" type="button">Отмена</button><button class="panel-action" type="submit">Сохранить</button></div>
+    </form>
+  </div>
+</div>
+
+<div id="promoCodeModal" class="management-modal">
+  <div class="management-dialog">
+    <div class="management-dialog-head">
+      <div>
+        <div id="promoCodeModalTitle" class="management-dialog-title">Новый промокод</div>
+        <div class="management-dialog-subtitle">Только параметры, которые реально влияют на применение промокода.</div>
+      </div>
+      <button id="closePromoCodeButton" class="management-close" type="button">×</button>
+    </div>
+
+    <form id="promoCodeForm" class="form">
+      <input id="promoCodeId" type="hidden">
+
+      <div class="simple-section">
+        <div class="simple-label">Код и скидка</div>
+        <div class="management-grid">
+          <div class="field full"><label for="promoCodeValue">Промокод</label><input id="promoCodeValue" required placeholder="MALINA10" autocapitalize="characters"></div>
+          <div class="field"><label for="promoCodeDiscountType">Тип скидки</label><select id="promoCodeDiscountType"><option value="percent">Проценты</option><option value="fixed">Рубли</option></select></div>
+          <div class="field"><label for="promoCodeDiscountValue">Размер скидки</label><input id="promoCodeDiscountValue" type="number" min="0" step="0.01" value="10"></div>
+        </div>
+      </div>
+
+      <div class="simple-section">
+        <div class="simple-label">Условия</div>
+        <div class="management-grid">
+          <div class="field"><label for="promoCodeMinOrder">Минимальная сумма заказа</label><div class="suffix-control"><input id="promoCodeMinOrder" type="number" min="0" step="1" value="0"><span>₽</span></div></div>
+          <div class="field"><label for="promoCodeMaxDiscount">Максимальная скидка</label><div class="suffix-control"><input id="promoCodeMaxDiscount" type="number" min="0" step="1" placeholder="Без лимита"><span>₽</span></div></div>
+          <div class="field"><label for="promoCodeUsageLimit">Лимит использований</label><input id="promoCodeUsageLimit" type="number" min="1" step="1" placeholder="Без лимита"></div>
+          <label class="soft-toggle inline-toggle"><input id="promoCodeOneUse" type="checkbox"><span class="soft-toggle-track"></span><span><strong>1 раз на пользователя</strong><small>Один аккаунт — одно применение</small></span></label>
+        </div>
+      </div>
+
+      <div class="simple-section">
+        <div class="simple-label">Период</div>
+        <div class="date-row compact-date-row two-fields">
+          <div class="field"><label for="promoCodeStartsAt">С</label><input id="promoCodeStartsAt" type="datetime-local"></div>
+          <div class="date-arrow">→</div>
+          <div class="field"><label for="promoCodeExpiresAt">До</label><input id="promoCodeExpiresAt" type="datetime-local"></div>
+        </div>
+      </div>
+
+      <div class="simple-bottom-row">
+        <label class="soft-toggle"><input id="promoCodeActive" type="checkbox" checked><span class="soft-toggle-track"></span><span><strong>Промокод включён</strong><small>Клиент сможет его применить</small></span></label>
+      </div>
+
+      <div class="management-form-actions"><button id="cancelPromoCodeButton" class="management-secondary" type="button">Отмена</button><button class="panel-action" type="submit">Сохранить</button></div>
+    </form>
+  </div>
+</div>
+
+<!-- ============================================================
+     ADMIN PANEL
+     ============================================================ -->
+
+<section
+    id="adminPanel"
+    class="admin-panel"
+>
+
+    <div class="admin-panel-card">
+
+        <div class="admin-panel-title-row">
+
+            <div class="admin-panel-title">
+                👥 Администраторы
+            </div>
+
+            <div class="owner-badge">
+                👑 ВЛАДЕЛЕЦ
+            </div>
+
+        </div>
+
+        <div class="admin-panel-description">
+
+            Добавляйте пользователей Telegram,
+            которым разрешено управлять каталогом.
+            Для добавления нужен их Telegram ID.
+
+        </div>
+
+
+        <!-- ADD ADMIN -->
+
+        <form
+            id="addAdminForm"
+            class="add-admin-form"
+        >
+
+            <input
+                id="adminTelegramId"
+                class="admin-id-input"
+                type="text"
+                inputmode="numeric"
+                autocomplete="off"
+                placeholder="Telegram ID"
+                required
+            >
+
+            <button
+                id="addAdminButton"
+                class="add-admin-button"
+                type="submit"
+            >
+                + Добавить
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <!-- ADMIN LIST -->
+
+    <div class="admin-list-header">
+        Список администраторов
+    </div>
+
+    <div
+        id="adminsList"
+        class="admin-list"
+    >
+
+        <div class="admin-empty">
+
+            <div class="admin-empty-icon">
+                ⏳
+            </div>
+
+            <div class="admin-empty-title">
+                Загружаем администраторов
+            </div>
+
+            <div class="admin-empty-text">
+                Подождите немного...
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ============================================================
+     PRODUCT MODAL
+     ============================================================ -->
+
+<div
+    id="modal"
+    class="modal"
+>
+
+    <div class="modal-sheet">
+
+        <div class="modal-header">
+
+            <div
+                id="modalTitle"
+                class="modal-title"
+            >
+                Новый товар
+            </div>
+
+            <button
+                id="closeButton"
+                class="close-button"
+                type="button"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <form
+            id="productForm"
+            class="form"
+        >
+
+            <input
+                id="productId"
+                type="hidden"
+            >
+
+
+            <!-- NAME -->
+
+            <div class="field">
+
+                <label for="name">
+                    Название *
+                </label>
+
+                <input
+                    id="name"
+                    type="text"
+                    required
+                    placeholder="Например: Медовик"
+                >
+
+            </div>
+
+
+            <!-- CATEGORY / PRICE -->
+
+            <div class="form-row">
+
+                <div class="field">
+
+                    <label for="category">
+                        Категория
+                    </label>
+
+                    <input
+                        id="category"
+                        type="text"
+                        placeholder="Торты"
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="price">
+                        Цена *
+                    </label>
+
+                    <input
+                        id="price"
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        required
+                        placeholder="1900"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- WEIGHT -->
+
+            <div class="field">
+
+                <label for="weight">
+                    Вес
+                </label>
+
+                <input
+                    id="weight"
+                    type="text"
+                    placeholder="1 кг"
+                >
+
+            </div>
+
+
+            <!-- DESCRIPTION -->
+
+            <div class="field">
+
+                <label for="description">
+                    Описание
+                </label>
+
+                <textarea
+                    id="description"
+                    placeholder="Описание товара..."
+                ></textarea>
+
+            </div>
+
+
+            <!-- IMAGE -->
+
+            <div class="field">
+
+                <label>
+                    Фотография
+                </label>
+
+
+                <div
+                    id="currentImage"
+                    class="image-current"
+                >
+
+                    <div class="image-current-label">
+                        Текущая фотография
+                    </div>
+
+                    <img
+                        id="currentImageImg"
+                        src=""
+                        alt=""
+                    >
+
+                </div>
+
+
+                <div class="image-upload">
+
+                    <div class="image-upload-icon">
+                        📷
+                    </div>
+
+                    <div class="image-upload-title">
+                        Выбрать фотографию
+                    </div>
+
+                    <div class="image-upload-subtitle">
+                        JPG, PNG, WEBP или GIF<br>
+                        Максимум 10 MB
+                    </div>
+
+                    <input
+                        id="imageFile"
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp,image/gif"
+                    >
+
+                </div>
+
+
+                <div
+                    id="imagePreview"
+                    class="image-preview"
+                >
+
+                    <img
+                        id="imagePreviewImg"
+                        src=""
+                        alt=""
+                    >
+
+                </div>
+
+
+                <input
+                    id="imageUrl"
+                    type="hidden"
+                >
+
+            </div>
+
+
+            <!-- TAG -->
+
+            <div class="field">
+
+                <label for="tag">
+                    Метка
+                </label>
+
+                <input
+                    id="tag"
+                    type="text"
+                    placeholder="Хит"
+                >
+
+            </div>
+
+
+            <!-- SORT -->
+
+            <div class="field">
+
+                <label for="sortOrder">
+                    Порядок отображения
+                </label>
+
+                <input
+                    id="sortOrder"
+                    type="number"
+                    step="1"
+                    value="0"
+                >
+
+            </div>
+
+
+            <!-- STOCK -->
+
+            <div class="switch-row">
+
+                <div class="switch-text">
+
+                    <strong>
+                        Товар в наличии
+                    </strong>
+
+                    <span>
+                        Если выключить, купить его будет нельзя
+                    </span>
+
+                </div>
+
+
+                <label class="switch">
+
+                    <input
+                        id="inStock"
+                        type="checkbox"
+                        checked
+                    >
+
+                    <span class="slider"></span>
+
+                </label>
+
+            </div>
+
+
+            <!-- ACTIONS -->
+
+            <div class="form-actions">
+
+                <button
+                    id="cancelButton"
+                    class="cancel-button"
+                    type="button"
+                >
+                    Отмена
+                </button>
+
+                <button
+                    id="saveButton"
+                    class="save-button"
+                    type="submit"
+                >
+                    Сохранить
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ============================================================
+     TOAST
+     ============================================================ -->
+
+<div
+    id="toast"
+    class="toast"
+></div>
+
+
 <script>
 "use strict";
 
@@ -363,10 +2453,17 @@ async function api(
     }
 
 
-    if (!response.ok || data.ok === false) {
-        const error = new Error(data.error || data.message || `HTTP ${response.status}`);
-        error.status = response.status;
-        throw error;
+    if (
+        !response.ok ||
+        data.ok === false
+    ) {
+
+        throw new Error(
+            data.error ||
+            data.message ||
+            `HTTP ${response.status}`,
+        );
+
     }
 
 
@@ -453,10 +2550,17 @@ async function adminsApi(
     }
 
 
-    if (!response.ok || data.ok === false) {
-        const error = new Error(data.error || data.message || `HTTP ${response.status}`);
-        error.status = response.status;
-        throw error;
+    if (
+        !response.ok ||
+        data.ok === false
+    ) {
+
+        throw new Error(
+            data.error ||
+            data.message ||
+            `HTTP ${response.status}`,
+        );
+
     }
 
 
@@ -2591,8 +4695,8 @@ function showManagementPanel(panel,btn){catalogPanel.classList.add("hidden");adm
 function fmtDateTime(v){if(!v)return "Без ограничения";const d=new Date(v);return Number.isNaN(d.getTime())?"—":d.toLocaleString("ru-RU",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"})}
 function toLocalInput(v){if(!v)return "";const d=new Date(v);if(Number.isNaN(d.getTime()))return "";const z=n=>String(n).padStart(2,"0");return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}T${z(d.getHours())}:${z(d.getMinutes())}`}
 function localToIso(v){return v?new Date(v).toISOString():null}
-function promotionTypeLabel(t){return ({product_discount:"На товар",category_discount:"На категорию",order_discount:"На весь заказ",bogo:"2 + 1",second_item_discount:"На второй товар",free_delivery:"Бесплатная доставка",delivery_discount:"Скидка на доставку",delivery_price:"Фиксированная цена доставки"})[t]||t}
-function promotionDiscountLabel(p){if(p.promotion_type==="free_delivery")return "Доставка бесплатно";if(p.promotion_type==="delivery_price")return `Доставка ${formatPrice(p.discount_value)}`;if(p.promotion_type==="delivery_discount")return p.discount_type==="fixed"?`Доставка −${formatPrice(p.discount_value)}`:`Доставка −${p.discount_value}%`;if(p.promotion_type==="bogo")return `${p.buy_quantity||2}+${p.reward_quantity||1}`;if(p.promotion_type==="second_item_discount")return `Второй −${p.reward_discount_percent??50}%`;return p.discount_type==="fixed"?`−${formatPrice(p.discount_value)}`:`−${p.discount_value}%`}
+function promotionTypeLabel(t){return ({product_discount:"На товар",category_discount:"На категорию",order_discount:"На весь заказ",bogo:"2 + 1",second_item_discount:"На второй товар",free_delivery:"Бесплатная доставка"})[t]||t}
+function promotionDiscountLabel(p){if(p.promotion_type==="free_delivery")return "Доставка бесплатно";if(p.promotion_type==="bogo")return `${p.buy_quantity||2}+${p.reward_quantity||1}`;if(p.promotion_type==="second_item_discount")return `Второй −${p.reward_discount_percent??50}%`;return p.discount_type==="fixed"?`−${formatPrice(p.discount_value)}`:`−${p.discount_value}%`}
 async function loadManagementProducts(){try{const r=await managementApi("products");managementProducts=r.products||[];const s=document.getElementById("promotionProduct");s.innerHTML='<option value="">Выберите товар</option>'+managementProducts.map(p=>`<option value="${escapeAttr(p.id)}">${escapeHtml(p.name)} · ${formatPrice(p.price)}</option>`).join("")}catch(e){console.warn(e)}}
 async function loadPromotions(){promotionsList.innerHTML='<div class="state"><div class="state-icon">⏳</div><div class="state-title">Загружаем акции…</div></div>';try{const r=await managementApi("promotions");managementPromotions=r.promotions||[];renderPromotions()}catch(e){promotionsList.innerHTML=`<div class="state"><div class="state-icon">⚠️</div><div class="state-title">Не удалось загрузить акции</div><div class="state-text">${escapeHtml(e.message)}</div></div>`;toast(e.message,true)}}
 function renderPromotions(){if(!managementPromotions.length){promotionsList.innerHTML='<div class="state"><div class="state-icon">🔥</div><div class="state-title">Акций пока нет</div><div class="state-text">Создайте первую акцию — она начнёт применяться автоматически после сохранения.</div></div>';return}promotionsList.innerHTML=managementPromotions.map(p=>{const target=p.target_product_id?` · ${escapeHtml(managementProducts.find(x=>String(x.id)===String(p.target_product_id))?.name||"Товар")}`:(p.target_category?` · ${escapeHtml(p.target_category)}`:"");const dates=(p.starts_at||p.expires_at)?`${fmtDateTime(p.starts_at)} → ${fmtDateTime(p.expires_at)}`:"Без ограничения по датам";return `<div class="promo-card"><div class="promo-card-head"><div><div class="promo-card-title">${escapeHtml(p.name)} ${p.badge?`<span class="discount-pill">${escapeHtml(p.badge)}</span>`:""}</div><div class="promo-meta"><strong>${escapeHtml(promotionTypeLabel(p.promotion_type))}</strong> · ${escapeHtml(promotionDiscountLabel(p))}${target}<br>${p.min_order_amount>0?`От ${formatPrice(p.min_order_amount)} · `:""}${dates}</div></div><div class="promo-actions"><button class="mini-button" title="Изменить" data-edit-promo="${p.id}">✏️</button><button class="mini-button danger" title="Удалить" data-delete-promo="${p.id}">🗑</button></div></div><div style="margin-top:10px"><span class="status-pill ${p.is_active?'':'off'}">${p.is_active?'ВКЛЮЧЕНА':'ВЫКЛЮЧЕНА'}</span></div></div>`}).join("")}
@@ -2605,19 +4709,18 @@ function syncPromotionUI(){
   const buy=document.getElementById("promotionBuyField");
   const reward=document.getElementById("promotionRewardField");
   const rewardDisc=document.getElementById("promotionRewardDiscountField");
+  const minOrder=document.getElementById("promotionMinOrderField");
   const max=document.getElementById("promotionMaxDiscountField");
   product.classList.toggle("hidden-field", !["product_discount","second_item_discount","bogo"].includes(type));
   category.classList.toggle("hidden-field", !["category_discount","second_item_discount"].includes(type));
+  // BOGO is currently product-based in the calculation function, so do not expose a category choice for it.
   if(type==="bogo") document.getElementById("promotionCategory").value="";
-  discountType.classList.toggle("hidden-field", type==="free_delivery" || type==="bogo");
-  buy.classList.toggle("hidden-field", type!=="bogo");
-  reward.classList.toggle("hidden-field", type!=="bogo");
-  rewardDisc.classList.toggle("hidden-field", type!=="second_item_discount");
-  max.classList.toggle("hidden-field", type==="free_delivery" || type==="bogo" || type==="delivery_price");
-  const label=document.getElementById("promotionValueLabel");
-  if(label) label.textContent=type==="delivery_price"?"Цена доставки":(["delivery_discount"].includes(type)?"Скидка на доставку":"Размер скидки");
-  const select=document.getElementById("promotionDiscountType");
-  if(type==="delivery_price"){select.value="fixed";select.disabled=true;}else{select.disabled=false;}
+  discountType.classList.toggle("hidden-field",type==="free_delivery"||type==="bogo");
+  buy.classList.toggle("hidden-field",!(["bogo"].includes(type)));
+  reward.classList.toggle("hidden-field",type!=="bogo");
+  rewardDisc.classList.toggle("hidden-field",type!=="second_item_discount");
+  minOrder.classList.toggle("hidden-field",false);
+  max.classList.toggle("hidden-field",type==="free_delivery");
 }
 function openPromotion(p=null){document.getElementById("promotionModalTitle").textContent=p?"Изменить акцию":"Новая акция";document.getElementById("promotionId").value=p?.id||"";document.getElementById("promotionName").value=p?.name||"";document.getElementById("promotionType").value=p?.promotion_type||"product_discount";document.getElementById("promotionValue").value=p?.discount_value??20;document.getElementById("promotionDiscountType").value=p?.discount_type||"percent";document.getElementById("promotionProduct").value=p?.target_product_id||"";document.getElementById("promotionCategory").value=p?.target_category||"";document.getElementById("promotionMinOrder").value=p?.min_order_amount??0;document.getElementById("promotionMaxDiscount").value=p?.max_discount??"";document.getElementById("promotionBuyQty").value=p?.buy_quantity??2;document.getElementById("promotionRewardQty").value=p?.reward_quantity??1;document.getElementById("promotionRewardDiscount").value=p?.reward_discount_percent??100;document.getElementById("promotionStartsAt").value=toLocalInput(p?.starts_at);document.getElementById("promotionExpiresAt").value=toLocalInput(p?.expires_at);document.getElementById("promotionBadge").value=p?.badge||"";document.getElementById("promotionActive").checked=p?.is_active!==false;syncPromotionUI();promotionModal.classList.add("open")}
 function closePromotion(){promotionModal.classList.remove("open")}
@@ -2631,8 +4734,7 @@ async function savePromoCodeForm(e){e.preventDefault();const code=document.getEl
 async function deletePromoCodeById(id){if(!confirm("Удалить этот промокод?"))return;try{await managementApi("promo_codes","DELETE",null,id);toast("Промокод удалён");await loadPromoCodes()}catch(e){toast(e.message,true)}}
 async function loadOrders(){ordersList.innerHTML='<div class="state"><div class="state-icon">⏳</div><div class="state-title">Загружаем заказы…</div></div>';try{const r=await managementApi("orders");managementOrders=r.orders||[];renderOrders()}catch(e){ordersList.innerHTML=`<div class="state"><div class="state-icon">⚠️</div><div class="state-title">Не удалось загрузить заказы</div><div class="state-text">${escapeHtml(e.message)}</div></div>`;toast(e.message,true)}}
 const ORDER_STATUS_LABELS={new:"Новый",confirmed:"Подтверждён",completed:"Выполнен",cancelled:"Отменён"};
-function renderOrders(){if(!managementOrders.length){ordersList.innerHTML='<div class="state"><div class="state-icon">📦</div><div class="state-title">Заказов пока нет</div><div class="state-text">Новые заказы появятся здесь автоматически.</div></div>';return}
-ordersList.innerHTML=managementOrders.map(o=>`<div class="order-card"><div class="order-head"><div><div class="order-number">Заказ №${escapeHtml(o.order_number||o.id)} <span class="status-pill ${o.status==='cancelled'?'off':''}">${escapeHtml(ORDER_STATUS_LABELS[o.status]||o.status)}</span></div><div class="order-meta">${fmtDateTime(o.created_at)} · ${escapeHtml(o.customer_name||'Без имени')}</div></div><div class="order-total">${formatPrice(o.total)}</div></div><div class="order-facts"><div class="fact"><span>ПОЛУЧЕНИЕ</span><strong>${escapeHtml(o.method||'—')}</strong></div><div class="fact"><span>ТЕЛЕФОН</span><strong>${escapeHtml(o.phone||'—')}</strong></div><div class="fact"><span>ДОСТАВКА</span><strong>${formatPrice(o.delivery_fee||0)}</strong></div></div><div class="order-meta">${o.address?`📍 ${escapeHtml(o.address)}`:''}${o.pickup_date?` · 📅 ${escapeHtml(o.pickup_date)}`:''}${o.promo_code?` · 🏷️ ${escapeHtml(o.promo_code)}`:''}</div>${Number(o.discount||0)>0?`<div class="order-meta"><span class="order-discount">Скидка −${formatPrice(o.discount)}</span> · Товары ${formatPrice(o.subtotal||0)}</div>`:''}<select class="order-select" data-order-status="${o.id}" aria-label="Статус заказа"><option value="new" ${o.status==='new'?'selected':''}>Новый</option><option value="confirmed" ${o.status==='confirmed'?'selected':''}>Подтверждён</option><option value="completed" ${o.status==='completed'?'selected':''}>Выполнен</option><option value="cancelled" ${o.status==='cancelled'?'selected':''}>Отменён</option></select></div>`).join("")}
+function renderOrders(){if(!managementOrders.length){ordersList.innerHTML='<div class="state"><div class="state-icon">📦</div><div class="state-title">Заказов пока нет</div></div>';return}ordersList.innerHTML=managementOrders.map(o=>`<div class="order-card"><div class="order-head"><div><div class="order-number">Заказ #${escapeHtml(o.order_number)} <span class="status-pill ${o.status==='cancelled'?'off':''}">${escapeHtml(ORDER_STATUS_LABELS[o.status]||o.status)}</span></div><div class="order-meta">${fmtDateTime(o.created_at)} · ${escapeHtml(o.customer_name||'Без имени')} · ${escapeHtml(o.method||'')}${o.address?`<br>${escapeHtml(o.address)}`:''}<br>${o.phone?escapeHtml(o.phone):''}${o.promo_code?` · 🏷️ ${escapeHtml(o.promo_code)}`:''}</div></div><div class="order-total">${formatPrice(o.total)}</div></div>${Number(o.discount||0)>0?`<div class="order-meta"><span class="order-discount">Скидка −${formatPrice(o.discount)}</span> · Товары ${formatPrice(o.subtotal)} · Доставка ${formatPrice(o.delivery_fee)}</div>`:''}<div style="margin-top:12px"><select class="order-select" data-order-status="${o.id}"><option value="new" ${o.status==='new'?'selected':''}>Новый</option><option value="confirmed" ${o.status==='confirmed'?'selected':''}>Подтверждён</option><option value="completed" ${o.status==='completed'?'selected':''}>Выполнен</option><option value="cancelled" ${o.status==='cancelled'?'selected':''}>Отменён</option></select></div></div>`).join("")}
 
 const promotionsNavButton=document.getElementById("promotionsNavButton"),promoCodesNavButton=document.getElementById("promoCodesNavButton"),ordersNavButton=document.getElementById("ordersNavButton");
 catalogNavButton.addEventListener("click",()=>{hideExtraPanels();catalogPanel.classList.remove("hidden");setActiveNav(catalogNavButton)});
@@ -2687,37 +4789,14 @@ function showTelegramUser() {
 
 
 /* ============================================================
-   ACCESS GATE
-   ============================================================ */
-const accessScreen=document.getElementById("accessScreen");
-const appShell=document.getElementById("appShell");
-function showAccessDenied(reason){
-  if(appShell) appShell.hidden=true;
-  if(accessScreen) accessScreen.hidden=false;
-  const reasonEl=document.getElementById("accessReason");
-  if(reasonEl) reasonEl.textContent=reason||"Доступ разрешён только администраторам.";
-}
-function isAccessError(error){return error?.status===401||error?.status===403||/Access denied|administrator only|initData|signature/i.test(error?.message||"");}
-async function initializeAdmin(){
-  try{
-    if(!TG?.initData){showAccessDenied("Откройте панель управления из Telegram.");return;}
-    await api("GET");
-    if(accessScreen) accessScreen.hidden=true;
-    if(appShell) appShell.hidden=false;
-    showTelegramUser();
-    await loadProducts();
-  }catch(error){
-    console.error(error);
-    showAccessDenied(isAccessError(error)?"У вашего Telegram-аккаунта нет прав администратора.":"Не удалось проверить права доступа.");
-  }
-}
-
-/* ============================================================
    START
    ============================================================ */
 
-initializeAdmin();
+showTelegramUser();
+
+loadProducts();
 
 </script>
+
 </body>
 </html>
