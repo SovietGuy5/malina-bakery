@@ -3,61 +3,105 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#fcfaf8">
+<meta name="theme-color" content="#ffffff">
 <title>Кондитерский дом «Малина» — управление</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
 /* ============================================================
-   CLEAN FLAT THEME & VARIABLES
+   VARIABLES & THEME
    ============================================================ */
 :root {
-    --bg: #fcfaf8;          /* Мягкий, теплый фон (уютный clean flat) */
-    --card: #ffffff;        /* Плоские белые карточки */
-    --text: #27272a;        /* Темно-серый текст, мягче чисто черного */
-    --muted: #a1a1aa;       /* Приглушенный текст и иконки */
-    --accent: #e11d48;      /* Плоский малиновый акцент */
-    --accent-hover: #be123c;
-    --accent-soft: #ffe4e6; /* Мягкий фон для активных элементов */
-    --line: #f4f4f5;        /* Очень легкие разделители */
-    --input-bg: #f4f4f5;    /* Фон для форм в стиле flat */
+    /* Telegram WebApp Variables with light theme fallbacks */
+    --tg-bg: var(--tg-theme-bg-color, #f8fafc);
+    --tg-card: var(--tg-theme-secondary-bg-color, #ffffff);
+    --tg-text: var(--tg-theme-text-color, #0f172a);
+    --tg-hint: var(--tg-theme-hint-color, #64748b);
+    --tg-btn: var(--tg-theme-button-color, #b02a5c);
+    --tg-btn-text: var(--tg-theme-button-text-color, #ffffff);
+    
+    /* Computed flat theme variables */
+    --bg: var(--tg-bg);
+    --card: var(--tg-card);
+    --text: var(--tg-text);
+    --muted: var(--tg-hint);
+    --accent: var(--tg-btn);
+    --accent-text: var(--tg-btn-text);
+    --line: color-mix(in srgb, var(--tg-text) 12%, transparent);
+    
     --danger: #ef4444;
-    --danger-soft: #fee2e2;
     --success: #10b981;
-    --success-soft: #d1fae5;
-    --warning: #f59e0b;
-    --warning-soft: #fef3c7;
-    
-    --radius-sm: 8px;
-    --radius-md: 12px;
-    --radius-lg: 16px;
-    --radius-xl: 24px;
-    
-    --shadow-flat: 0 4px 20px rgba(0, 0, 0, 0.03);
+    --warning: #d79a28;
+    --radius: 12px;
 }
 
-* { box-sizing: border-box; }
+/* Browser dark mode fallback if opened outside Telegram */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --tg-bg: var(--tg-theme-bg-color, #0f172a);
+        --tg-card: var(--tg-theme-secondary-bg-color, #1e293b);
+        --tg-text: var(--tg-theme-text-color, #f8fafc);
+        --tg-hint: var(--tg-theme-hint-color, #94a3b8);
+        --tg-btn: var(--tg-theme-button-color, #ec4899);
+    }
+}
 
-html { background: var(--bg); }
+/* ============================================================
+   GLOBAL & RESET
+   ============================================================ */
+* {
+    box-sizing: border-box;
+}
 
-body {
+html, body {
     margin: 0;
-    padding: calc(16px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom));
+    padding: 0;
     background: var(--bg);
     color: var(--text);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    line-height: 1.5;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     min-height: 100vh;
-    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
 }
 
-button, input, textarea, select { font: inherit; }
-button { border: 0; cursor: pointer; outline: none; transition: background 0.15s, transform 0.1s; }
-button:active { transform: scale(0.98); }
-button:disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
+body {
+    padding: calc(12px + env(safe-area-inset-top)) 12px calc(24px + env(safe-area-inset-bottom));
+    max-width: 800px;
+    margin: 0 auto;
+}
 
-[hidden], .hidden, .hidden-field { display: none !important; }
-.visually-hidden { position: absolute !important; width: 1px !important; height: 1px !important; padding: 0 !important; margin: -1px !important; overflow: hidden !important; clip: rect(0,0,0,0) !important; white-space: nowrap !important; border: 0 !important; }
+button, input, textarea, select {
+    font: inherit;
+    outline: none;
+    border: none;
+    margin: 0;
+}
+
+button {
+    cursor: pointer;
+    background: transparent;
+    transition: opacity 0.2s;
+}
+
+button:active {
+    opacity: 0.8;
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+.visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0,0,0,0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
 
 /* ============================================================
    HEADER
@@ -67,359 +111,576 @@ button:disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 }
+
 .header-title h1 {
     margin: 0;
     font-size: 20px;
     line-height: 1.2;
     font-weight: 700;
-    letter-spacing: -0.02em;
 }
+
 .header-title p {
     margin: 4px 0 0;
     color: var(--muted);
     font-size: 12px;
 }
+
 .user-badge {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     padding: 6px 12px;
     background: var(--card);
     border: 1px solid var(--line);
-    border-radius: 999px;
-    font-size: 12px;
+    border-radius: 20px;
+    font-size: 11px;
     font-weight: 600;
 }
-.user-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); }
+
+.user-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--success);
+}
 
 /* ============================================================
-   MAIN NAV (COMPACT FLAT)
+   COMPACT NAV
    ============================================================ */
 .admin-nav {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
     gap: 4px;
-    padding: 4px;
     margin-bottom: 20px;
-    background: var(--input-bg);
-    border-radius: var(--radius-md);
-    overflow-x: auto;
-    scrollbar-width: none;
+    background: var(--card);
+    padding: 4px;
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
     position: sticky;
-    top: 10px;
+    top: 0;
     z-index: 40;
 }
-.admin-nav::-webkit-scrollbar { display: none; }
+
 .nav-button {
-    flex: 1 0 auto;
-    padding: 10px 16px;
-    background: transparent;
-    color: var(--muted);
-    border-radius: var(--radius-sm);
-    font-size: 13px;
-    font-weight: 600;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-    white-space: nowrap;
-}
-.nav-button span { font-size: 16px; }
-.nav-button.active {
-    background: var(--card);
-    color: var(--text);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-}
-
-/* ============================================================
-   TOOLBAR & FILTERS
-   ============================================================ */
-.toolbar { display: flex; gap: 8px; margin-bottom: 16px; }
-.search {
-    flex: 1;
-    min-width: 0;
-    height: 44px;
-    padding: 0 16px;
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: var(--radius-md);
-    color: var(--text);
-    outline: none;
-    transition: border-color 0.2s;
-}
-.search:focus { border-color: var(--accent); }
-.add-button {
-    height: 44px;
-    padding: 0 16px;
-    background: var(--accent);
-    color: #fff;
-    border-radius: var(--radius-md);
-    font-weight: 600;
-    font-size: 14px;
-}
-
-.filters { display: flex; gap: 8px; overflow-x: auto; margin-bottom: 20px; scrollbar-width: none; }
-.filters::-webkit-scrollbar { display: none; }
-.filter {
-    flex: 0 0 auto;
-    padding: 8px 16px;
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: 999px;
+    padding: 8px 2px;
+    border-radius: 8px;
     color: var(--muted);
-    font-size: 13px;
-    font-weight: 500;
 }
-.filter.active { background: var(--text); color: #fff; border-color: var(--text); }
 
-/* ============================================================
-   STATS
-   ============================================================ */
-.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 24px; }
-.stat {
-    padding: 16px;
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: var(--radius-md);
+.nav-button span {
+    font-size: 18px;
+    margin-bottom: 4px;
+}
+
+.nav-button b {
+    font-size: 9px;
+    font-weight: 500;
     text-align: center;
 }
-.stat-value { font-size: 20px; font-weight: 700; line-height: 1.2; }
-.stat-label { margin-top: 4px; color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+
+.nav-button.active {
+    background: var(--accent);
+    color: var(--accent-text);
+}
 
 /* ============================================================
-   PRODUCTS
+   COMMON PANELS & TOOLBAR
    ============================================================ */
-.products { display: grid; gap: 12px; }
-.product {
+.extra-panel[hidden], .catalog-panel.hidden, .admin-panel { display: none; }
+.admin-panel.open, .catalog-panel, .extra-panel { display: block; }
+
+.management-page-head, .toolbar {
     display: flex;
-    gap: 16px;
-    padding: 12px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.panel-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 4px 0;
+}
+
+.panel-kicker {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 4px;
+    opacity: 0.9;
+}
+
+.search {
+    flex: 1;
+    height: 44px;
+    padding: 0 16px;
     background: var(--card);
     border: 1px solid var(--line);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius);
+    color: var(--text);
 }
+
+.search:focus {
+    border-color: var(--accent);
+}
+
+.add-button, .panel-action, .add-admin-button, .save-button {
+    height: 44px;
+    padding: 0 16px;
+    border-radius: var(--radius);
+    background: var(--accent);
+    color: var(--accent-text);
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* ============================================================
+   CARDS & LISTS
+   ============================================================ */
+.products, .panel-list, .admin-list {
+    display: grid;
+    gap: 12px;
+}
+
+.product, .promo-card, .order-card, .admin-item, .stat, .admin-panel-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 16px;
+}
+
+/* Products */
+.products {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+.product {
+    display: flex;
+    gap: 12px;
+    padding: 12px;
+}
+
 .product-image {
     flex: 0 0 80px;
     width: 80px;
     height: 80px;
-    border-radius: var(--radius-sm);
-    background: var(--input-bg);
+    border-radius: 8px;
+    background: var(--bg);
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 24px;
     overflow: hidden;
 }
-.product-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.product-content { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
-.product-name { font-size: 15px; font-weight: 600; line-height: 1.3; margin-bottom: 4px; }
-.product-description { color: var(--muted); font-size: 12px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 8px; }
-.product-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
-.price { font-size: 14px; font-weight: 700; }
-.badge { padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.02em; }
-.badge-stock { background: var(--success-soft); color: var(--success); }
-.badge-out { background: var(--danger-soft); color: var(--danger); }
-.badge-category { background: var(--input-bg); color: var(--muted); }
-.badge-tag { background: var(--warning-soft); color: var(--warning); }
 
-.product-actions { flex: 0 0 auto; display: flex; flex-direction: column; gap: 6px; }
-.icon-button, .mini-button {
-    width: 36px; height: 36px;
-    border-radius: var(--radius-sm);
-    background: var(--input-bg);
-    color: var(--text);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 16px;
+.product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
-.icon-button.danger, .mini-button.danger { color: var(--danger); background: var(--danger-soft); }
+
+.product-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.product-name {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.product-description {
+    color: var(--muted);
+    font-size: 12px;
+    margin-bottom: 8px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.product-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+
+.price {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    background: var(--bg);
+    border: 1px solid var(--line);
+}
+.badge-stock { color: var(--success); }
+.badge-out { color: var(--danger); }
+
+.product-actions, .promo-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.promo-actions { flex-direction: row; }
+
+.icon-button, .mini-button {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--line);
+    display: grid;
+    place-items: center;
+}
+.icon-button.danger, .mini-button.danger {
+    color: var(--danger);
+}
+
+/* Orders & Promos */
+.promo-card-head, .order-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.promo-card-title, .order-number {
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.promo-meta, .order-meta {
+    margin-top: 6px;
+    color: var(--muted);
+    font-size: 11px;
+}
+
+.status-pill, .discount-pill {
+    display: inline-flex;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 600;
+    background: var(--bg);
+    border: 1px solid var(--line);
+}
+.status-pill { color: var(--success); }
+.status-pill.off { color: var(--danger); opacity: 0.7; }
+.discount-pill { color: var(--accent); }
+
+.order-total { font-weight: 700; font-size: 15px; }
+.order-discount { color: var(--accent); }
+
+.order-select {
+    width: 100%;
+    margin-top: 12px;
+    padding: 10px;
+    border-radius: 8px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    color: var(--text);
+    font-size: 13px;
+}
+
+/* Stats & Filters */
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.stat { padding: 12px; text-align: center; }
+.stat-value { font-size: 20px; font-weight: 700; }
+.stat-label { margin-top: 4px; color: var(--muted); font-size: 10px; text-transform: uppercase; }
+
+.filters {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    margin-bottom: 16px;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+}
+.filters::-webkit-scrollbar { display: none; }
+
+.filter {
+    padding: 8px 16px;
+    border-radius: 20px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 13px;
+    white-space: nowrap;
+}
+.filter.active {
+    background: var(--text);
+    color: var(--card);
+    border-color: var(--text);
+}
 
 /* ============================================================
-   MANAGEMENT PANELS
+   FORMS & MODALS (Clean Flat)
    ============================================================ */
-.management-page-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.panel-title { font-size: 20px; font-weight: 700; line-height: 1.2; letter-spacing: -0.02em; }
-.panel-kicker { font-size: 10px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
-.panel-action { height: 40px; padding: 0 16px; border-radius: var(--radius-sm); background: var(--accent); color: #fff; font-size: 13px; font-weight: 600; }
-
-.panel-list { display: grid; gap: 12px; }
-.promo-card, .order-card { padding: 16px; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--card); }
-.promo-card-head, .order-head { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
-.promo-card-title, .order-number { font-weight: 600; font-size: 15px; display: flex; align-items: center; gap: 8px; }
-.promo-meta, .order-meta { margin-top: 6px; color: var(--muted); font-size: 12px; line-height: 1.5; }
-.promo-actions { display: flex; gap: 6px; flex-shrink: 0; }
-
-.discount-pill { display: inline-flex; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; background: var(--accent-soft); color: var(--accent); text-transform: uppercase; }
-.status-pill { display: inline-flex; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; background: var(--success-soft); color: var(--success); text-transform: uppercase; }
-.status-pill.off { background: var(--danger-soft); color: var(--danger); }
-
-.order-total { font-weight: 700; font-size: 16px; }
-.order-discount { color: var(--accent); font-weight: 600; }
-.order-select { margin-top: 12px; width: 100%; height: 44px; padding: 0 16px; border-radius: var(--radius-sm); border: 1px solid var(--line); background: var(--input-bg); color: var(--text); font-size: 14px; font-weight: 500; }
-
-/* ============================================================
-   ADMIN LIST
-   ============================================================ */
-.admin-panel-card { padding: 20px; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-md); margin-bottom: 24px; }
-.admin-panel-title-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-.admin-panel-title { font-size: 18px; font-weight: 700; }
-.owner-badge { padding: 4px 8px; border-radius: 6px; background: var(--warning-soft); color: var(--warning); font-size: 10px; font-weight: 700; letter-spacing: 0.02em; }
-.admin-panel-description { color: var(--muted); font-size: 13px; line-height: 1.5; }
-.add-admin-form { display: flex; gap: 8px; margin-top: 16px; }
-.admin-id-input { flex: 1; height: 44px; padding: 0 16px; background: var(--input-bg); border: 1px solid transparent; border-radius: var(--radius-sm); outline: none; }
-.admin-id-input:focus { border-color: var(--accent); }
-.add-admin-button { flex: 0 0 auto; height: 44px; padding: 0 16px; border-radius: var(--radius-sm); background: var(--text); color: #fff; font-weight: 600; font-size: 14px; }
-
-.admin-list-header { margin: 0 0 12px 4px; color: var(--muted); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
-.admin-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-md); margin-bottom: 8px; }
-.admin-name { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; }
-.admin-telegram-id { margin-top: 4px; color: var(--muted); font-size: 12px; }
-.admin-role { padding: 4px 8px; border-radius: 6px; font-size: 9px; font-weight: 700; background: var(--success-soft); color: var(--success); }
-.admin-role.owner { background: var(--warning-soft); color: var(--warning); }
-
-/* ============================================================
-   MODALS & FORMS (CLEAN FLAT)
-   ============================================================ */
-.modal, .management-modal { position: fixed; inset: 0; z-index: 100; display: none; align-items: flex-end; justify-content: center; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); }
+.modal, .management-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: none;
+    align-items: flex-end;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(4px);
+}
 .modal.open, .management-modal.open { display: flex; }
 
 .modal-sheet, .management-dialog {
-    width: 100%; max-width: 600px;
-    max-height: 90vh; overflow-y: auto;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
     background: var(--card);
-    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-    padding: 24px 20px calc(24px + env(safe-area-inset-bottom));
-    box-shadow: var(--shadow-flat);
+    border-radius: 20px 20px 0 0;
+    padding: 20px;
 }
 
-.modal-header, .management-dialog-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
-.modal-title, .management-dialog-title { font-size: 20px; font-weight: 700; line-height: 1.2; letter-spacing: -0.02em; }
-.close-button, .management-close { width: 36px; height: 36px; border-radius: 50%; background: var(--input-bg); color: var(--text); font-size: 18px; display: flex; align-items: center; justify-content: center; }
+.modal-header, .management-dialog-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
 
-.form, .management-grid { display: grid; gap: 16px; }
+.modal-title, .management-dialog-title {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.close-button, .management-close {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 18px;
+    display: grid;
+    place-items: center;
+}
+
+.form { display: grid; gap: 16px; }
+
+.field, .management-grid { display: grid; gap: 8px; }
 .management-grid { grid-template-columns: 1fr; }
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
-.field { display: flex; flex-direction: column; gap: 6px; }
-.field label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
-.field input, .field textarea, .field select {
+.field label, .simple-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+}
+
+.field input, .field textarea, .field select, .suffix-control {
     width: 100%;
-    padding: 14px 16px;
-    background: var(--input-bg);
-    border: 1px solid transparent;
-    border-radius: var(--radius-sm);
+    padding: 12px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 8px;
     color: var(--text);
     font-size: 14px;
-    transition: all 0.2s;
 }
-.field input:focus, .field textarea:focus, .field select:focus { border-color: var(--accent); background: var(--card); }
-.field textarea { min-height: 100px; resize: vertical; }
 
-/* Complex Inputs */
-.suffix-control { position: relative; }
-.suffix-control input { padding-right: 40px; }
-.suffix-control span { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); font-weight: 600; color: var(--muted); font-size: 14px; }
-.inline-control { display: flex; gap: 8px; }
-.inline-control.compact select { flex: 0 0 70px; padding: 14px 10px; }
-.inline-control.compact input { flex: 1; }
+.field input:focus, .field textarea:focus, .field select:focus, .suffix-control:focus-within {
+    border-color: var(--accent);
+}
 
-.date-row { display: grid; grid-template-columns: 1fr; gap: 12px; }
+.field textarea { min-height: 80px; resize: vertical; }
 
-/* Simple Section grouping */
-.simple-section { padding: 20px 0 0; border-top: 1px solid var(--line); margin-top: 4px; }
-.simple-label { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 12px; }
-.promo-choice-group-label { font-size: 11px; color: var(--muted); margin: 0 0 8px; }
+.suffix-control {
+    display: flex;
+    align-items: center;
+    padding: 0;
+}
+.suffix-control input {
+    border: none;
+    flex: 1;
+    background: transparent;
+}
+.suffix-control span {
+    padding-right: 12px;
+    color: var(--muted);
+    font-weight: 600;
+}
 
-.quick-choice-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 16px; }
+.form-row, .date-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+.date-arrow { display: none; }
+
+/* Quick Choices */
+.quick-choice-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 8px;
+}
+.promo-choice-group-label {
+    font-size: 11px;
+    color: var(--muted);
+    margin: 8px 0 4px;
+}
 .quick-choice {
-    padding: 12px; border-radius: var(--radius-md);
-    background: var(--input-bg); border: 1px solid transparent;
-    text-align: left; transition: all 0.2s; display: flex; flex-direction: column; gap: 4px;
+    padding: 12px;
+    border-radius: 8px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    color: var(--text);
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
-.quick-choice span { font-size: 20px; }
-.quick-choice strong { font-size: 12px; font-weight: 600; color: var(--text); }
-.quick-choice.active { background: var(--accent-soft); border-color: var(--accent); }
-.quick-choice.active strong { color: var(--accent-hover); }
-
-/* Switch / Toggle */
-.switch-row { display: flex; align-items: center; justify-content: space-between; padding: 16px; background: var(--input-bg); border-radius: var(--radius-md); }
-.switch-text strong { display: block; font-size: 14px; font-weight: 600; }
-.switch-text span { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; }
-.switch { position: relative; width: 44px; height: 24px; }
-.switch input { display: none; }
-.slider { position: absolute; inset: 0; background: var(--muted); border-radius: 999px; transition: 0.2s; }
-.slider::before { content: ""; position: absolute; width: 18px; height: 18px; left: 3px; top: 3px; border-radius: 50%; background: white; transition: 0.2s; }
-.switch input:checked + .slider { background: var(--success); }
-.switch input:checked + .slider::before { transform: translateX(20px); }
-
-.soft-toggle { display: flex; align-items: center; gap: 12px; padding: 16px; background: var(--input-bg); border-radius: var(--radius-md); cursor: pointer; }
-.soft-toggle input { display: none; }
-.soft-toggle-track { position: relative; width: 40px; height: 22px; border-radius: 999px; background: var(--muted); transition: 0.2s; flex-shrink: 0; }
-.soft-toggle-track:after { content: ""; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: 0.2s; }
-.soft-toggle input:checked + .soft-toggle-track { background: var(--success); }
-.soft-toggle input:checked + .soft-toggle-track:after { transform: translateX(18px); }
-.soft-toggle strong { display: block; font-size: 13px; font-weight: 600; }
-.soft-toggle small { display: block; margin-top: 2px; color: var(--muted); font-size: 11px; line-height: 1.3; }
+.quick-choice span { font-size: 16px; }
+.quick-choice strong { font-size: 11px; }
+.quick-choice.active {
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+    color: var(--accent);
+}
 
 /* Image Upload */
-.image-upload { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 120px; padding: 24px; background: var(--input-bg); border-radius: var(--radius-md); cursor: pointer; position: relative; transition: 0.2s; }
-.image-upload:hover { background: var(--line); }
-.image-upload-icon { font-size: 32px; margin-bottom: 8px; }
-.image-upload-title { font-size: 14px; font-weight: 600; color: var(--text); }
-.image-upload-subtitle { margin-top: 4px; color: var(--muted); font-size: 11px; text-align: center; }
-.image-upload input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
-.image-preview, .image-current { display: none; width: 100%; margin-top: 12px; border-radius: var(--radius-sm); overflow: hidden; background: var(--input-bg); }
+.image-upload {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    border: 1px dashed var(--line);
+    border-radius: 8px;
+    background: var(--bg);
+    position: relative;
+}
+.image-upload input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.image-upload-icon { font-size: 24px; margin-bottom: 8px; }
+.image-upload-title { font-size: 13px; font-weight: 600; }
+.image-upload-subtitle { font-size: 11px; color: var(--muted); margin-top: 4px; }
+.image-preview, .image-current { display: none; margin-top: 12px; }
 .image-preview.show, .image-current.show { display: block; }
-.image-preview img, .image-current img { display: block; width: 100%; max-height: 200px; object-fit: cover; }
-.image-current-label { padding: 8px; color: var(--muted); font-size: 11px; font-weight: 600; text-transform: uppercase; text-align: center; }
+.image-preview img, .image-current img { width: 100%; border-radius: 8px; max-height: 200px; object-fit: cover; }
+.image-current-label { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
 
-/* Buttons in Form */
-.form-actions, .management-form-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; padding-top: 20px; border-top: 1px solid var(--line); position: sticky; bottom: 0; background: var(--card); }
-.cancel-button, .management-secondary, .save-button, .panel-action { height: 48px; border-radius: var(--radius-sm); font-weight: 600; font-size: 14px; }
-.cancel-button, .management-secondary { background: var(--input-bg); color: var(--text); }
-.save-button, .panel-action[type="submit"] { background: var(--text); color: #fff; }
+/* Switches & Toggles */
+.switch-row, .soft-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+}
+.switch-text strong, .soft-toggle strong { display: block; font-size: 13px; }
+.switch-text span, .soft-toggle small { display: block; font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+.switch, .soft-toggle input { position: relative; width: 44px; height: 24px; appearance: none; margin: 0;}
+.slider, .soft-toggle-track {
+    position: absolute; inset: 0; background: var(--line); border-radius: 12px; transition: 0.2s; pointer-events: none;
+}
+.slider::before, .soft-toggle-track::after {
+    content: ""; position: absolute; width: 18px; height: 18px; left: 3px; top: 3px; border-radius: 50%; background: #fff; transition: 0.2s;
+}
+.switch input:checked + .slider, .soft-toggle input:checked + .soft-toggle-track { background: var(--success); }
+.switch input:checked + .slider::before, .soft-toggle input:checked + .soft-toggle-track::after { transform: translateX(20px); }
+.soft-toggle input { opacity: 0; position: absolute; }
+.soft-toggle { cursor: pointer; display: grid; grid-template-columns: auto 1fr; gap: 12px; justify-content: start; }
+
+/* Form Actions */
+.form-actions, .management-form-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 8px;
+}
+.cancel-button, .management-secondary {
+    height: 44px;
+    border-radius: var(--radius);
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--line);
+    font-weight: 600;
+}
 
 /* ============================================================
-   TOAST & EMPTY STATES
+   ADMINS PANEL
    ============================================================ */
+.admin-panel-title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.owner-badge { font-size: 9px; padding: 4px 8px; background: var(--bg); color: var(--warning); border: 1px solid var(--line); border-radius: 4px; font-weight: 700; }
+.admin-panel-description { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
+.add-admin-form { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+.admin-id-input { height: 44px; padding: 0 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--text); width: 100%; }
+.admin-list-header { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; margin: 24px 0 12px; }
+.admin-item { display: flex; justify-content: space-between; align-items: center; }
+.admin-name { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.admin-telegram-id, .admin-created { font-size: 11px; color: var(--muted); margin-top: 4px; }
+.admin-role { font-size: 9px; padding: 2px 6px; border-radius: 4px; background: var(--bg); border: 1px solid var(--line); }
+.remove-admin-button { width: 36px; height: 36px; border-radius: 8px; background: var(--bg); border: 1px solid var(--line); color: var(--danger); }
+
+/* ============================================================
+   STATES & TOASTS
+   ============================================================ */
+.state { text-align: center; padding: 40px 20px; color: var(--muted); }
+.state-icon { font-size: 32px; margin-bottom: 12px; }
+.state-title { color: var(--text); font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+.state-text { font-size: 12px; }
+.hidden-field { display: none !important; }
+
 .toast {
-    position: fixed; left: 16px; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom)); z-index: 200;
-    padding: 14px 16px; background: var(--text); color: #fff; border-radius: var(--radius-sm); font-size: 13px; font-weight: 500;
-    transform: translateY(20px); opacity: 0; pointer-events: none; transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    position: fixed;
+    left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom));
+    z-index: 200; padding: 12px 16px;
+    background: var(--text); color: var(--card);
+    border-radius: 8px; font-size: 13px; font-weight: 600;
+    transform: translateY(20px); opacity: 0; pointer-events: none; transition: 0.2s ease;
 }
 .toast.show { transform: translateY(0); opacity: 1; }
-.toast.error { background: var(--danger); }
-
-.state, .admin-empty { text-align: center; padding: 48px 20px; color: var(--muted); }
-.state-icon, .admin-empty-icon { font-size: 32px; margin-bottom: 12px; }
-.state-title, .admin-empty-title { color: var(--text); font-size: 15px; font-weight: 600; margin-bottom: 6px; }
-.state-text, .admin-empty-text { font-size: 13px; line-height: 1.5; }
-
-/* ============================================================
-   RESPONSIVE (DESKTOP)
-   ============================================================ */
-@media (min-width: 768px) {
-    body { max-width: 800px; margin: 0 auto; padding-top: 32px; }
-    .products { grid-template-columns: repeat(2, 1fr); }
-    .modal, .management-modal { align-items: center; padding: 24px; }
-    .modal-sheet, .management-dialog { border-radius: var(--radius-xl); max-height: 85vh; }
-    .quick-choice-row { grid-template-columns: repeat(4, 1fr); }
-    .date-row { grid-template-columns: 1fr 1fr; }
-    .management-grid { grid-template-columns: 1fr 1fr; }
-    .management-grid .full { grid-column: 1 / -1; }
-    .form-row { grid-template-columns: 1fr 1fr; }
-    .add-admin-form { width: 60%; }
-}
+.toast.error { background: var(--danger); color: #fff; }
 
 #accessDenied { display: none; min-height: 100vh; align-items: center; justify-content: center; padding: 24px; }
-body.pending #appShell { display: none !important; }
-body.pending #accessDenied { display: flex !important; }
-.access-card { width: min(400px, 100%); padding: 32px; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-lg); text-align: center; box-shadow: var(--shadow-flat); }
-.access-icon { font-size: 40px; margin-bottom: 16px; }
+body.pending #appShell { display: none; }
+body.pending #accessDenied { display: flex; }
+.access-card { text-align: center; background: var(--card); padding: 24px; border-radius: var(--radius); border: 1px solid var(--line); }
 .access-title { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
-.access-text { color: var(--muted); font-size: 13px; line-height: 1.5; }
-.access-code { display: none; margin-top: 16px; padding: 12px; border-radius: var(--radius-sm); background: var(--input-bg); color: var(--danger); font-size: 12px; font-family: monospace; }
+.access-text { font-size: 13px; color: var(--muted); }
+
+/* ============================================================
+   DESKTOP / TABLET OVERRIDES
+   ============================================================ */
+@media (min-width: 600px) {
+    .management-grid { grid-template-columns: 1fr 1fr; }
+    .management-grid .full { grid-column: 1 / -1; }
+    .quick-choice-row { grid-template-columns: repeat(4, 1fr); }
+    .modal, .management-modal { align-items: center; justify-content: center; padding: 20px; }
+    .modal-sheet, .management-dialog { border-radius: var(--radius); width: min(600px, 100%); max-height: 85vh; }
+    .nav-button { flex-direction: row; gap: 8px; }
+    .nav-button span { margin-bottom: 0; }
+    .nav-button b { font-size: 12px; }
+}
 </style>
 </head>
 
@@ -428,7 +689,7 @@ body.pending #accessDenied { display: flex !important; }
   <div class="access-card">
     <div class="access-icon">🔒</div>
     <div class="access-title">Доступ запрещён</div>
-    <div class="access-text">Эта страница доступна только администраторам кондитерского дома «Малина». Откройте админку из разрешённого Telegram-аккаунта.</div>
+    <div class="access-text">Эта страница доступна только администраторам кондитерского дома «Малина».<br>Откройте админку из разрешённого Telegram-аккаунта.</div>
     <div id="accessError" class="access-code"></div>
   </div>
 </div>
@@ -436,12 +697,12 @@ body.pending #accessDenied { display: flex !important; }
 <div id="appShell">
 <header class="header">
     <div class="header-title">
-        <h1>🍰 Управление</h1>
+        <h1>Управление</h1>
         <p>Кондитерский дом «Малина»</p>
     </div>
     <div class="user-badge">
         <span class="user-dot"></span>
-        <span id="userName">Администратор</span>
+        <span id="userName">Админ</span>
     </div>
 </header>
 
@@ -458,25 +719,24 @@ body.pending #accessDenied { display: flex !important; }
         <input id="search" class="search" type="search" placeholder="Поиск товара..." autocomplete="off">
         <button id="addButton" class="add-button" type="button">+ Добавить</button>
     </section>
-    
+
     <div id="filters" class="filters"></div>
-    
+
     <section class="stats">
         <div class="stat"><div id="totalCount" class="stat-value">0</div><div class="stat-label">Всего</div></div>
         <div class="stat"><div id="stockCount" class="stat-value">0</div><div class="stat-label">В наличии</div></div>
-        <div class="stat"><div id="outCount" class="stat-value">0</div><div class="stat-label">Нет</div></div>
+        <div class="stat"><div id="outCount" class="stat-value">0</div><div class="stat-label">Нет в наличии</div></div>
     </section>
-    
+
     <main id="products" class="products"></main>
 </section>
 
 <section id="promotionsPanel" class="extra-panel" hidden>
   <div class="management-page-head">
     <div>
-      <div class="panel-kicker">Автоматические предложения</div>
       <div class="panel-title">🔥 Акции</div>
     </div>
-    <button id="addPromotionButton" class="panel-action" type="button">Новая акция</button>
+    <button id="addPromotionButton" class="panel-action" type="button">＋ Создать</button>
   </div>
   <div id="promotionsList" class="panel-list"></div>
 </section>
@@ -484,10 +744,9 @@ body.pending #accessDenied { display: flex !important; }
 <section id="promoCodesPanel" class="extra-panel" hidden>
   <div class="management-page-head">
     <div>
-      <div class="panel-kicker">Специальные предложения</div>
       <div class="panel-title">🏷️ Промокоды</div>
     </div>
-    <button id="addPromoCodeButton" class="panel-action" type="button">Новый код</button>
+    <button id="addPromoCodeButton" class="panel-action" type="button">＋ Создать</button>
   </div>
   <div id="promoCodesList" class="panel-list"></div>
 </section>
@@ -495,10 +754,9 @@ body.pending #accessDenied { display: flex !important; }
 <section id="ordersPanel" class="extra-panel" hidden>
   <div class="management-page-head">
     <div>
-      <div class="panel-kicker">Контроль</div>
       <div class="panel-title">📦 Заказы</div>
     </div>
-    <button id="refreshOrdersButton" class="panel-action" type="button">Обновить</button>
+    <button id="refreshOrdersButton" class="panel-action" type="button">↻ Обновить</button>
   </div>
   <div id="ordersList" class="panel-list"></div>
 </section>
@@ -512,24 +770,23 @@ body.pending #accessDenied { display: flex !important; }
 
     <form id="promotionForm" class="form">
       <input id="promotionId" type="hidden">
-      
+
       <div class="simple-section">
-        <div class="promo-choice-group-label">Скидка на десерты и заказ</div>
+        <div class="simple-label">Объект акции</div>
+        <div class="promo-choice-group-label">На десерты и заказ</div>
         <div class="quick-choice-row">
           <button type="button" class="quick-choice active" data-promo-type="product_discount"><span>🍰</span><strong>Товар</strong></button>
           <button type="button" class="quick-choice" data-promo-type="category_discount"><span>🧁</span><strong>Категория</strong></button>
           <button type="button" class="quick-choice" data-promo-type="order_discount"><span>🛍️</span><strong>Заказ</strong></button>
           <button type="button" class="quick-choice" data-promo-type="second_item_discount"><span>🍰×2</span><strong>Второй</strong></button>
-          <button type="button" class="quick-choice" data-promo-type="bogo"><span>2+1</span><strong>2 + 1</strong></button>
+          <button type="button" class="quick-choice" data-promo-type="bogo"><span>2+1</span><strong>2+1</strong></button>
         </div>
-        
-        <div class="promo-choice-group-label delivery-choice-label">Условия доставки</div>
-        <div class="quick-choice-row">
+        <div class="promo-choice-group-label delivery-choice-label">На доставку</div>
+        <div class="quick-choice-row delivery-choice-row">
           <button type="button" class="quick-choice" data-promo-type="free_delivery"><span>🚚</span><strong>Бесплатно</strong></button>
           <button type="button" class="quick-choice" data-promo-type="delivery_discount"><span>−</span><strong>Скидка</strong></button>
           <button type="button" class="quick-choice" data-promo-type="delivery_price"><span>₽</span><strong>Фикс. цена</strong></button>
         </div>
-        
         <select id="promotionType" class="visually-hidden" aria-hidden="true" tabindex="-1">
           <option value="product_discount">product_discount</option>
           <option value="category_discount">category_discount</option>
@@ -545,45 +802,44 @@ body.pending #accessDenied { display: flex !important; }
       <div class="simple-section">
         <div class="simple-label">Настройка</div>
         <div class="management-grid">
-          <div class="field full"><label for="promotionName">Название</label><input id="promotionName" required placeholder="Например: 20% на торты"></div>
-          <div class="field hidden-field full" id="promotionProductField"><label for="promotionProduct">Товар</label><select id="promotionProduct"><option value="">Выберите товар</option></select></div>
-          <div class="field hidden-field full" id="promotionCategoryField"><label for="promotionCategory">Категория</label><input id="promotionCategory" placeholder="Категория"></div>
-          
-          <div class="form-row">
-              <div class="field" id="promotionDiscountTypeField">
-                  <label for="promotionDiscountType">Размер скидки</label>
-                  <div class="inline-control compact">
-                      <select id="promotionDiscountType"><option value="percent">%</option><option value="fixed">₽</option></select>
-                      <input id="promotionValue" type="number" min="0" step="0.01" value="20" placeholder="20">
-                  </div>
+          <div class="field full"><label for="promotionName">Название</label><input id="promotionName" required placeholder="Например: 20% на чизкейки"></div>
+          <div class="field hidden-field" id="promotionProductField"><label for="promotionProduct">Товар</label><select id="promotionProduct"><option value="">Выберите товар</option></select></div>
+          <div class="field hidden-field" id="promotionCategoryField"><label for="promotionCategory">Категория</label><input id="promotionCategory" placeholder="Чизкейки"></div>
+          <div class="field" id="promotionDiscountTypeField">
+              <label for="promotionValue">Размер скидки</label>
+              <div class="form-row" style="gap:4px">
+                  <select id="promotionDiscountType"><option value="percent">%</option><option value="fixed">₽</option></select>
+                  <input id="promotionValue" type="number" min="0" step="0.01" value="20" placeholder="20">
               </div>
-              <div class="field" id="promotionMinOrderField"><label for="promotionMinOrder">Мин. сумма заказа</label><div class="suffix-control"><input id="promotionMinOrder" type="number" min="0" step="1" value="0"><span>₽</span></div></div>
           </div>
-          
-          <div class="form-row hidden-field" id="promotionBuyField"><div class="field"><label for="promotionBuyQty">Покупка (шт)</label><input id="promotionBuyQty" type="number" min="1" step="1" value="2"></div></div>
-          <div class="form-row hidden-field" id="promotionRewardField"><div class="field"><label for="promotionRewardQty">В подарок (шт)</label><input id="promotionRewardQty" type="number" min="1" step="1" value="1"></div></div>
-          <div class="form-row hidden-field" id="promotionRewardDiscountField"><div class="field"><label for="promotionRewardDiscount">Скидка на второй</label><div class="suffix-control"><input id="promotionRewardDiscount" type="number" min="0" max="100" step="1" value="50"><span>%</span></div></div></div>
-          <div class="form-row hidden-field" id="promotionDeliveryPriceField"><div class="field"><label for="promotionDeliveryPrice">Цена доставки</label><div class="suffix-control"><input id="promotionDeliveryPrice" type="number" min="0" step="1" value="100"><span>₽</span></div></div></div>
-          <div class="field hidden-field" id="promotionMaxDiscountField"><label for="promotionMaxDiscount">Максимальная скидка</label><div class="suffix-control"><input id="promotionMaxDiscount" type="number" min="0" step="1" placeholder="Без лимита"><span>₽</span></div></div>
+          <div class="field hidden-field" id="promotionBuyField"><label for="promotionBuyQty">Покупка (шт)</label><input id="promotionBuyQty" type="number" min="1" step="1" value="2"></div>
+          <div class="field hidden-field" id="promotionRewardField"><label for="promotionRewardQty">В подарок (шт)</label><input id="promotionRewardQty" type="number" min="1" step="1" value="1"></div>
+          <div class="field hidden-field" id="promotionRewardDiscountField"><label for="promotionRewardDiscount">Скидка на второй</label><div class="suffix-control"><input id="promotionRewardDiscount" type="number" min="0" max="100" step="1" value="50"><span>%</span></div></div>
+          <div class="field hidden-field" id="promotionDeliveryPriceField"><label for="promotionDeliveryPrice">Цена доставки</label><div class="suffix-control"><input id="promotionDeliveryPrice" type="number" min="0" step="1" value="100"><span>₽</span></div></div>
+          <div class="field" id="promotionMinOrderField"><label for="promotionMinOrder">Мин. сумма заказа</label><div class="suffix-control"><input id="promotionMinOrder" type="number" min="0" step="1" value="0"><span>₽</span></div></div>
+          <div class="field hidden-field" id="promotionMaxDiscountField"><label for="promotionMaxDiscount">Макс. скидка</label><div class="suffix-control"><input id="promotionMaxDiscount" type="number" min="0" step="1" placeholder="Без лимита"><span>₽</span></div></div>
         </div>
       </div>
 
       <div class="simple-section">
-        <div class="simple-label">Период и вид</div>
+        <div class="simple-label">Период и метка</div>
         <div class="date-row">
-          <div class="form-row">
-              <div class="field"><label for="promotionStartsAt">С</label><input id="promotionStartsAt" type="datetime-local"></div>
-              <div class="field"><label for="promotionExpiresAt">До</label><input id="promotionExpiresAt" type="datetime-local"></div>
-          </div>
-          <div class="field full"><label for="promotionBadge">Метка (бейдж)</label><input id="promotionBadge" placeholder="🔥 АКЦИЯ"></div>
+          <div class="field"><label for="promotionStartsAt">С</label><input id="promotionStartsAt" type="datetime-local"></div>
+          <div class="field"><label for="promotionExpiresAt">До</label><input id="promotionExpiresAt" type="datetime-local"></div>
+          <div class="field full"><label for="promotionBadge">Метка на сайте</label><input id="promotionBadge" placeholder="🔥 АКЦИЯ"></div>
         </div>
       </div>
 
-      <div class="simple-section">
-          <label class="soft-toggle"><input id="promotionActive" type="checkbox" checked><span class="soft-toggle-track"></span><span><strong>Акция включена</strong><small>Применяется автоматически</small></span></label>
-      </div>
+      <label class="soft-toggle">
+          <input id="promotionActive" type="checkbox" checked>
+          <span class="soft-toggle-track"></span>
+          <div><strong>Акция включена</strong></div>
+      </label>
 
-      <div class="management-form-actions"><button id="cancelPromotionButton" class="management-secondary" type="button">Отмена</button><button class="panel-action" type="submit">Сохранить</button></div>
+      <div class="management-form-actions">
+          <button id="cancelPromotionButton" class="management-secondary" type="button">Отмена</button>
+          <button class="panel-action" type="submit">Сохранить</button>
+      </div>
     </form>
   </div>
 </div>
@@ -597,64 +853,64 @@ body.pending #accessDenied { display: flex !important; }
 
     <form id="promoCodeForm" class="form">
       <input id="promoCodeId" type="hidden">
+
+      <div class="simple-section">
+        <div class="management-grid">
+          <div class="field full"><label for="promoCodeValue">Код</label><input id="promoCodeValue" required placeholder="MALINA10" autocapitalize="characters"></div>
+          <div class="field"><label for="promoCodeDiscountType">Тип скидки</label><select id="promoCodeDiscountType"><option value="percent">%</option><option value="fixed">₽</option></select></div>
+          <div class="field"><label for="promoCodeDiscountValue">Размер</label><input id="promoCodeDiscountValue" type="number" min="0" step="0.01" value="10"></div>
+          <div class="field"><label for="promoCodeMinOrder">Мин. заказ</label><div class="suffix-control"><input id="promoCodeMinOrder" type="number" min="0" step="1" value="0"><span>₽</span></div></div>
+          <div class="field"><label for="promoCodeMaxDiscount">Макс. скидка</label><div class="suffix-control"><input id="promoCodeMaxDiscount" type="number" min="0" step="1" placeholder="Без лимита"><span>₽</span></div></div>
+          <div class="field"><label for="promoCodeUsageLimit">Лимит активаций</label><input id="promoCodeUsageLimit" type="number" min="1" step="1" placeholder="∞"></div>
+        </div>
+      </div>
       
       <div class="simple-section">
-        <div class="simple-label">Основные параметры</div>
-        <div class="management-grid">
-          <div class="field full"><label for="promoCodeValue">Промокод</label><input id="promoCodeValue" required placeholder="Например: MALINA10" autocapitalize="characters"></div>
-          <div class="form-row">
-              <div class="field"><label for="promoCodeDiscountType">Тип скидки</label><select id="promoCodeDiscountType"><option value="percent">%</option><option value="fixed">₽</option></select></div>
-              <div class="field"><label for="promoCodeDiscountValue">Размер</label><input id="promoCodeDiscountValue" type="number" min="0" step="0.01" value="10"></div>
-          </div>
-        </div>
+        <label class="soft-toggle">
+            <input id="promoCodeOneUse" type="checkbox">
+            <span class="soft-toggle-track"></span>
+            <div><strong>1 раз на пользователя</strong></div>
+        </label>
       </div>
 
       <div class="simple-section">
-        <div class="simple-label">Условия</div>
-        <div class="management-grid">
-          <div class="form-row">
-              <div class="field"><label for="promoCodeMinOrder">Мин. сумма заказа</label><div class="suffix-control"><input id="promoCodeMinOrder" type="number" min="0" step="1" value="0"><span>₽</span></div></div>
-              <div class="field"><label for="promoCodeMaxDiscount">Макс. скидка</label><div class="suffix-control"><input id="promoCodeMaxDiscount" type="number" min="0" step="1" placeholder="Нет лимита"><span>₽</span></div></div>
-          </div>
-          <div class="field"><label for="promoCodeUsageLimit">Лимит использований</label><input id="promoCodeUsageLimit" type="number" min="1" step="1" placeholder="Без лимита"></div>
-          <label class="soft-toggle"><input id="promoCodeOneUse" type="checkbox"><span class="soft-toggle-track"></span><span><strong>1 раз на пользователя</strong></span></label>
-        </div>
-      </div>
-
-      <div class="simple-section">
-        <div class="simple-label">Период действия</div>
-        <div class="form-row">
+        <div class="simple-label">Период</div>
+        <div class="date-row">
           <div class="field"><label for="promoCodeStartsAt">С</label><input id="promoCodeStartsAt" type="datetime-local"></div>
           <div class="field"><label for="promoCodeExpiresAt">До</label><input id="promoCodeExpiresAt" type="datetime-local"></div>
         </div>
       </div>
 
-      <div class="simple-section">
-        <label class="soft-toggle"><input id="promoCodeActive" type="checkbox" checked><span class="soft-toggle-track"></span><span><strong>Включен</strong></span></label>
-      </div>
+      <label class="soft-toggle">
+          <input id="promoCodeActive" type="checkbox" checked>
+          <span class="soft-toggle-track"></span>
+          <div><strong>Промокод активен</strong></div>
+      </label>
 
-      <div class="management-form-actions"><button id="cancelPromoCodeButton" class="management-secondary" type="button">Отмена</button><button class="panel-action" type="submit">Сохранить</button></div>
+      <div class="management-form-actions">
+          <button id="cancelPromoCodeButton" class="management-secondary" type="button">Отмена</button>
+          <button class="panel-action" type="submit">Сохранить</button>
+      </div>
     </form>
   </div>
 </div>
 
-<section id="adminPanel" class="admin-panel hidden">
+<section id="adminPanel" class="admin-panel">
     <div class="admin-panel-card">
         <div class="admin-panel-title-row">
-            <div class="admin-panel-title">👥 Команда</div>
+            <div class="panel-title">Команда</div>
             <div class="owner-badge">ВЛАДЕЛЕЦ</div>
         </div>
-        <div class="admin-panel-description">Управление доступом к каталогу (по Telegram ID).</div>
+        <div class="admin-panel-description">Добавление по Telegram ID.</div>
+
         <form id="addAdminForm" class="add-admin-form">
             <input id="adminTelegramId" class="admin-id-input" type="text" inputmode="numeric" autocomplete="off" placeholder="Telegram ID" required>
-            <button id="addAdminButton" class="add-admin-button" type="submit">Добавить</button>
+            <button id="addAdminButton" class="add-admin-button" type="submit">+ Добавить</button>
         </form>
     </div>
-    
+
     <div class="admin-list-header">Список администраторов</div>
-    <div id="adminsList" class="admin-list">
-        <div class="admin-empty"><div class="admin-empty-icon">⏳</div><div class="admin-empty-title">Загрузка...</div></div>
-    </div>
+    <div id="adminsList" class="admin-list"></div>
 </section>
 
 <div id="modal" class="modal">
@@ -663,48 +919,36 @@ body.pending #accessDenied { display: flex !important; }
             <div id="modalTitle" class="modal-title">Новый товар</div>
             <button id="closeButton" class="close-button" type="button">×</button>
         </div>
-        
+
         <form id="productForm" class="form">
             <input id="productId" type="hidden">
-            
-            <div class="field full">
+
+            <div class="field">
                 <label for="name">Название *</label>
                 <input id="name" type="text" required placeholder="Например: Медовик">
             </div>
-            
+
             <div class="form-row">
-                <div class="field">
-                    <label for="category">Категория</label>
-                    <input id="category" type="text" placeholder="Десерты">
-                </div>
-                <div class="field">
-                    <label for="price">Цена *</label>
-                    <div class="suffix-control">
-                        <input id="price" type="number" min="0" step="0.01" required placeholder="1900">
-                        <span>₽</span>
-                    </div>
-                </div>
+                <div class="field"><label for="category">Категория</label><input id="category" type="text" placeholder="Торты"></div>
+                <div class="field"><label for="price">Цена *</label><input id="price" type="number" min="0" step="0.01" required placeholder="1900"></div>
             </div>
-            
+
             <div class="form-row">
-                <div class="field">
-                    <label for="weight">Вес / Объем</label>
-                    <input id="weight" type="text" placeholder="1 кг">
-                </div>
-                <div class="field">
-                    <label for="tag">Метка (бейдж)</label>
-                    <input id="tag" type="text" placeholder="Хит">
-                </div>
+                <div class="field"><label for="weight">Вес / Объем</label><input id="weight" type="text" placeholder="1 кг"></div>
+                <div class="field"><label for="tag">Метка</label><input id="tag" type="text" placeholder="Хит"></div>
             </div>
-            
-            <div class="field full">
+
+            <div class="field">
                 <label for="description">Описание</label>
-                <textarea id="description" placeholder="Состав, особенности..."></textarea>
+                <textarea id="description" placeholder="Описание товара..."></textarea>
             </div>
-            
-            <div class="field full">
+
+            <div class="field">
                 <label>Фотография</label>
-                <div id="currentImage" class="image-current"><div class="image-current-label">Текущее фото</div><img id="currentImageImg" src="" alt=""></div>
+                <div id="currentImage" class="image-current">
+                    <div class="image-current-label">Текущая фотография</div>
+                    <img id="currentImageImg" src="" alt="">
+                </div>
                 <div class="image-upload">
                     <div class="image-upload-icon">📷</div>
                     <div class="image-upload-title">Загрузить фото</div>
@@ -714,17 +958,20 @@ body.pending #accessDenied { display: flex !important; }
                 <div id="imagePreview" class="image-preview"><img id="imagePreviewImg" src="" alt=""></div>
                 <input id="imageUrl" type="hidden">
             </div>
-            
-            <div class="field full">
-                <label for="sortOrder">Сортировка (индекс)</label>
+
+            <div class="field">
+                <label for="sortOrder">Порядок сортировки</label>
                 <input id="sortOrder" type="number" step="1" value="0">
             </div>
-            
-            <div class="switch-row full">
-                <div class="switch-text"><strong>В наличии</strong><span>Снимите галочку, если товар закончился</span></div>
+
+            <div class="switch-row">
+                <div class="switch-text">
+                    <strong>В наличии</strong>
+                    <span>Будет доступен для покупки</span>
+                </div>
                 <label class="switch"><input id="inStock" type="checkbox" checked><span class="slider"></span></label>
             </div>
-            
+
             <div class="form-actions">
                 <button id="cancelButton" class="cancel-button" type="button">Отмена</button>
                 <button id="saveButton" class="save-button" type="submit">Сохранить</button>
@@ -751,77 +998,97 @@ if (TG) { TG.ready(); TG.expand(); }
 let products = [], activeCategory = "Все", editingId = null, loading = false, admins = [], currentIsOwner = false;
 let managementProducts = [], managementPromotions = [], managementPromoCodes = [], managementOrders = [];
 
-const productsEl = document.getElementById("products"), searchEl = document.getElementById("search"), filtersEl = document.getElementById("filters");
-const totalCountEl = document.getElementById("totalCount"), stockCountEl = document.getElementById("stockCount"), outCountEl = document.getElementById("outCount");
-const modal = document.getElementById("modal"), modalTitle = document.getElementById("modalTitle"), form = document.getElementById("productForm");
-const toastEl = document.getElementById("toast"), userNameEl = document.getElementById("userName"), imageFileEl = document.getElementById("imageFile");
-const imagePreview = document.getElementById("imagePreview"), imagePreviewImg = document.getElementById("imagePreviewImg");
-const currentImage = document.getElementById("currentImage"), currentImageImg = document.getElementById("currentImageImg");
-const catalogPanel = document.getElementById("catalogPanel"), adminPanel = document.getElementById("adminPanel");
-const catalogNavButton = document.getElementById("catalogNavButton"), adminsNavButton = document.getElementById("adminsNavButton");
-const adminsList = document.getElementById("adminsList"), addAdminForm = document.getElementById("addAdminForm");
-const adminTelegramId = document.getElementById("adminTelegramId"), addAdminButton = document.getElementById("addAdminButton");
+const productsEl = document.getElementById("products");
+const searchEl = document.getElementById("search");
+const filtersEl = document.getElementById("filters");
+const totalCountEl = document.getElementById("totalCount");
+const stockCountEl = document.getElementById("stockCount");
+const outCountEl = document.getElementById("outCount");
+const modal = document.getElementById("modal");
+const modalTitle = document.getElementById("modalTitle");
+const form = document.getElementById("productForm");
+const toastEl = document.getElementById("toast");
+const userNameEl = document.getElementById("userName");
+const imageFileEl = document.getElementById("imageFile");
+const imagePreview = document.getElementById("imagePreview");
+const imagePreviewImg = document.getElementById("imagePreviewImg");
+const currentImage = document.getElementById("currentImage");
+const currentImageImg = document.getElementById("currentImageImg");
 
-const promotionsPanel = document.getElementById("promotionsPanel"), promoCodesPanel = document.getElementById("promoCodesPanel"), ordersPanel = document.getElementById("ordersPanel");
-const promotionsList = document.getElementById("promotionsList"), promoCodesList = document.getElementById("promoCodesList"), ordersList = document.getElementById("ordersList");
-const promotionModal = document.getElementById("promotionModal"), promoCodeModal = document.getElementById("promoCodeModal");
-const promotionsNavButton = document.getElementById("promotionsNavButton"), promoCodesNavButton = document.getElementById("promoCodesNavButton"), ordersNavButton = document.getElementById("ordersNavButton");
+const catalogPanel = document.getElementById("catalogPanel");
+const adminPanel = document.getElementById("adminPanel");
+const promotionsPanel = document.getElementById("promotionsPanel");
+const promoCodesPanel = document.getElementById("promoCodesPanel");
+const ordersPanel = document.getElementById("ordersPanel");
+
+const catalogNavButton = document.getElementById("catalogNavButton");
+const adminsNavButton = document.getElementById("adminsNavButton");
+const promotionsNavButton = document.getElementById("promotionsNavButton");
+const promoCodesNavButton = document.getElementById("promoCodesNavButton");
+const ordersNavButton = document.getElementById("ordersNavButton");
+
+const adminsList = document.getElementById("adminsList");
+const addAdminForm = document.getElementById("addAdminForm");
+const adminTelegramId = document.getElementById("adminTelegramId");
+const addAdminButton = document.getElementById("addAdminButton");
+
+const promotionsList = document.getElementById("promotionsList");
+const promoCodesList = document.getElementById("promoCodesList");
+const ordersList = document.getElementById("ordersList");
+const promotionModal = document.getElementById("promotionModal");
+const promoCodeModal = document.getElementById("promoCodeModal");
 
 let toastTimer = null;
 function toast(message, error = false) {
     clearTimeout(toastTimer);
     toastEl.textContent = message;
-    toastEl.classList.toggle("error", error);
-    toastEl.classList.add("show");
+    toastEl.className = `toast show ${error ? 'error' : ''}`;
     toastTimer = setTimeout(() => toastEl.classList.remove("show"), 3000);
 }
 
 function getTelegramInitData() { return TG?.initData || ""; }
 
 async function api(method = "GET", body = null, id = null) {
-    const url = new URL(ADMIN_API_URL); if (id) url.searchParams.set("id", id);
+    const url = new URL(ADMIN_API_URL);
+    if (id) url.searchParams.set("id", id);
     const headers = { "Content-Type": "application/json", "X-Telegram-Init-Data": getTelegramInitData() };
     const response = await fetch(url.toString(), { method, headers, body: body !== null ? JSON.stringify(body) : undefined });
-    const text = await response.text(); let data;
-    try { data = text ? JSON.parse(text) : {}; } catch { throw new Error(`Сервер вернул некорректный ответ: ${text}`); }
+    const text = await response.text();
+    let data; try { data = text ? JSON.parse(text) : {}; } catch { throw new Error(`Сервер вернул некорректный ответ`); }
     if (!response.ok || data.ok === false) throw new Error(data.error || data.message || `HTTP ${response.status}`);
     return data;
 }
 
 async function adminsApi(method = "GET", body = null, telegramId = null) {
-    const url = new URL(ADMINS_API_URL); if (telegramId !== null) url.searchParams.set("telegram_id", String(telegramId));
+    const url = new URL(ADMINS_API_URL);
+    if (telegramId !== null) url.searchParams.set("telegram_id", String(telegramId));
     const headers = { "Content-Type": "application/json", "X-Telegram-Init-Data": getTelegramInitData() };
     const response = await fetch(url.toString(), { method, headers, body: body !== null ? JSON.stringify(body) : undefined });
-    const text = await response.text(); let data;
-    try { data = text ? JSON.parse(text) : {}; } catch { throw new Error(`Сервер администраторов вернул некорректный ответ: ${text}`); }
+    const text = await response.text();
+    let data; try { data = text ? JSON.parse(text) : {}; } catch { throw new Error(`Ошибка сервера администраторов`); }
     if (!response.ok || data.ok === false) throw new Error(data.error || data.message || `HTTP ${response.status}`);
     return data;
-}
-
-async function managementApi(resource, method="GET", body=null, id=null){
-  const url=new URL(MANAGEMENT_API_URL); url.searchParams.set("resource",resource); if(id) url.searchParams.set("id",id);
-  const r=await fetch(url,{method,headers:{"Content-Type":"application/json","X-Telegram-Init-Data":getTelegramInitData()},body:body?JSON.stringify(body):undefined});
-  const text=await r.text(); let data={}; try{data=text?JSON.parse(text):{}}catch{throw new Error(text||`HTTP ${r.status}`)}
-  if(!r.ok||data.ok===false) throw new Error(data.error||`HTTP ${r.status}`); return data;
 }
 
 async function uploadProductImage(file) {
     if (!file) return null;
     if (file.size > 10 * 1024 * 1024) throw new Error("Изображение не должно быть больше 10 MB");
-    const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
-    if (!allowedTypes.includes(file.type)) throw new Error("Разрешены только JPG, PNG, WEBP и GIF");
+    if (!["image/jpeg", "image/png", "image/webp", "image/gif"].includes(file.type)) throw new Error("Разрешены только JPG, PNG, WEBP и GIF");
     if (!TG?.initData) throw new Error("Откройте админку внутри Telegram");
-    const formData = new FormData(); formData.append("file", file);
+    
+    const formData = new FormData();
+    formData.append("file", file);
     const response = await fetch(ADMIN_UPLOAD_URL, { method: "POST", headers: { "X-Telegram-Init-Data": TG.initData }, body: formData });
-    const text = await response.text(); let data;
-    try { data = text ? JSON.parse(text) : {}; } catch { throw new Error(`Ошибка загрузки изображения: ${text}`); }
-    if (!response.ok || data.ok === false) throw new Error(data.error || data.message || `Ошибка загрузки изображения (${response.status})`);
+    const text = await response.text();
+    let data; try { data = text ? JSON.parse(text) : {}; } catch { throw new Error(`Ошибка загрузки изображения`); }
+    if (!response.ok || data.ok === false) throw new Error(data.error || data.message || `Ошибка загрузки`);
     if (!data.image?.url) throw new Error("Сервер не вернул URL изображения");
     return data.image.url;
 }
 
 async function loadProducts() {
-    if (loading) return; loading = true;
+    if (loading) return;
+    loading = true;
     productsEl.innerHTML = `<div class="state"><div class="state-icon">⏳</div><div class="state-title">Загружаем каталог</div></div>`;
     try {
         const result = await api("GET");
@@ -829,57 +1096,58 @@ async function loadProducts() {
         renderFilters(); renderStats(); renderProducts();
     } catch (error) {
         productsEl.innerHTML = `<div class="state"><div class="state-icon">⚠️</div><div class="state-title">Ошибка</div><div class="state-text">${escapeHtml(error.message)}</div></div>`;
-        toast(error.message, true);
     } finally { loading = false; }
 }
 
 async function loadAdmins() {
-    adminsList.innerHTML = `<div class="admin-empty"><div class="admin-empty-icon">⏳</div><div class="admin-empty-title">Загружаем</div></div>`;
+    adminsList.innerHTML = `<div class="state"><div class="state-icon">⏳</div><div class="state-title">Загружаем команду</div></div>`;
     try {
         const result = await adminsApi("GET");
         admins = Array.isArray(result.admins) ? result.admins : [];
         currentIsOwner = result.is_owner === true;
         if (!currentIsOwner) {
-            adminPanel.innerHTML = `<div class="admin-panel-card"><div class="admin-panel-title">🔒 Доступ ограничен</div><div class="admin-panel-description" style="margin-top:8px">Только владелец может управлять командой.</div></div>`;
+            adminPanel.innerHTML = `<div class="admin-panel-card"><div class="panel-title">🔒 Доступ закрыт</div><div class="admin-panel-description">Только владелец управляет командой.</div></div>`;
             return;
         }
         renderAdmins();
     } catch (error) {
-        adminsList.innerHTML = `<div class="admin-empty"><div class="admin-empty-icon">⚠️</div><div class="admin-empty-title">Ошибка</div></div>`;
-        toast(error.message, true);
+        adminsList.innerHTML = `<div class="state"><div class="state-icon">⚠️</div><div class="state-title">Ошибка</div></div>`;
     }
 }
 
 function renderAdmins() {
-    if (!admins.length) { adminsList.innerHTML = `<div class="admin-empty"><div class="admin-empty-icon">👥</div><div class="admin-empty-title">Пусто</div></div>`; return; }
+    if (!admins.length) { adminsList.innerHTML = `<div class="state"><div class="state-title">Команда пуста</div></div>`; return; }
     adminsList.innerHTML = admins.map(admin => {
         const owner = admin.is_owner === true;
-        const telegramId = String(admin.telegram_id ?? "");
-        const created = admin.created_at ? formatDate(admin.created_at) : "";
-        return `<div class="admin-item"><div class="admin-info"><div class="admin-name">${owner ? "👑" : "👤"} <span>${owner ? "Владелец" : "Администратор"}</span><span class="admin-role ${owner ? "owner" : ""}">${owner ? "OWNER" : "ADMIN"}</span></div><div class="admin-telegram-id">ID: ${escapeHtml(telegramId)}</div>${created ? `<div class="admin-telegram-id">Добавлен: ${escapeHtml(created)}</div>` : ""}</div><button type="button" class="icon-button danger remove-admin-button" data-remove-admin="${escapeAttr(telegramId)}" ${owner ? "disabled" : ""}>🗑</button></div>`;
+        return `<div class="admin-item">
+            <div>
+                <div class="admin-name">${owner ? "👑 Владелец" : "👤 Администратор"}</div>
+                <div class="admin-telegram-id">ID: ${escapeHtml(String(admin.telegram_id || ''))}</div>
+            </div>
+            <button type="button" class="remove-admin-button" data-remove-admin="${admin.telegram_id}" ${owner ? "disabled" : ""}>🗑</button>
+        </div>`;
     }).join("");
 }
 
 async function addAdmin() {
-    if (!currentIsOwner) return toast("Только владелец может добавлять администраторов", true);
+    if (!currentIsOwner) return;
     const telegramId = adminTelegramId.value.trim();
-    if (!telegramId) return toast("Введите Telegram ID", true);
-    if (!/^\d+$/.test(telegramId)) return toast("Telegram ID должен содержать только цифры", true);
-    addAdminButton.disabled = true; addAdminButton.textContent = "Добавление...";
+    if (!/^\d+$/.test(telegramId)) { toast("Неверный ID", true); return; }
+    addAdminButton.disabled = true;
     try {
         await adminsApi("POST", { telegram_id: Number(telegramId) });
         adminTelegramId.value = ""; toast("Администратор добавлен"); await loadAdmins();
-    } catch (error) { toast(error.message || "Ошибка", true); } 
-    finally { addAdminButton.disabled = false; addAdminButton.textContent = "Добавить"; }
+    } catch (error) { toast(error.message, true); } 
+    finally { addAdminButton.disabled = false; }
 }
 
 async function removeAdmin(telegramId) {
-    if (!currentIsOwner) return toast("Недостаточно прав", true);
-    const admin = admins.find(item => String(item.telegram_id) === String(telegramId));
-    if (admin?.is_owner === true) return toast("Владельца удалить нельзя", true);
+    if (!currentIsOwner) return;
     if (!confirm(`Удалить администратора ${telegramId}?`)) return;
-    try { await adminsApi("DELETE", null, telegramId); toast("Администратор удалён"); await loadAdmins(); } 
-    catch (error) { toast(error.message, true); }
+    try {
+        await adminsApi("DELETE", null, telegramId);
+        toast("Удалён"); await loadAdmins();
+    } catch (error) { toast(error.message, true); }
 }
 
 function setActiveNav(btn) {
@@ -889,137 +1157,160 @@ function setActiveNav(btn) {
 
 function hideExtraPanels() {
     promotionsPanel.hidden = true; promoCodesPanel.hidden = true; ordersPanel.hidden = true;
-    catalogPanel.classList.add("hidden"); adminPanel.classList.add("hidden");
+    catalogPanel.classList.remove("hidden"); adminPanel.classList.remove("open");
 }
 
-function showPanel(panelEl, navBtn) {
-    hideExtraPanels();
-    panelEl.classList.remove("hidden");
-    if(panelEl.hasAttribute('hidden')) panelEl.removeAttribute('hidden');
-    setActiveNav(navBtn);
+function showManagementPanel(panel, btn) {
+    catalogPanel.classList.add("hidden"); adminPanel.classList.remove("open");
+    promotionsPanel.hidden = true; promoCodesPanel.hidden = true; ordersPanel.hidden = true;
+    panel.hidden = false; setActiveNav(btn);
 }
 
 function renderFilters() {
     const categories = ["Все", ...new Set(products.map(p => p.category).filter(Boolean))];
     if (!categories.includes(activeCategory)) activeCategory = "Все";
-    filtersEl.innerHTML = categories.map(c => `<button type="button" class="filter ${c === activeCategory ? "active" : ""}" data-category="${escapeAttr(c)}">${escapeHtml(c)}</button>`).join("");
+    filtersEl.innerHTML = categories.map(c => `<button class="filter ${c === activeCategory ? "active" : ""}" data-category="${escapeAttr(c)}">${escapeHtml(c)}</button>`).join("");
 }
 
 function renderStats() {
-    const total = products.length;
-    const stock = products.filter(p => p.in_stock).length;
+    const total = products.length; const stock = products.filter(p => p.in_stock).length;
     totalCountEl.textContent = total; stockCountEl.textContent = stock; outCountEl.textContent = total - stock;
 }
 
 function getFilteredProducts() {
-    const query = searchEl.value.trim().toLowerCase();
-    return products.filter(p => {
-        const cMatch = activeCategory === "Все" || p.category === activeCategory;
-        const sMatch = !query || String(p.name || "").toLowerCase().includes(query) || String(p.description || "").toLowerCase().includes(query) || String(p.category || "").toLowerCase().includes(query);
-        return cMatch && sMatch;
-    });
+    const q = searchEl.value.trim().toLowerCase();
+    return products.filter(p => (activeCategory === "Все" || p.category === activeCategory) &&
+        (!q || (p.name||"").toLowerCase().includes(q) || (p.category||"").toLowerCase().includes(q)));
 }
 
 function renderProducts() {
     const filtered = getFilteredProducts();
     if (!filtered.length) { productsEl.innerHTML = `<div class="state"><div class="state-icon">🍰</div><div class="state-title">Пусто</div></div>`; return; }
-    productsEl.innerHTML = filtered.map(p => {
-        const img = p.image_url ? `<img src="${escapeAttr(p.image_url)}" alt="" loading="lazy">` : "🍰";
-        const stockBadge = p.in_stock ? `<span class="badge badge-stock">В наличии</span>` : `<span class="badge badge-out">Нет в наличии</span>`;
-        const category = p.category ? `<span class="badge badge-category">${escapeHtml(p.category)}</span>` : "";
-        const tag = p.tag ? `<span class="badge badge-tag">${escapeHtml(p.tag)}</span>` : "";
-        return `<article class="product" data-id="${escapeAttr(p.id)}"><div class="product-image">${img}</div><div class="product-content"><div class="product-name">${escapeHtml(p.name)}</div><div class="product-description">${escapeHtml(p.description || "Нет описания")}</div><div class="product-meta"><span class="price">${formatPrice(p.price)}</span>${stockBadge}${category}${tag}</div></div><div class="product-actions"><button type="button" class="icon-button" data-action="edit" data-id="${escapeAttr(p.id)}">✏️</button><button type="button" class="icon-button" data-action="stock" data-id="${escapeAttr(p.id)}">${p.in_stock ? "📦" : "🔄"}</button><button type="button" class="icon-button danger" data-action="delete" data-id="${escapeAttr(p.id)}">🗑</button></div></article>`;
-    }).join("");
+    productsEl.innerHTML = filtered.map(p => productCard(p)).join("");
+}
+
+function formatPrice(v) { return Number(v || 0).toLocaleString("ru-RU") + " ₽"; }
+function formatDate(v) { try { return new Date(v).toLocaleString("ru-RU", { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit" }); } catch { return v; } }
+function escapeHtml(v) { return String(v ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); }
+function escapeAttr(v) { return escapeHtml(v); }
+
+function productCard(product) {
+    return `<article class="product">
+        <div class="product-image">${product.image_url ? `<img src="${escapeAttr(product.image_url)}" loading="lazy">` : "🍰"}</div>
+        <div class="product-content">
+            <div class="product-name">${escapeHtml(product.name)}</div>
+            <div class="product-description">${escapeHtml(product.description || "Без описания")}</div>
+            <div class="product-meta">
+                <span class="price">${formatPrice(product.price)}</span>
+                <span class="badge ${product.in_stock ? 'badge-stock' : 'badge-out'}">${product.in_stock ? 'В наличии' : 'Нет в наличии'}</span>
+            </div>
+        </div>
+        <div class="product-actions">
+            <button class="icon-button" data-action="edit" data-id="${product.id}">✏️</button>
+            <button class="icon-button" data-action="stock" data-id="${product.id}">${product.in_stock ? "📦" : "🔄"}</button>
+            <button class="icon-button danger" data-action="delete" data-id="${product.id}">🗑</button>
+        </div>
+    </article>`;
 }
 
 function openCreateModal() {
     editingId = null; modalTitle.textContent = "Новый товар"; form.reset();
-    document.getElementById("productId").value = ""; document.getElementById("inStock").checked = true; document.getElementById("sortOrder").value = "0"; document.getElementById("imageUrl").value = "";
-    imageFileEl.value = ""; imagePreview.classList.remove("show"); imagePreviewImg.src = ""; currentImage.classList.remove("show"); currentImageImg.src = "";
+    document.getElementById("productId").value = "";
+    imagePreview.classList.remove("show"); currentImage.classList.remove("show");
     modal.classList.add("open");
 }
 
 function openEditModal(product) {
-    editingId = product.id; modalTitle.textContent = "Редактирование товара";
-    document.getElementById("productId").value = product.id || ""; document.getElementById("name").value = product.name || "";
-    document.getElementById("category").value = product.category || ""; document.getElementById("price").value = product.price ?? "";
-    document.getElementById("weight").value = product.weight || ""; document.getElementById("description").value = product.description || "";
-    document.getElementById("imageUrl").value = product.image_url || ""; document.getElementById("tag").value = product.tag || "";
-    document.getElementById("sortOrder").value = product.sort_order ?? 0; document.getElementById("inStock").checked = product.in_stock !== false;
-    imageFileEl.value = ""; imagePreview.classList.remove("show"); imagePreviewImg.src = "";
-    if (product.image_url) { currentImage.classList.add("show"); currentImageImg.src = product.image_url; } else { currentImage.classList.remove("show"); currentImageImg.src = ""; }
+    editingId = product.id; modalTitle.textContent = "Редактирование";
+    ["productId", "name", "category", "price", "weight", "description", "imageUrl", "tag", "sortOrder"].forEach(id => {
+        const mappedKey = id === "productId" ? "id" : id === "imageUrl" ? "image_url" : id === "sortOrder" ? "sort_order" : id;
+        document.getElementById(id).value = product[mappedKey] ?? "";
+    });
+    document.getElementById("inStock").checked = product.in_stock !== false;
+    imagePreview.classList.remove("show");
+    if (product.image_url) { currentImage.classList.add("show"); document.getElementById("currentImageImg").src = product.image_url; }
+    else currentImage.classList.remove("show");
     modal.classList.add("open");
 }
 
 function closeModal() { modal.classList.remove("open"); editingId = null; }
 
 async function saveProduct() {
-    const saveBtn = document.getElementById("saveButton"), name = document.getElementById("name").value.trim(), price = Number(document.getElementById("price").value);
-    if (!name) return toast("Введите название товара", true);
-    if (!Number.isFinite(price) || price < 0) return toast("Введите корректную цену", true);
-    saveBtn.disabled = true;
+    const name = document.getElementById("name").value.trim();
+    const price = Number(document.getElementById("price").value);
+    if (!name || price < 0) { toast("Проверьте поля", true); return; }
+    
+    document.getElementById("saveButton").disabled = true;
     try {
-        const imageFile = imageFileEl.files?.[0]; let uploadedImageUrl = null;
-        if (imageFile) { saveBtn.textContent = "Фото..."; uploadedImageUrl = await uploadProductImage(imageFile); }
-        const oldImageUrl = document.getElementById("imageUrl").value.trim();
-        const product = { name, category: document.getElementById("category").value.trim() || null, price, weight: document.getElementById("weight").value.trim() || null, description: document.getElementById("description").value.trim() || null, image_url: uploadedImageUrl || oldImageUrl || null, tag: document.getElementById("tag").value.trim() || null, sort_order: Number(document.getElementById("sortOrder").value || 0), in_stock: document.getElementById("inStock").checked };
-        saveBtn.textContent = "Сохранение...";
-        if (editingId) { await api("PUT", product, editingId); toast("Товар изменён"); } else { await api("POST", product); toast("Товар добавлен"); }
-        closeModal(); await loadProducts();
-    } catch (error) { toast(error.message || "Ошибка", true); } finally { saveBtn.disabled = false; saveBtn.textContent = "Сохранить"; }
+        let uploadedUrl = null;
+        if (imageFileEl.files?.[0]) uploadedUrl = await uploadProductImage(imageFileEl.files[0]);
+        
+        const p = {
+            name, category: document.getElementById("category").value.trim() || null,
+            price, weight: document.getElementById("weight").value.trim() || null,
+            description: document.getElementById("description").value.trim() || null,
+            image_url: uploadedUrl || document.getElementById("imageUrl").value.trim() || null,
+            tag: document.getElementById("tag").value.trim() || null,
+            sort_order: Number(document.getElementById("sortOrder").value || 0),
+            in_stock: document.getElementById("inStock").checked
+        };
+        
+        if (editingId) await api("PUT", p, editingId); else await api("POST", p);
+        closeModal(); toast(editingId ? "Изменено" : "Добавлено"); await loadProducts();
+    } catch (e) { toast(e.message, true); }
+    finally { document.getElementById("saveButton").disabled = false; }
 }
 
 async function deleteProduct(product) {
-    if (!confirm(`Удалить товар «${product.name}»?`)) return;
-    try { await api("DELETE", null, product.id); toast("Товар удалён"); await loadProducts(); } catch (error) { toast(error.message, true); }
+    if (!confirm(`Удалить «${product.name}»?`)) return;
+    try { await api("DELETE", null, product.id); toast("Удалено"); await loadProducts(); } catch (e) { toast(e.message, true); }
 }
 
 async function toggleStock(product) {
     try {
         await api("PUT", { ...product, in_stock: !product.in_stock }, product.id);
-        toast(product.in_stock ? "Убран из наличия" : "Снова в наличии"); await loadProducts();
-    } catch (error) { toast(error.message, true); }
+        toast(product.in_stock ? "Скрыто" : "В наличии"); await loadProducts();
+    } catch (e) { toast(e.message, true); }
 }
 
+/* Event Listeners */
 imageFileEl.addEventListener("change", () => {
     const file = imageFileEl.files?.[0];
-    if (!file || file.size > 10 * 1024 * 1024 || !["image/jpeg", "image/png", "image/webp", "image/gif"].includes(file.type)) {
-        if(file) toast("Файл не подходит (нужно до 10MB, JPG/PNG/WEBP/GIF)", true);
-        imagePreview.classList.remove("show"); imagePreviewImg.src = ""; imageFileEl.value = ""; return;
-    }
-    imagePreviewImg.src = URL.createObjectURL(file); imagePreview.classList.add("show");
+    if (file) {
+        imagePreviewImg.src = URL.createObjectURL(file);
+        imagePreview.classList.add("show");
+    } else imagePreview.classList.remove("show");
 });
 
 addAdminForm.addEventListener("submit", e => { e.preventDefault(); addAdmin(); });
-adminsList.addEventListener("click", e => { const b = e.target.closest("[data-remove-admin]"); if (b) removeAdmin(b.dataset.removeAdmin); });
+adminsList.addEventListener("click", e => { if (e.target.dataset.removeAdmin) removeAdmin(e.target.dataset.removeAdmin); });
+
 document.getElementById("addButton").addEventListener("click", openCreateModal);
 document.getElementById("closeButton").addEventListener("click", closeModal);
 document.getElementById("cancelButton").addEventListener("click", closeModal);
 form.addEventListener("submit", e => { e.preventDefault(); saveProduct(); });
 searchEl.addEventListener("input", renderProducts);
-filtersEl.addEventListener("click", e => { const b = e.target.closest(".filter"); if (!b) return; activeCategory = b.dataset.category || "Все"; renderFilters(); renderProducts(); });
+filtersEl.addEventListener("click", e => { if (e.target.dataset.category) { activeCategory = e.target.dataset.category; renderFilters(); renderProducts(); } });
+
 productsEl.addEventListener("click", e => {
-    const b = e.target.closest("[data-action]"); if (!b) return;
-    const p = products.find(i => String(i.id) === String(b.dataset.id)); if (!p) return;
-    const a = b.dataset.action; if (a === "edit") openEditModal(p); if (a === "delete") deleteProduct(p); if (a === "stock") toggleStock(p);
+    const btn = e.target.closest("[data-action]");
+    if (!btn) return;
+    const p = products.find(x => String(x.id) === btn.dataset.id);
+    if (!p) return;
+    if (btn.dataset.action === "edit") openEditModal(p);
+    if (btn.dataset.action === "delete") deleteProduct(p);
+    if (btn.dataset.action === "stock") toggleStock(p);
 });
+
 modal.addEventListener("click", e => { if (e.target === modal) closeModal(); });
-document.addEventListener("keydown", e => { if (e.key === "Escape" && modal.classList.contains("open")) closeModal(); });
 
-function formatPrice(value) { return Number(value || 0).toLocaleString("ru-RU", { maximumFractionDigits: 2 }) + " ₽"; }
-function formatDate(value) { try { return new Date(value).toLocaleString("ru-RU", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" }); } catch { return String(value); } }
-function escapeHtml(value) { return String(value ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); }
-function escapeAttr(value) { return escapeHtml(value); }
-
-function fmtDateTime(v){if(!v)return "Без ограничения";const d=new Date(v);return Number.isNaN(d.getTime())?"—":d.toLocaleString("ru-RU",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"})}
-function toLocalInput(v){if(!v)return "";const d=new Date(v);if(Number.isNaN(d.getTime()))return "";const z=n=>String(n).padStart(2,"0");return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}T${z(d.getHours())}:${z(d.getMinutes())}`}
-function localToIso(v){return v?new Date(v).toISOString():null}
-function promotionTypeLabel(t){return ({product_discount:"На товар",category_discount:"На категорию",order_discount:"На весь заказ",bogo:"2 + 1",second_item_discount:"На второй товар",free_delivery:"Бесплатная доставка",delivery_discount:"Скидка на доставку",delivery_price:"Фикс. цена доставки"})[t]||t}
-function promotionDiscountLabel(p){if(p.promotion_type==="free_delivery")return "Бесплатно";if(p.promotion_type==="delivery_discount")return p.discount_type==="fixed"?`−${formatPrice(p.discount_value)}`:`−${p.discount_value}%`;if(p.promotion_type==="delivery_price")return `${formatPrice(p.discount_value)}`;if(p.promotion_type==="bogo")return `${p.buy_quantity||2}+${p.reward_quantity||1}`;if(p.promotion_type==="second_item_discount")return `Второй −${p.reward_discount_percent??50}%`;return p.discount_type==="fixed"?`−${formatPrice(p.discount_value)}`:`−${p.discount_value}%`}
-
-async function loadManagementProducts(){try{const r=await managementApi("products");managementProducts=r.products||[];const s=document.getElementById("promotionProduct");s.innerHTML='<option value="">Выберите товар</option>'+managementProducts.map(p=>`<option value="${escapeAttr(p.id)}">${escapeHtml(p.name)} · ${formatPrice(p.price)}</option>`).join("")}catch(e){console.warn(e)}}
-async function loadPromotions(){promotionsList.innerHTML='<div class="state"><div class="state-icon">⏳</div><div class="state-title">Загружаем...</div></div>';try{const r=await managementApi("promotions");managementPromotions=r.promotions||[];renderPromotions()}catch(e){promotionsList.innerHTML=`<div class="state"><div class="state-icon">⚠️</div><div class="state-title">Ошибка</div></div>`;toast(e.message,true)}}
-function renderPromotions(){if(!managementPromotions.length){promotionsList.innerHTML='<div class="state"><div class="state-title">Акций пока нет</div></div>';return}promotionsList.innerHTML=managementPromotions.map(p=>{const target=p.target_product_id?` · ${escapeHtml(managementProducts.find(x=>String(x.id)===String(p.target_product_id))?.name||"Товар")}`:(p.target_category?` · ${escapeHtml(p.target_category)}`:"");const dates=(p.starts_at||p.expires_at)?`${fmtDateTime(p.starts_at)} → ${fmtDateTime(p.expires_at)}`:"Без ограничения";return `<div class="promo-card"><div class="promo-card-head"><div><div class="promo-card-title">${escapeHtml(p.name)} ${p.badge?`<span class="discount-pill">${escapeHtml(p.badge)}</span>`:""}</div><div class="promo-meta"><strong>${escapeHtml(promotionTypeLabel(p.promotion_type))}</strong> · ${escapeHtml(promotionDiscountLabel(p))}${target}<br>${p.min_order_amount>0?`От ${formatPrice(p.min_order_amount)} · `:""}${dates}</div></div><div class="promo-actions"><button class="mini-button" data-edit-promo="${p.id}">✏️</button><button class="mini-button danger" data-delete-promo="${p.id}">🗑</button></div></div><div style="margin-top:8px"><span class="status-pill ${p.is_active?'':'off'}">${p.is_active?'ВКЛЮЧЕНА':'ВЫКЛЮЧЕНА'}</span></div></div>`}).join("")}
+/* Management API */
+async function managementApi(resource, method="GET", body=null, id=null){
+  const url=new URL(MANAGEMENT_API_URL); url.searchParams.set("resource",resource); if(id) url.searchParams.set("id",id);
+  const r=await fetch(url,{method,headers:{"Content-Type":"application/json","X-Telegram-Init-Data":getTelegramInitData()},body:body?JSON.stringify(body):undefined});
+  const text=await r.text(); let data={}; try{data=text?JSON.parse(text):{}}catch{throw new Error(text||`HTTP ${r.status}`)}
+  if(!r.ok||data.ok===false) throw new Error(data.error||`HTTP ${r.status}`); return data;
+}
 
 function syncPromotionUI(){
   const type=document.getElementById("promotionType").value;
@@ -1032,58 +1323,34 @@ function syncPromotionUI(){
   show("promotionRewardField",type==="bogo");
   show("promotionRewardDiscountField",type==="second_item_discount");
   show("promotionDeliveryPriceField",type==="delivery_price");
-  show("promotionMinOrderField",true);
   show("promotionMaxDiscountField",!["free_delivery","delivery_price"].includes(type));
-  if(type==="bogo") document.getElementById("promotionCategory").value="";
-  if(["free_delivery","delivery_discount","delivery_price"].includes(type)){ document.getElementById("promotionProduct").value=""; document.getElementById("promotionCategory").value=""; }
 }
 
-function openPromotion(p=null){document.getElementById("promotionModalTitle").textContent=p?"Изменить акцию":"Новая акция";document.getElementById("promotionId").value=p?.id||"";document.getElementById("promotionName").value=p?.name||"";document.getElementById("promotionType").value=p?.promotion_type||"product_discount";document.getElementById("promotionValue").value=p?.discount_value??20;document.getElementById("promotionDiscountType").value=p?.discount_type||"percent";document.getElementById("promotionProduct").value=p?.target_product_id||"";document.getElementById("promotionCategory").value=p?.target_category||"";document.getElementById("promotionMinOrder").value=p?.min_order_amount??0;document.getElementById("promotionMaxDiscount").value=p?.max_discount??"";document.getElementById("promotionBuyQty").value=p?.buy_quantity??2;document.getElementById("promotionRewardQty").value=p?.reward_quantity??1;document.getElementById("promotionRewardDiscount").value=p?.reward_discount_percent??100;document.getElementById("promotionDeliveryPrice").value=(p?.promotion_type==="delivery_price"?p?.discount_value:100)??100;document.getElementById("promotionStartsAt").value=toLocalInput(p?.starts_at);document.getElementById("promotionExpiresAt").value=toLocalInput(p?.expires_at);document.getElementById("promotionBadge").value=p?.badge||"";document.getElementById("promotionActive").checked=p?.is_active!==false;syncPromotionUI();promotionModal.classList.add("open")}
-function closePromotion(){promotionModal.classList.remove("open")}
+catalogNavButton.addEventListener("click", () => { hideExtraPanels(); setActiveNav(catalogNavButton); });
+adminsNavButton.addEventListener("click", () => { hideExtraPanels(); adminPanel.classList.add("open"); setActiveNav(adminsNavButton); loadAdmins(); });
+promotionsNavButton.addEventListener("click", () => { showManagementPanel(promotionsPanel, promotionsNavButton); });
+promoCodesNavButton.addEventListener("click", () => { showManagementPanel(promoCodesPanel, promoCodesNavButton); });
+ordersNavButton.addEventListener("click", () => { showManagementPanel(ordersPanel, ordersNavButton); });
 
-async function savePromotionForm(e){e.preventDefault();const type=document.getElementById("promotionType").value;const body={name:document.getElementById("promotionName").value.trim(),promotion_type:type,discount_type:document.getElementById("promotionDiscountType").value,discount_value:Number(document.getElementById("promotionValue").value||0),target_product_id:document.getElementById("promotionProduct").value||null,target_category:document.getElementById("promotionCategory").value.trim()||null,min_order_amount:Number(document.getElementById("promotionMinOrder").value||0),max_discount:document.getElementById("promotionMaxDiscount").value===""?null:Number(document.getElementById("promotionMaxDiscount").value),buy_quantity:["bogo","second_item_discount"].includes(type)?Number(document.getElementById("promotionBuyQty").value||2):null,reward_quantity:type==="bogo"?Number(document.getElementById("promotionRewardQty").value||1):null,reward_discount_percent:type==="second_item_discount"?Number(document.getElementById("promotionRewardDiscount").value||50):null,starts_at:localToIso(document.getElementById("promotionStartsAt").value),expires_at:localToIso(document.getElementById("promotionExpiresAt").value),badge:document.getElementById("promotionBadge").value.trim()||null,is_active:document.getElementById("promotionActive").checked};if(type==="delivery_price"){body.discount_type="fixed";body.discount_value=Number(document.getElementById("promotionDeliveryPrice").value||0);}if(!body.name){toast("Введите название акции",true);return}if(type==="category_discount"&&!body.target_category){toast("Укажите категорию",true);return}if(["product_discount","second_item_discount","bogo"].includes(type)&&!body.target_product_id&&!body.target_category){toast("Выберите товар",true);return}try{const id=document.getElementById("promotionId").value;await managementApi("promotions",id?"PATCH":"POST",body,id||null);closePromotion();toast(id?"Акция изменена":"Акция создана");await loadPromotions()}catch(err){toast(err.message,true)}}
-async function deletePromotionById(id){if(!confirm("Удалить?"))return;try{await managementApi("promotions","DELETE",null,id);toast("Удалено");await loadPromotions()}catch(e){toast(e.message,true)}}
-
-async function loadPromoCodes(){promoCodesList.innerHTML='<div class="state"><div class="state-icon">⏳</div><div class="state-title">Загружаем...</div></div>';try{const r=await managementApi("promo_codes");managementPromoCodes=r.promo_codes||[];renderPromoCodes()}catch(e){promoCodesList.innerHTML=`<div class="state"><div class="state-icon">⚠️</div></div>`;toast(e.message,true)}}
-function renderPromoCodes(){if(!managementPromoCodes.length){promoCodesList.innerHTML='<div class="state"><div class="state-title">Кодов пока нет</div></div>';return}promoCodesList.innerHTML=managementPromoCodes.map(p=>{const dates=(p.starts_at||p.expires_at)?`${fmtDateTime(p.starts_at)} → ${fmtDateTime(p.expires_at)}`:"Без ограничения";return `<div class="promo-card"><div class="promo-card-head"><div><div class="promo-card-title">${escapeHtml(p.code)} <span class="discount-pill">${p.discount_type==='fixed'?`−${formatPrice(p.discount_value)}`:`−${p.discount_value}%`}</span></div><div class="promo-meta">${p.min_order_amount>0?`От ${formatPrice(p.min_order_amount)} · `:"Без мин. суммы"}${p.usage_limit?`Исп. ${p.usage_count||0}/${p.usage_limit}`:"Без лимита"}<br>${dates}${p.one_use_per_user?' · 1 раз на пользователя':''}</div></div><div class="promo-actions"><button class="mini-button" data-edit-code="${p.id}">✏️</button><button class="mini-button danger" data-delete-code="${p.id}">🗑</button></div></div><div style="margin-top:8px"><span class="status-pill ${p.is_active?'':'off'}">${p.is_active?'ВКЛЮЧЕН':'ВЫКЛЮЧЕН'}</span></div></div>`}).join("")}
-function openPromoCode(p=null){document.getElementById("promoCodeModalTitle").textContent=p?"Изменить код":"Новый код";document.getElementById("promoCodeId").value=p?.id||"";document.getElementById("promoCodeValue").value=p?.code||"";document.getElementById("promoCodeDiscountValue").value=p?.discount_value??10;document.getElementById("promoCodeDiscountType").value=p?.discount_type||"percent";document.getElementById("promoCodeMinOrder").value=p?.min_order_amount??0;document.getElementById("promoCodeMaxDiscount").value=p?.max_discount??"";document.getElementById("promoCodeUsageLimit").value=p?.usage_limit??"";document.getElementById("promoCodeStartsAt").value=toLocalInput(p?.starts_at);document.getElementById("promoCodeExpiresAt").value=toLocalInput(p?.expires_at);document.getElementById("promoCodeActive").checked=p?.is_active!==false;document.getElementById("promoCodeOneUse").checked=p?.one_use_per_user===true;promoCodeModal.classList.add("open")}
-function closePromoCode(){promoCodeModal.classList.remove("open")}
-async function savePromoCodeForm(e){e.preventDefault();const code=document.getElementById("promoCodeValue").value.trim().toUpperCase();const value=Number(document.getElementById("promoCodeDiscountValue").value||0);if(!code||value<=0){toast("Заполните код и размер",true);return}const id=document.getElementById("promoCodeId").value;const body={code,discount_value:value,discount_type:document.getElementById("promoCodeDiscountType").value,min_order_amount:Number(document.getElementById("promoCodeMinOrder").value||0),max_discount:document.getElementById("promoCodeMaxDiscount").value===""?null:Number(document.getElementById("promoCodeMaxDiscount").value),usage_limit:document.getElementById("promoCodeUsageLimit").value===""?null:Number(document.getElementById("promoCodeUsageLimit").value),starts_at:localToIso(document.getElementById("promoCodeStartsAt").value),expires_at:localToIso(document.getElementById("promoCodeExpiresAt").value),is_active:document.getElementById("promoCodeActive").checked,one_use_per_user:document.getElementById("promoCodeOneUse").checked};try{await managementApi("promo_codes",id?"PATCH":"POST",body,id||null);closePromoCode();toast("Сохранено");await loadPromoCodes()}catch(err){toast(err.message,true)}}
-async function deletePromoCodeById(id){if(!confirm("Удалить?"))return;try{await managementApi("promo_codes","DELETE",null,id);toast("Удалено");await loadPromoCodes()}catch(e){toast(e.message,true)}}
-
-async function loadOrders(){ordersList.innerHTML='<div class="state"><div class="state-icon">⏳</div><div class="state-title">Загружаем...</div></div>';try{const r=await managementApi("orders");managementOrders=r.orders||[];renderOrders()}catch(e){ordersList.innerHTML=`<div class="state"><div class="state-icon">⚠️</div></div>`;toast(e.message,true)}}
-const ORDER_STATUS_LABELS={new:"Новый",confirmed:"Подтверждён",completed:"Выполнен",cancelled:"Отменён"};
-function renderOrders(){if(!managementOrders.length){ordersList.innerHTML='<div class="state"><div class="state-title">Заказов пока нет</div></div>';return}ordersList.innerHTML=managementOrders.map(o=>`<div class="order-card"><div class="order-head"><div><div class="order-number">#${escapeHtml(o.order_number)} <span class="status-pill ${o.status==='cancelled'?'off':''}">${escapeHtml(ORDER_STATUS_LABELS[o.status]||o.status)}</span></div><div class="order-meta">${fmtDateTime(o.created_at)} · ${escapeHtml(o.customer_name||'Без имени')} · ${escapeHtml(o.method||'')}${o.address?`<br>${escapeHtml(o.address)}`:''}<br>${o.phone?escapeHtml(o.phone):''}${o.promo_code?` · 🏷️ ${escapeHtml(o.promo_code)}`:''}</div></div><div class="order-total">${formatPrice(o.total)}</div></div>${Number(o.discount||0)>0?`<div class="order-meta"><span class="order-discount">Скидка −${formatPrice(o.discount)}</span> · Товары ${formatPrice(o.subtotal)} · Доставка ${formatPrice(o.delivery_fee)}</div>`:''}<div style="margin-top:12px"><select class="order-select" data-order-status="${o.id}"><option value="new" ${o.status==='new'?'selected':''}>Новый</option><option value="confirmed" ${o.status==='confirmed'?'selected':''}>Подтверждён</option><option value="completed" ${o.status==='completed'?'selected':''}>Выполнен</option><option value="cancelled" ${o.status==='cancelled'?'selected':''}>Отменён</option></select></div></div>`).join("")}
-
-catalogNavButton.addEventListener("click",()=>showPanel(catalogPanel,catalogNavButton));
-adminsNavButton.addEventListener("click",()=>{showPanel(adminPanel,adminsNavButton);loadAdmins()});
-promotionsNavButton.addEventListener("click",()=>{showPanel(promotionsPanel,promotionsNavButton);loadManagementProducts().then(loadPromotions)});
-promoCodesNavButton.addEventListener("click",()=>{showPanel(promoCodesPanel,promoCodesNavButton);loadPromoCodes()});
-ordersNavButton.addEventListener("click",()=>{showPanel(ordersPanel,ordersNavButton);loadOrders()});
-
-document.getElementById("addPromotionButton").addEventListener("click",async()=>{if(!managementProducts.length)await loadManagementProducts();openPromotion()});
 document.querySelectorAll("[data-promo-type]").forEach(b=>b.addEventListener("click",()=>{document.getElementById("promotionType").value=b.dataset.promoType;syncPromotionUI()}));
-document.getElementById("closePromotionButton").addEventListener("click",closePromotion);document.getElementById("cancelPromotionButton").addEventListener("click",closePromotion);document.getElementById("promotionForm").addEventListener("submit",savePromotionForm);
-promotionsList.addEventListener("click",e=>{const edit=e.target.closest("[data-edit-promo]"),del=e.target.closest("[data-delete-promo]");if(edit)openPromotion(managementPromotions.find(p=>String(p.id)===String(edit.dataset.editPromo)));if(del)deletePromotionById(del.dataset.deletePromo)});
+[promotionModal, promoCodeModal].forEach(m => m.addEventListener("click", e => { if (e.target === m) m.classList.remove("open"); }));
+document.getElementById("closePromotionButton").addEventListener("click", () => promotionModal.classList.remove("open"));
+document.getElementById("cancelPromotionButton").addEventListener("click", () => promotionModal.classList.remove("open"));
+document.getElementById("closePromoCodeButton").addEventListener("click", () => promoCodeModal.classList.remove("open"));
+document.getElementById("cancelPromoCodeButton").addEventListener("click", () => promoCodeModal.classList.remove("open"));
 
-document.getElementById("addPromoCodeButton").addEventListener("click",()=>openPromoCode());document.getElementById("closePromoCodeButton").addEventListener("click",closePromoCode);document.getElementById("cancelPromoCodeButton").addEventListener("click",closePromoCode);document.getElementById("promoCodeForm").addEventListener("submit",savePromoCodeForm);
-promoCodesList.addEventListener("click",e=>{const edit=e.target.closest("[data-edit-code]"),del=e.target.closest("[data-delete-code]");if(edit)openPromoCode(managementPromoCodes.find(p=>String(p.id)===String(edit.dataset.editCode)));if(del)deletePromoCodeById(del.dataset.deleteCode)});
-document.getElementById("refreshOrdersButton").addEventListener("click",loadOrders);
-
-ordersList.addEventListener("change",async e=>{const s=e.target.closest("[data-order-status]");if(!s)return;const id=s.dataset.orderStatus;const before=managementOrders.find(o=>String(o.id)===String(id));const old=before?.status||s.dataset.previousStatus||"new";try{const result=await managementApi("orders","PATCH",{status:s.value},id);s.dataset.previousStatus=s.value;const item=managementOrders.find(o=>String(o.id)===String(id));if(item)item.status=s.value;const changed=old!==s.value;const n=result?.notification;let msg=changed?`Статус: ${ORDER_STATUS_LABELS[s.value]||s.value}`:"Обновлено";if(changed){if(n?.sent)msg+=" (Уведомление отправлено)";else if(n?.skipped)msg+=" (Уведомление не отправлено)";}toast(msg)}catch(err){toast(err.message,true);await loadOrders()}});
-[promotionModal,promoCodeModal].forEach(m=>m.addEventListener("click",e=>{if(e.target===m)m.classList.remove("open")}));
-syncPromotionUI();
-
-function showTelegramUser() { try { const user = TG?.initDataUnsafe?.user; if (user) userNameEl.textContent = user.first_name || user.username || "Администратор"; } catch {} }
-
-async function authorizeAdmin(){
-  const accessError=document.getElementById("accessError");
-  if(!TG?.initData){ accessError.textContent="Админка должна быть открыта внутри Telegram WebApp."; return false; }
-  try{ await api("GET"); document.body.classList.remove("pending"); return true; }
-  catch(error){ console.error("ADMIN ACCESS DENIED",error); accessError.textContent=error?.message||"Недостаточно прав."; return false; }
+async function authorizeAdmin() {
+    if (!TG?.initData) { document.getElementById("accessError").textContent = "Откройте админку внутри Telegram."; return false; }
+    try { await api("GET"); document.body.classList.remove("pending"); return true; } 
+    catch (e) { document.getElementById("accessError").textContent = "Нет доступа."; return false; }
 }
 
-(async()=>{ if(await authorizeAdmin()){ showTelegramUser(); await loadProducts(); } })();
+(async () => {
+    if (await authorizeAdmin()) {
+        try { userNameEl.textContent = TG.initDataUnsafe.user.first_name || "Админ"; } catch {}
+        await loadProducts();
+    }
+})();
 </script>
 </body>
 </html>
