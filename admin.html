@@ -1644,6 +1644,8 @@ button:disabled {
           <button type="button" class="quick-choice" data-promo-type="second_item_discount"><span>🍰🍰</span><strong>Скидка на второй</strong></button>
           <button type="button" class="quick-choice" data-promo-type="bogo"><span>2+1</span><strong>Третий бесплатно</strong></button>
           <button type="button" class="quick-choice" data-promo-type="free_delivery"><span>🚚</span><strong>Доставка бесплатно</strong></button>
+          <button type="button" class="quick-choice" data-promo-type="delivery_discount"><span>🏷️</span><strong>Скидка на доставку</strong></button>
+          <button type="button" class="quick-choice" data-promo-type="delivery_price"><span>🚚</span><strong>Доставка за X ₽</strong></button>
         </div>
         <select id="promotionType" class="visually-hidden" aria-hidden="true" tabindex="-1">
           <option value="product_discount">product_discount</option>
@@ -1652,6 +1654,8 @@ button:disabled {
           <option value="second_item_discount">second_item_discount</option>
           <option value="bogo">bogo</option>
           <option value="free_delivery">free_delivery</option>
+          <option value="delivery_discount">delivery_discount</option>
+          <option value="delivery_price">delivery_price</option>
         </select>
       </div>
 
@@ -4695,8 +4699,8 @@ function showManagementPanel(panel,btn){catalogPanel.classList.add("hidden");adm
 function fmtDateTime(v){if(!v)return "Без ограничения";const d=new Date(v);return Number.isNaN(d.getTime())?"—":d.toLocaleString("ru-RU",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"})}
 function toLocalInput(v){if(!v)return "";const d=new Date(v);if(Number.isNaN(d.getTime()))return "";const z=n=>String(n).padStart(2,"0");return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}T${z(d.getHours())}:${z(d.getMinutes())}`}
 function localToIso(v){return v?new Date(v).toISOString():null}
-function promotionTypeLabel(t){return ({product_discount:"На товар",category_discount:"На категорию",order_discount:"На весь заказ",bogo:"2 + 1",second_item_discount:"На второй товар",free_delivery:"Бесплатная доставка"})[t]||t}
-function promotionDiscountLabel(p){if(p.promotion_type==="free_delivery")return "Доставка бесплатно";if(p.promotion_type==="bogo")return `${p.buy_quantity||2}+${p.reward_quantity||1}`;if(p.promotion_type==="second_item_discount")return `Второй −${p.reward_discount_percent??50}%`;return p.discount_type==="fixed"?`−${formatPrice(p.discount_value)}`:`−${p.discount_value}%`}
+function promotionTypeLabel(t){return ({product_discount:"На товар",category_discount:"На категорию",order_discount:"На весь заказ",bogo:"2 + 1",second_item_discount:"На второй товар",free_delivery:"Бесплатная доставка",delivery_discount:"Скидка на доставку",delivery_price:"Доставка за фиксированную цену"})[t]||t}
+function promotionDiscountLabel(p){if(p.promotion_type==="free_delivery")return "Доставка бесплатно";if(p.promotion_type==="delivery_discount")return p.discount_type==="fixed"?`−${formatPrice(p.discount_value)} на доставку`:`−${p.discount_value}% на доставку`;if(p.promotion_type==="delivery_price")return `Доставка ${formatPrice(p.discount_value)}`;if(p.promotion_type==="bogo")return `${p.buy_quantity||2}+${p.reward_quantity||1}`;if(p.promotion_type==="second_item_discount")return `Второй −${p.reward_discount_percent??50}%`;return p.discount_type==="fixed"?`−${formatPrice(p.discount_value)}`:`−${p.discount_value}%`}
 async function loadManagementProducts(){try{const r=await managementApi("products");managementProducts=r.products||[];const s=document.getElementById("promotionProduct");s.innerHTML='<option value="">Выберите товар</option>'+managementProducts.map(p=>`<option value="${escapeAttr(p.id)}">${escapeHtml(p.name)} · ${formatPrice(p.price)}</option>`).join("")}catch(e){console.warn(e)}}
 async function loadPromotions(){promotionsList.innerHTML='<div class="state"><div class="state-icon">⏳</div><div class="state-title">Загружаем акции…</div></div>';try{const r=await managementApi("promotions");managementPromotions=r.promotions||[];renderPromotions()}catch(e){promotionsList.innerHTML=`<div class="state"><div class="state-icon">⚠️</div><div class="state-title">Не удалось загрузить акции</div><div class="state-text">${escapeHtml(e.message)}</div></div>`;toast(e.message,true)}}
 function renderPromotions(){if(!managementPromotions.length){promotionsList.innerHTML='<div class="state"><div class="state-icon">🔥</div><div class="state-title">Акций пока нет</div><div class="state-text">Создайте первую акцию — она начнёт применяться автоматически после сохранения.</div></div>';return}promotionsList.innerHTML=managementPromotions.map(p=>{const target=p.target_product_id?` · ${escapeHtml(managementProducts.find(x=>String(x.id)===String(p.target_product_id))?.name||"Товар")}`:(p.target_category?` · ${escapeHtml(p.target_category)}`:"");const dates=(p.starts_at||p.expires_at)?`${fmtDateTime(p.starts_at)} → ${fmtDateTime(p.expires_at)}`:"Без ограничения по датам";return `<div class="promo-card"><div class="promo-card-head"><div><div class="promo-card-title">${escapeHtml(p.name)} ${p.badge?`<span class="discount-pill">${escapeHtml(p.badge)}</span>`:""}</div><div class="promo-meta"><strong>${escapeHtml(promotionTypeLabel(p.promotion_type))}</strong> · ${escapeHtml(promotionDiscountLabel(p))}${target}<br>${p.min_order_amount>0?`От ${formatPrice(p.min_order_amount)} · `:""}${dates}</div></div><div class="promo-actions"><button class="mini-button" title="Изменить" data-edit-promo="${p.id}">✏️</button><button class="mini-button danger" title="Удалить" data-delete-promo="${p.id}">🗑</button></div></div><div style="margin-top:10px"><span class="status-pill ${p.is_active?'':'off'}">${p.is_active?'ВКЛЮЧЕНА':'ВЫКЛЮЧЕНА'}</span></div></div>`}).join("")}
@@ -4716,11 +4720,13 @@ function syncPromotionUI(){
   // BOGO is currently product-based in the calculation function, so do not expose a category choice for it.
   if(type==="bogo") document.getElementById("promotionCategory").value="";
   discountType.classList.toggle("hidden-field",type==="free_delivery"||type==="bogo");
+  if(type==="delivery_price") document.getElementById("promotionDiscountType").value="fixed";
+  document.querySelector("label[for=promotionValue]").textContent=(type==="delivery_price"?"Цена доставки":type==="delivery_discount"?"Скидка":"Размер скидки");
   buy.classList.toggle("hidden-field",!(["bogo"].includes(type)));
   reward.classList.toggle("hidden-field",type!=="bogo");
   rewardDisc.classList.toggle("hidden-field",type!=="second_item_discount");
   minOrder.classList.toggle("hidden-field",false);
-  max.classList.toggle("hidden-field",type==="free_delivery");
+  max.classList.toggle("hidden-field",type==="free_delivery"||type==="delivery_price");
 }
 function openPromotion(p=null){document.getElementById("promotionModalTitle").textContent=p?"Изменить акцию":"Новая акция";document.getElementById("promotionId").value=p?.id||"";document.getElementById("promotionName").value=p?.name||"";document.getElementById("promotionType").value=p?.promotion_type||"product_discount";document.getElementById("promotionValue").value=p?.discount_value??20;document.getElementById("promotionDiscountType").value=p?.discount_type||"percent";document.getElementById("promotionProduct").value=p?.target_product_id||"";document.getElementById("promotionCategory").value=p?.target_category||"";document.getElementById("promotionMinOrder").value=p?.min_order_amount??0;document.getElementById("promotionMaxDiscount").value=p?.max_discount??"";document.getElementById("promotionBuyQty").value=p?.buy_quantity??2;document.getElementById("promotionRewardQty").value=p?.reward_quantity??1;document.getElementById("promotionRewardDiscount").value=p?.reward_discount_percent??100;document.getElementById("promotionStartsAt").value=toLocalInput(p?.starts_at);document.getElementById("promotionExpiresAt").value=toLocalInput(p?.expires_at);document.getElementById("promotionBadge").value=p?.badge||"";document.getElementById("promotionActive").checked=p?.is_active!==false;syncPromotionUI();promotionModal.classList.add("open")}
 function closePromotion(){promotionModal.classList.remove("open")}
