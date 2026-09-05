@@ -6,7 +6,6 @@
 <meta name="theme-color" content="#ffffff">
 <title>Кондитерский дом «Малина»</title>
 
-<!-- Подключение профессионального шрифта Inter -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -20,12 +19,13 @@
   --tg-card: #ffffff;
   --tg-text: #0f172a;
   --tg-muted: #475569;
-  --tg-blue: #d81b60; 
-  --tg-blue2: #ad144b;
+  /* Более премиальные и элегантные оттенки розового */
+  --tg-blue: #b02a5c; 
+  --tg-blue2: #911f47;
   --tg-line: #e2e8f0;
   --tg-soft: #f1f5f9;
-  --accent: #d81b60;
-  --accent-dark: #9d1045;
+  --accent: #b02a5c;
+  --accent-dark: #911f47;
   --danger: #ef4444;
   --success: #10b981;
   --shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
@@ -34,16 +34,17 @@
 
 body.dark-theme {
   color-scheme: dark;
-  --tg-bg: #0f172a;
-  --tg-card: #1e293b;
-  --tg-text: #f8fafc;
-  --tg-muted: #94a3b8;
-  --tg-blue: #ec4899;
-  --tg-blue2: #db2777;
-  --tg-line: #334155;
-  --tg-soft: #334155;
-  --accent: #ec4899;
-  --accent-dark: #db2777;
+  /* Цвета, приближенные к оригинальной темной теме Telegram */
+  --tg-bg: #18222d;
+  --tg-card: #212d3b;
+  --tg-text: #ffffff;
+  --tg-muted: #8b9bb4;
+  --tg-blue: #c94b7a;
+  --tg-blue2: #e05e8e;
+  --tg-line: #2b3a4a;
+  --tg-soft: #2b3a4a;
+  --accent: #c94b7a;
+  --accent-dark: #e05e8e;
   --shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
 }
 
@@ -96,7 +97,7 @@ body:not(.dark-theme) .topbar {
   background:rgba(255, 255, 255, 0.9);
 }
 body.dark-theme .topbar {
-  background:rgba(15, 23, 42, 0.9);
+  background:rgba(24, 34, 45, 0.9);
 }
 
 .topbar-inner{
@@ -112,7 +113,8 @@ body.dark-theme .topbar {
   align-items:center;
   gap:10px;
   font-weight:800;
-  letter-spacing:-.03em
+  letter-spacing:-.03em;
+  font-size: 16px;
 }
 
 .brand-mark{
@@ -123,20 +125,11 @@ body.dark-theme .topbar {
   place-items:center;
   background:var(--tg-blue);
   color:white;
-  box-shadow:0 7px 18px rgba(216, 27, 96, 0.25)
+  box-shadow:0 7px 18px rgba(176, 42, 92, 0.25)
 }
 
 .brand-mark svg{
   width:22px
-}
-
-.brand small{
-  display:block;
-  color:var(--tg-muted);
-  font-size:11px;
-  font-weight:600;
-  letter-spacing:.02em;
-  margin-top:1px
 }
 
 .top-actions{
@@ -145,7 +138,7 @@ body.dark-theme .topbar {
   gap:8px
 }
 
-.language-toggle{
+.top-btn {
   height:38px;
   border:1px solid var(--tg-line);
   background:var(--tg-card);
@@ -159,21 +152,12 @@ body.dark-theme .topbar {
   font-weight:700;
   letter-spacing:.02em;
   transition: 0.2s;
+  cursor: pointer;
 }
 
-.language-toggle:hover{
+.top-btn:hover{
   border-color:var(--tg-blue);
   color:var(--tg-blue)
-}
-
-.pill{
-  border:1px solid var(--tg-line);
-  background:var(--tg-card);
-  color:var(--tg-text);
-  border-radius:999px;
-  padding:8px 12px;
-  font-size:12px;
-  font-weight:700
 }
 
 .hero{
@@ -247,7 +231,7 @@ body.dark-theme .topbar {
   padding:14px 20px;
   border-radius:14px;
   font-weight:800;
-  box-shadow:0 8px 18px rgba(216, 27, 96, 0.22);
+  box-shadow:0 8px 18px rgba(176, 42, 92, 0.22);
   transition:.18s
 }
 
@@ -354,13 +338,13 @@ body.dark-theme .topbar {
   border: 2px solid var(--accent);
   border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 8px 24px rgba(216, 27, 96, 0.1);
+  box-shadow: 0 8px 24px rgba(176, 42, 92, 0.1);
   transition: 0.3s;
 }
 
 .hit-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(216, 27, 96, 0.15);
+  box-shadow: 0 12px 32px rgba(176, 42, 92, 0.15);
 }
 
 .hit-img {
@@ -400,7 +384,7 @@ body.dark-theme .topbar {
   margin-top: 12px;
 }
 
-.hit-tag {
+.hit-tag, .tag {
   position: absolute;
   top: 10px;
   left: 10px;
@@ -411,6 +395,7 @@ body.dark-theme .topbar {
   font-size: 11px;
   font-weight: 800;
   text-transform: uppercase;
+  z-index: 2;
 }
 
 .hit-card.unavailable {
@@ -486,19 +471,6 @@ body.dark-theme .topbar {
   height:100%;
   object-fit:cover;
   display:block
-}
-
-.tag{
-  position:absolute;
-  left:10px;
-  top:10px;
-  background:rgba(var(--tg-card-rgb), .9);
-  backdrop-filter:blur(8px);
-  border-radius:999px;
-  padding:6px 10px;
-  font-size:11px;
-  font-weight:800;
-  color: var(--tg-text);
 }
 
 .card-body{
@@ -594,30 +566,35 @@ body.dark-theme .topbar {
   display:flex;
   align-items:center;
   justify-content:center;
-  background:rgba(15, 23, 42, 0.6);
+  background:rgba(15, 23, 42, 0.7);
   color:#fff;
   font-weight:800;
   font-size:13px;
   letter-spacing:.04em;
-  text-transform:uppercase
+  text-transform:uppercase;
+  z-index: 1;
 }
 
 .unavailable-badge{
   position:absolute;
-  right:10px;
-  top:10px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   background:var(--tg-card);
-  color:var(--tg-muted);
-  border:1px solid var(--tg-line);
+  color:var(--danger);
+  border:1px solid var(--danger);
   border-radius:999px;
-  padding:6px 10px;
-  font-size:11px;
-  font-weight:800
+  padding:8px 16px;
+  font-size:12px;
+  font-weight:800;
+  z-index: 2;
+  text-align: center;
+  white-space: nowrap;
 }
 
 .feature{
   display:grid;
-  grid-template-columns:1fr 1fr 1fr;
+  grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));
   gap:16px
 }
 
@@ -632,13 +609,13 @@ body.dark-theme .topbar {
   width:48px;
   height:48px;
   border-radius:16px;
-  background:rgba(216, 27, 96, 0.1);
+  background:rgba(176, 42, 92, 0.1);
   color:var(--tg-blue);
   display:grid;
   place-items:center;
   margin-bottom:20px;
   font-weight: 800;
-  font-size: 16px;
+  font-size: 18px;
 }
 
 .feature-card h3{
@@ -653,27 +630,6 @@ body.dark-theme .topbar {
   line-height:1.6;
   font-size:14px;
   font-weight: 500;
-}
-
-.delivery-banner {
-  background: var(--tg-soft);
-  border-radius: 20px;
-  padding: 24px;
-  margin-top: 24px;
-  text-align: center;
-  border: 1px solid var(--tg-line);
-}
-.delivery-banner strong {
-  display: block;
-  font-size: 18px;
-  margin-bottom: 8px;
-  color: var(--tg-text);
-}
-.delivery-banner p {
-  margin: 0;
-  color: var(--tg-muted);
-  font-weight: 600;
-  font-size: 15px;
 }
 
 .footer{
@@ -1048,7 +1004,7 @@ body.dark-theme .topbar {
 .method input:checked+span{
   border-color:var(--tg-blue);
   color:var(--tg-blue);
-  background:rgba(216, 27, 96, 0.05);
+  background:rgba(176, 42, 92, 0.05);
 }
 
 .status{
@@ -1068,34 +1024,41 @@ body.dark-theme .topbar {
 }
 
 .success{
-  padding:50px 10px;
-  text-align:center
+  padding:60px 20px;
+  text-align:center;
+  background: linear-gradient(135deg, var(--tg-card), var(--tg-soft));
+  border-radius: 24px;
+  border: 1px solid var(--tg-line);
+  margin-top: 20px;
+  box-shadow: var(--shadow);
 }
 
 .success-icon{
-  width:64px;
-  height:64px;
-  margin:auto;
+  width:80px;
+  height:80px;
+  margin:0 auto 24px;
   border-radius:50%;
   display:grid;
   place-items:center;
-  background:rgba(16, 185, 129, 0.1);
-  color:var(--success);
-  font-size: 24px;
+  background:var(--accent);
+  color:#fff;
+  font-size: 32px;
+  box-shadow: 0 10px 25px rgba(176, 42, 92, 0.3);
 }
 
 .success h3{
-  font-size:24px;
-  font-weight: 800;
-  margin:20px 0 8px
+  font-size:26px;
+  font-weight: 900;
+  margin-bottom: 12px;
+  color: var(--tg-text);
 }
 
 .success p{
-  font-size:15px;
+  font-size:16px;
   color:var(--tg-muted);
   line-height:1.6;
   font-weight: 500;
-  margin-bottom: 24px;
+  margin-bottom: 32px;
 }
 
 .hint{
@@ -1166,9 +1129,6 @@ body.dark-theme .topbar {
   .topbar-inner{
     height:60px
   }
-  .brand small{
-    display:none
-  }
   .hero{
     padding-top:12px
   }
@@ -1185,17 +1145,11 @@ body.dark-theme .topbar {
   .products{
     gap:12px
   }
-  .feature{
-    grid-template-columns:1fr
-  }
   .section{
     padding:24px 0
   }
   .section-head h2{
     font-size:26px
-  }
-  .pill{
-    display:none
   }
 }
 </style>
@@ -1213,17 +1167,14 @@ body.dark-theme .topbar {
           <path d="M9 19v-5h6v5"/>
         </svg>
       </span>
-      <span>
-        <span data-i18n="brand">КД «Малина»</span>
-        <small data-i18n="brandSmall">Кондитерский дом</small>
-      </span>
+      <span data-i18n="brand">Кондитерский дом «Малина»</span>
     </a>
 
     <div class="top-actions">
-      <button class="language-toggle" id="languageToggle" type="button" aria-label="Change language">
+      <button class="top-btn" id="languageToggle" type="button" aria-label="Change language">
         RU
       </button>
-      <span class="pill" id="tgUser">
+      <span class="top-btn" id="tgUser">
         <span data-i18n="shop">Магазин</span>
       </span>
     </div>
@@ -1311,14 +1262,12 @@ body.dark-theme .topbar {
         <h3 data-i18n="step3Title">Получите подтверждение</h3>
         <p data-i18n="step3Text">Заказ сразу поступит в Telegram — мы свяжемся для подтверждения.</p>
       </div>
+      <div class="feature-card">
+        <div class="feature-icon">📦</div>
+        <h3 data-i18n="step4Title">Условия доставки</h3>
+        <p data-i18n="deliveryTiersInfo">До 500 ₽ — 199 ₽ | До 1000 ₽ — 149 ₽ | До 2000 ₽ — 99 ₽ | От 2000 ₽ — бесплатно</p>
+      </div>
     </div>
-
-    <!-- Стоимость доставки вынесена сюда -->
-    <div class="delivery-banner">
-      <strong data-i18n="deliveryTiersTitle">Стоимость доставки</strong>
-      <p data-i18n="deliveryTiersInfo">До 500 ₽ — 199 ₽ | До 1000 ₽ — 149 ₽ | До 2000 ₽ — 99 ₽ | От 2000 ₽ — бесплатно</p>
-    </div>
-
   </div>
 </section>
 
@@ -1344,7 +1293,6 @@ body.dark-theme .topbar {
 
 <div class="sheet-backdrop" id="cartOverlay"></div>
 
-<!-- Product Modal -->
 <div class="sheet-backdrop" id="pmOverlay"></div>
 <aside class="sheet" id="pmDrawer">
   <div class="grab"></div>
@@ -1363,7 +1311,6 @@ body.dark-theme .topbar {
   </div>
 </aside>
 
-<!-- Cart Sheet -->
 <aside class="sheet" id="cartDrawer">
   <div class="grab"></div>
   <div class="sheet-head">
@@ -1415,13 +1362,12 @@ body.dark-theme .topbar {
       </div>
 
       <label data-i18n="dateLabel">Желаемая дата</label>
-      <!-- Нативный date input использует язык системы -->
+      <div class="hint" style="margin-top: -6px; margin-bottom: 8px;" data-i18n="dateHint">Заказы принимаются минимум за 48 часов.</div>
       <input id="ckDate" name="date" type="date" required>
 
       <label data-i18n="commentLabel">Комментарий</label>
       <textarea id="ckComment" name="comment" data-i18n-placeholder="commentPlaceholder" placeholder="Пожелания к заказу"></textarea>
 
-      <!-- Промокод -->
       <label data-i18n="promoLabel">Промокод</label>
       <div style="display: flex; gap: 8px; margin-bottom: 4px;">
         <input id="ckPromo" name="promo" data-i18n-placeholder="promoPlaceholder" placeholder="Введите промокод" style="flex: 1;">
@@ -1471,8 +1417,7 @@ if (TG && TG.onEvent) {
 ===================================================== */
 const I18N = {
   ru: {
-    brand: "КД «Малина»",
-    brandSmall: "Кондитерский дом",
+    brand: "Кондитерский дом «Малина»",
     shop: "Магазин",
     eyebrow: "Заведение со вкусом",
     heroTitle1: "С любовью к каждому кусочку",
@@ -1495,6 +1440,7 @@ const I18N = {
     step2Text: "Имя, телефон, дату и способ получения. Адрес нужен только для доставки.",
     step3Title: "Получите подтверждение",
     step3Text: "Заказ сразу поступит в Telegram — мы свяжемся для подтверждения.",
+    step4Title: "Условия доставки",
     copyright: "© Кондитерский дом «Малина»",
     deliveryTiersTitle: "Стоимость доставки",
     deliveryTiersInfo: "До 500 ₽ — 199 ₽ | До 1000 ₽ — 149 ₽ | До 2000 ₽ — 99 ₽ | От 2000 ₽ — бесплатно",
@@ -1512,6 +1458,8 @@ const I18N = {
     addressPlaceholder: "Улица, дом, квартира",
     pickupNotice: "Адрес для получения заказа мы сообщим вам при подтверждении.",
     dateLabel: "Желаемая дата",
+    dateHint: "Заказы принимаются минимум за 48 часов.",
+    dateInvalid: "Выбрана недоступная дата.",
     commentLabel: "Комментарий",
     commentPlaceholder: "Пожелания к заказу",
     promoLabel: "Промокод",
@@ -1522,8 +1470,8 @@ const I18N = {
     promoUsed: "Промокод уже использован на этом аккаунте",
     submitOrder: "Подтвердить заказ",
     privacy: "Заказ отправляется в Telegram. Данные используются только для обработки заказа.",
-    orderSent: "Заказ отправлен",
-    orderSentText: "Мы получили заказ и свяжемся с вами для подтверждения.",
+    orderSent: "Ваш заказ оформлен!",
+    orderSentText: "Мы успешно получили вашу заявку. В ближайшее время мы свяжемся с вами в Telegram для подтверждения.",
     continueShopping: "Продолжить покупки",
     emptyCart: "Корзина пуста",
     cartEmpty: "Корзина пуста.<br>Добавьте любимую позицию из каталога.",
@@ -1531,11 +1479,11 @@ const I18N = {
     hitsEmpty: "Хиты появятся здесь.",
     addToCart: "Добавить",
     unavailable: "Сейчас недоступно",
-    outOfStock: "Нет в наличии",
+    outOfStock: "НЕТ В НАЛИЧИИ",
     added: "добавлен в корзину",
     sending: "Отправляем заказ…",
     orderError: "Не удалось отправить заказ",
-    requiredFields: "Заполните имя и телефон",
+    requiredFields: "Заполните имя, телефон и дату",
     phoneInvalid: "Проверьте номер телефона",
     addressRequired: "Введите адрес доставки",
     timeoutError: "Сервер не отвечает. Проверьте связь и попробуйте ещё раз",
@@ -1545,11 +1493,11 @@ const I18N = {
     deliveryItemDesc: "Нажмите, чтобы узнать условия",
     deliveryFree: "Бесплатно",
     promoDiscountText: "Скидка по промокоду",
-    readMore: "Развернуть"
+    readMore: "Развернуть",
+    collapse: "Свернуть"
   },
   en: {
     brand: "PH «Malina»",
-    brandSmall: "Pastry House",
     shop: "Shop",
     eyebrow: "A place with taste",
     heroTitle1: "With love for every bite",
@@ -1572,6 +1520,7 @@ const I18N = {
     step2Text: "Name, phone, date and delivery method. Address is only needed for delivery.",
     step3Title: "Get confirmation",
     step3Text: "The order will immediately go to Telegram — we will contact you to confirm.",
+    step4Title: "Delivery terms",
     copyright: "© Pastry House «Malina»",
     deliveryTiersTitle: "Delivery cost",
     deliveryTiersInfo: "Under 500 ₽ — 199 ₽ | Under 1000 ₽ — 149 ₽ | Under 2000 ₽ — 99 ₽ | From 2000 ₽ — free",
@@ -1589,6 +1538,8 @@ const I18N = {
     addressPlaceholder: "Street, building, apartment",
     pickupNotice: "We will inform you of the pickup address upon order confirmation.",
     dateLabel: "Preferred date",
+    dateHint: "Orders are accepted at least 48 hours in advance.",
+    dateInvalid: "Selected date is unavailable.",
     commentLabel: "Comment",
     commentPlaceholder: "Any special requests",
     promoLabel: "Promo code",
@@ -1599,8 +1550,8 @@ const I18N = {
     promoUsed: "Promo code already used on this account",
     submitOrder: "Confirm order",
     privacy: "The order is sent to Telegram. Your data is used only to process the order.",
-    orderSent: "Order sent",
-    orderSentText: "We've received your order and will contact you to confirm it.",
+    orderSent: "Your order is placed!",
+    orderSentText: "We have successfully received your request. We will contact you shortly in Telegram to confirm.",
     continueShopping: "Continue shopping",
     emptyCart: "Cart is empty",
     cartEmpty: "Your cart is empty.<br>Add your favorite item from the catalog.",
@@ -1608,11 +1559,11 @@ const I18N = {
     hitsEmpty: "Popular items will appear here.",
     addToCart: "Add",
     unavailable: "Currently unavailable",
-    outOfStock: "Out of stock",
+    outOfStock: "OUT OF STOCK",
     added: "added to cart",
     sending: "Sending order…",
     orderError: "Failed to send the order",
-    requiredFields: "Please fill in your name and phone",
+    requiredFields: "Please fill in your name, phone and date",
     phoneInvalid: "Please check the phone number",
     addressRequired: "Please enter delivery address",
     timeoutError: "The server isn't responding. Check your connection and try again",
@@ -1622,7 +1573,8 @@ const I18N = {
     deliveryItemDesc: "Click to see conditions",
     deliveryFree: "Free",
     promoDiscountText: "Promo discount",
-    readMore: "Read more"
+    readMore: "Read more",
+    collapse: "Collapse"
   }
 };
 
@@ -1659,7 +1611,6 @@ function applyLanguage(){
     el.alt = t(key);
   });
   
-  // Убраны флаги
   languageToggle.innerHTML = currentLanguage === "ru" ? "EN" : "RU";
   languageToggle.setAttribute("aria-label", t("languageLabel"));
   
@@ -1698,7 +1649,7 @@ if(TG){
 ===================================================== */
 const dateInput = document.getElementById("ckDate");
 const todayDate = new Date();
-todayDate.setDate(todayDate.getDate() + 2); // Через 2 дня
+todayDate.setDate(todayDate.getDate() + 2); // Заказы от послезавтра (минимум 48 часов)
 dateInput.min = todayDate.toISOString().split("T")[0];
 
 /* =====================================================
@@ -1719,7 +1670,7 @@ let cart = [];
 let isCartOpen = false;
 let checkoutStep = "items";
 
-const fallbackIcon = '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="35" fill="#f1f5f9"/><path d="M28 62c9-16 22-24 42-14 4 2 7 7 9 14H28z" fill="#d81b60"/></svg>';
+const fallbackIcon = '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="35" fill="#f1f5f9"/><path d="M28 62c9-16 22-24 42-14 4 2 7 7 9 14H28z" fill="#b02a5c"/></svg>';
 
 async function loadCatalog(){
   prodGrid.innerHTML = `<div class="empty">Загрузка каталога…</div>`;
@@ -1762,7 +1713,6 @@ async function loadCatalog(){
   }
 }
 
-// Убраны запятые, используются пробелы
 function money(n){
   const num = Number(n || 0);
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ") + " ₽";
@@ -1807,6 +1757,18 @@ function translatedTag(tag){
   return map[tag] || tag;
 }
 
+// Глобальная функция для развертывания описания
+window.toggleReadMore = function(btn) {
+  const meta = btn.previousElementSibling;
+  if (meta.style.webkitLineClamp === 'initial') {
+    meta.style.webkitLineClamp = '2';
+    btn.textContent = t('readMore');
+  } else {
+    meta.style.webkitLineClamp = 'initial';
+    btn.textContent = t('collapse');
+  }
+};
+
 function getQtyControlsHtml(name, out) {
   const qty = cart.find(c => c.name === name)?.qty || 0;
   if (qty > 0) {
@@ -1829,18 +1791,18 @@ function card(p){
     <article class="card ${out ? "unavailable" : ""}" data-product-name="${escapeHtml(p.name)}">
       <div class="card-img">
         ${p.tag ? `<span class="tag">${escapeHtml(translatedTag(p.tag))}</span>` : ""}
-        ${out ? `<div class="unavailable-overlay">${t("unavailable")}</div><span class="unavailable-badge">${t("outOfStock")}</span>` : ""}
+        ${out ? `<div class="unavailable-overlay"></div><div class="unavailable-badge">${t("outOfStock")}</div>` : ""}
         ${img(p)}
       </div>
       <div class="card-body">
         <h3>${escapeHtml(p.name)}</h3>
         <div>
-          <div class="meta">${escapeHtml(fullMeta)}</div>
-          ${showReadMore ? `<button class="read-more-btn" onclick="event.stopPropagation(); this.previousElementSibling.style.webkitLineClamp='initial'; this.style.display='none';">${t("readMore")}</button>` : ""}
+          <div class="meta" style="-webkit-line-clamp: 2;">${escapeHtml(fullMeta)}</div>
+          ${showReadMore ? `<button class="read-more-btn" onclick="toggleReadMore(this); event.stopPropagation();">${t("readMore")}</button>` : ""}
         </div>
         <div class="card-foot">
           <span class="price">${escapeHtml(p.price)}</span>
-          <div class="controls-wrap" onclick="event.stopPropagation()">
+          <div class="controls-wrap">
             ${getQtyControlsHtml(p.name, out)}
           </div>
         </div>
@@ -1856,7 +1818,7 @@ function hitCard(p) {
     <article class="hit-card ${out ? "unavailable" : ""}" data-product-name="${escapeHtml(p.name)}">
       <div class="hit-img">
         ${p.tag ? `<span class="hit-tag">${escapeHtml(translatedTag(p.tag))}</span>` : ""}
-        ${out ? `<div class="unavailable-overlay">${t("unavailable")}</div>` : ""}
+        ${out ? `<div class="unavailable-overlay"></div>` : ""}
         ${img(p)}
       </div>
       <div class="hit-body">
@@ -1866,7 +1828,7 @@ function hitCard(p) {
         </div>
         <div class="hit-foot">
           <span class="price">${escapeHtml(p.price)}</span>
-          <div class="controls-wrap" onclick="event.stopPropagation()">
+          <div class="controls-wrap">
             ${getQtyControlsHtml(p.name, out)}
           </div>
         </div>
@@ -1917,7 +1879,7 @@ document.body.addEventListener('click', e => {
   // Клик по + или -
   const qtyBtn = e.target.closest('.qty-btn, .add');
   if (qtyBtn && !qtyBtn.disabled) {
-    e.stopPropagation();
+    e.stopPropagation(); // Не открывать модалку
     const change = parseInt(qtyBtn.dataset.qtyChange);
     const name = qtyBtn.dataset.name;
     const p = allProducts.find(x => x.name === name);
@@ -1930,7 +1892,7 @@ document.body.addEventListener('click', e => {
   
   // Клик по карточке для открытия модалки
   const cardEl = e.target.closest('.card, .hit-card');
-  if (cardEl && !e.target.closest('.controls-wrap') && !e.target.closest('.read-more-btn')) {
+  if (cardEl && !e.target.closest('.read-more-btn')) {
     openProductModal(cardEl.dataset.productName);
   }
 });
@@ -2017,13 +1979,13 @@ function removeFromCartLogic(name){
 }
 
 function showDeliveryRules() {
-    const msg = "Стоимость доставки:\nДо 500 ₽ — 199 ₽\nДо 1000 ₽ — 149 ₽\nДо 2000 ₽ — 99 ₽\nОт 2000 ₽ — бесплатно";
+    const msg = `${t("deliveryTiersTitle")}:\n${t("deliveryTiersInfo").replace(/ \| /g, "\n")}`;
     if (TG && TG.showAlert) TG.showAlert(msg);
     else alert(msg);
 }
 
 function renderCart(){
-  // Исключаем доставку из счетчика товаров n
+  // Исключаем доставку из счетчика товаров
   const n = cart.filter(i => i.name !== "Доставка").reduce((s,i) => s + i.qty, 0);
   const subtotal = cart.reduce((s,i) => s + i.priceNum * i.qty, 0);
   
@@ -2085,7 +2047,7 @@ function renderCart(){
     if (method === "Доставка") {
         itemsHTML += `
         <div class="cart-item delivery-item" onclick="showDeliveryRules()">
-          <div class="cart-thumb" style="background: rgba(216, 27, 96, 0.1); color: var(--tg-blue); font-size: 24px; display: grid; place-items: center;">📦</div>
+          <div class="cart-thumb" style="background: rgba(176, 42, 92, 0.1); color: var(--tg-blue); font-size: 24px; display: grid; place-items: center;">📦</div>
           <div class="cart-info">
             <strong style="color: var(--tg-blue)">${t("deliveryItemName")}</strong>
             <small>${t("deliveryItemDesc")}</small>
@@ -2269,15 +2231,26 @@ function validateOrder(){
   if(!cart.length) return t("emptyCart");
   const name = ckName.value.trim();
   const phone = ckPhone.value.trim();
-  const date = document.getElementById("ckDate").value.trim();
+  const dateVal = document.getElementById("ckDate").value.trim();
   const addr = document.getElementById("ckAddress").value.trim();
   const method = document.querySelector('input[name="method"]:checked')?.value;
 
-  if(!name || !phone || !date){
+  if(!name || !phone || !dateVal){
     if(!name) markInvalid(ckName);
     if(!phone) markInvalid(ckPhone);
-    if(!date) markInvalid(document.getElementById("ckDate"));
+    if(!dateVal) markInvalid(document.getElementById("ckDate"));
     return t("requiredFields");
+  }
+
+  // Проверка даты (минимум 48 часов)
+  const selectedDate = new Date(dateVal);
+  const minDate = new Date();
+  minDate.setDate(minDate.getDate() + 1); // Блокируем сегодня и завтра
+  minDate.setHours(0,0,0,0);
+  
+  if (selectedDate <= minDate) {
+      markInvalid(document.getElementById("ckDate"));
+      return t("dateInvalid");
   }
   
   if(method === "Доставка" && !addr) {
