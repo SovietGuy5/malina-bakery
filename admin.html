@@ -13,7 +13,7 @@
     content="#f2f4f7"
 >
 
-<title>Медовый Дом — управление</title>
+<title>Кондитерский дом «Малина» — управление</title>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
@@ -1336,6 +1336,12 @@ button:disabled {
 
 }
 
+
+.extra-panel{display:block}.extra-panel[hidden]{display:none!important}
+.nav-button{min-width:0}.admin-nav{grid-template-columns:repeat(5,1fr)}
+.promo-card,.order-card{padding:14px;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}
+.promo-card-head,.order-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.promo-card-title,.order-number{font-weight:800;font-size:15px}.promo-meta,.order-meta{margin-top:6px;color:var(--muted);font-size:11px;line-height:1.55}.promo-actions{display:flex;gap:6px}.mini-button{width:36px;height:36px;border-radius:10px;background:var(--bg);color:var(--text);border:1px solid var(--line)}.mini-button.danger{color:var(--danger)}.status-pill{display:inline-flex;padding:4px 8px;border-radius:999px;font-size:10px;font-weight:800;background:rgba(58,157,104,.12);color:var(--success)}.status-pill.off{background:rgba(217,83,79,.12);color:var(--danger)}.discount-pill{display:inline-flex;padding:4px 8px;border-radius:999px;background:rgba(176,42,92,.12);color:var(--accent);font-size:10px;font-weight:800}.price-old{text-decoration:line-through;color:var(--muted);margin-right:5px}.order-total{font-weight:900;font-size:16px}.order-discount{color:var(--accent);font-weight:800}.order-select{height:36px;padding:0 8px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text);font-size:12px}
+@media(max-width:699px){.admin-nav{grid-template-columns:repeat(2,1fr)}.admin-nav .nav-button:nth-child(5){grid-column:span 2}.form-row{grid-template-columns:1fr}}
 </style>
 </head>
 
@@ -1351,11 +1357,11 @@ button:disabled {
     <div class="header-title">
 
         <h1>
-            🍯 Управление
+            🍰 Управление
         </h1>
 
         <p>
-            Медовый Дом
+            Кондитерский дом «Малина» · @MalinaBakeryBot
         </p>
 
     </div>
@@ -1378,23 +1384,11 @@ button:disabled {
      ============================================================ -->
 
 <nav class="admin-nav">
-
-    <button
-        id="catalogNavButton"
-        class="nav-button active"
-        type="button"
-    >
-        🍰 Каталог
-    </button>
-
-    <button
-        id="adminsNavButton"
-        class="nav-button"
-        type="button"
-    >
-        👥 Администраторы
-    </button>
-
+    <button id="catalogNavButton" class="nav-button active" type="button">🍰 Каталог</button>
+    <button id="promotionsNavButton" class="nav-button" type="button">🔥 Акции</button>
+    <button id="promoCodesNavButton" class="nav-button" type="button">🏷️ Промокоды</button>
+    <button id="ordersNavButton" class="nav-button" type="button">📦 Заказы</button>
+    <button id="adminsNavButton" class="nav-button" type="button">👥 Администраторы</button>
 </nav>
 
 
@@ -4443,6 +4437,65 @@ function escapeAttr(
 
 }
 
+
+
+/* ============================================================
+   MALINA PROMOTIONS / PROMO CODES / ORDERS MANAGEMENT
+   ============================================================ */
+const MANAGEMENT_API_URL = "https://xheusnpmmmhbwwfcozbr.supabase.co/functions/v1/admin-management";
+const promotionsPanel = document.getElementById("promotionsPanel");
+const promoCodesPanel = document.getElementById("promoCodesPanel");
+const ordersPanel = document.getElementById("ordersPanel");
+const promotionsList = document.getElementById("promotionsList");
+const promoCodesList = document.getElementById("promoCodesList");
+const ordersList = document.getElementById("ordersList");
+const promotionModal = document.getElementById("promotionModal");
+const promoCodeModal = document.getElementById("promoCodeModal");
+let managementProducts = [], managementPromotions = [], managementPromoCodes = [], managementOrders = [];
+
+async function managementApi(resource, method="GET", body=null, id=null){
+  const url=new URL(MANAGEMENT_API_URL); url.searchParams.set("resource",resource); if(id) url.searchParams.set("id",id);
+  const r=await fetch(url,{method,headers:{"Content-Type":"application/json","X-Telegram-Init-Data":getTelegramInitData()},body:body?JSON.stringify(body):undefined});
+  const text=await r.text(); let data={}; try{data=text?JSON.parse(text):{}}catch{throw new Error(text)}
+  if(!r.ok||data.ok===false) throw new Error(data.error||`HTTP ${r.status}`); return data;
+}
+function setActiveNav(btn){document.querySelectorAll(".admin-nav .nav-button").forEach(x=>x.classList.remove("active")); if(btn)btn.classList.add("active");}
+function hideExtraPanels(){promotionsPanel.hidden=true;promoCodesPanel.hidden=true;ordersPanel.hidden=true;catalogPanel.classList.remove("hidden");adminPanel.classList.remove("open");}
+function showManagementPanel(panel,btn){catalogPanel.classList.add("hidden");adminPanel.classList.remove("open");promotionsPanel.hidden=true;promoCodesPanel.hidden=true;ordersPanel.hidden=true;panel.hidden=false;setActiveNav(btn);}
+function fmtDateTime(v){if(!v)return "—"; try{return new Date(v).toLocaleString("ru-RU",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"})}catch{return v}}
+function toLocalInput(v){if(!v)return ""; const d=new Date(v); if(Number.isNaN(d.getTime()))return ""; const z=n=>String(n).padStart(2,"0"); return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}T${z(d.getHours())}:${z(d.getMinutes())}`}
+function localToIso(v){return v?new Date(v).toISOString():null}
+function promotionTypeLabel(t){return ({product_discount:"Товар",category_discount:"Категория",order_discount:"Заказ",bogo:"2+1 / подарок",second_item_discount:"Второй товар",free_delivery:"Бесплатная доставка"})[t]||t}
+function promotionDiscountLabel(p){if(p.promotion_type==="free_delivery")return "Бесплатная доставка";if(p.promotion_type==="bogo")return `${p.buy_quantity||2}+${p.reward_quantity||1}, −${p.reward_discount_percent??100}%`;return p.discount_type==="fixed"?`−${formatPrice(p.discount_value)}`:`−${p.discount_value}%`}
+async function loadManagementProducts(){try{const r=await managementApi("products");managementProducts=r.products||[];const s=document.getElementById("promotionProduct");s.innerHTML='<option value="">Любой / не выбран</option>'+managementProducts.map(p=>`<option value="${escapeAttr(p.id)}">${escapeHtml(p.name)} · ${formatPrice(p.price)}</option>`).join("")}catch(e){console.warn(e)}}
+async function loadPromotions(){promotionsList.innerHTML='<div class="state"><div class="state-icon">⏳</div><div class="state-title">Загружаем акции</div></div>';try{const r=await managementApi("promotions");managementPromotions=r.promotions||[];renderPromotions()}catch(e){promotionsList.innerHTML=`<div class="state"><div class="state-icon">⚠️</div><div class="state-title">Не удалось загрузить акции</div><div class="state-text">${escapeHtml(e.message)}</div></div>`;toast(e.message,true)}}
+function renderPromotions(){if(!managementPromotions.length){promotionsList.innerHTML='<div class="state"><div class="state-icon">🔥</div><div class="state-title">Акций пока нет</div><div class="state-text">Создайте первую акцию для Кондитерского дома «Малина».</div></div>';return}promotionsList.innerHTML=managementPromotions.map(p=>`<div class="promo-card"><div class="promo-card-head"><div><div class="promo-card-title">${escapeHtml(p.name)} ${p.badge?`<span class="discount-pill">${escapeHtml(p.badge)}</span>`:""}</div><div class="promo-meta">${escapeHtml(promotionTypeLabel(p.promotion_type))} · ${escapeHtml(promotionDiscountLabel(p))}<br>${p.target_product_id?`Товар: ${escapeHtml(managementProducts.find(x=>String(x.id)===String(p.target_product_id))?.name||p.target_product_id)}<br>`:""}${p.target_category?`Категория: ${escapeHtml(p.target_category)}<br>`:""}${p.min_order_amount>0?`От ${formatPrice(p.min_order_amount)} · `:""}${p.starts_at||p.expires_at?`${fmtDateTime(p.starts_at)} — ${fmtDateTime(p.expires_at)}`:"Без ограничения по датам"}</div></div><div class="promo-actions"><button class="mini-button" data-edit-promo="${p.id}">✏️</button><button class="mini-button danger" data-delete-promo="${p.id}">🗑</button></div></div><div style="margin-top:10px"><span class="status-pill ${p.is_active?'':'off'}">${p.is_active?'АКТИВНА':'ВЫКЛЮЧЕНА'}</span>${p.stackable_with_promo_code?'<span class="status-pill" style="margin-left:6px">+ ПРОМОКОД</span>':''}</div></div>`).join("")}
+function openPromotion(p=null){document.getElementById("promotionModalTitle").textContent=p?"Изменить акцию":"Новая акция";document.getElementById("promotionId").value=p?.id||"";document.getElementById("promotionName").value=p?.name||"";document.getElementById("promotionDescription").value=p?.description||"";document.getElementById("promotionType").value=p?.promotion_type||"product_discount";document.getElementById("promotionValue").value=p?.discount_value??20;document.getElementById("promotionDiscountType").value=p?.discount_type||"percent";document.getElementById("promotionProduct").value=p?.target_product_id||"";document.getElementById("promotionCategory").value=p?.target_category||"";document.getElementById("promotionMinOrder").value=p?.min_order_amount??0;document.getElementById("promotionMaxDiscount").value=p?.max_discount??"";document.getElementById("promotionBuyQty").value=p?.buy_quantity??"";document.getElementById("promotionRewardQty").value=p?.reward_quantity??"";document.getElementById("promotionRewardDiscount").value=p?.reward_discount_percent??"";document.getElementById("promotionStartsAt").value=toLocalInput(p?.starts_at);document.getElementById("promotionExpiresAt").value=toLocalInput(p?.expires_at);document.getElementById("promotionPriority").value=p?.priority??100;document.getElementById("promotionBadge").value=p?.badge||"";document.getElementById("promotionActive").checked=p?.is_active!==false;document.getElementById("promotionStackable").checked=p?.stackable_with_promo_code===true;promotionModal.classList.add("open")}
+function closePromotion(){promotionModal.classList.remove("open")}
+async function savePromotionForm(e){e.preventDefault();const id=document.getElementById("promotionId").value;const body={name:document.getElementById("promotionName").value.trim(),description:document.getElementById("promotionDescription").value.trim(),promotion_type:document.getElementById("promotionType").value,discount_type:document.getElementById("promotionDiscountType").value,discount_value:Number(document.getElementById("promotionValue").value||0),target_product_id:document.getElementById("promotionProduct").value||null,target_category:document.getElementById("promotionCategory").value.trim()||null,min_order_amount:Number(document.getElementById("promotionMinOrder").value||0),max_discount:document.getElementById("promotionMaxDiscount").value===""?null:Number(document.getElementById("promotionMaxDiscount").value),buy_quantity:document.getElementById("promotionBuyQty").value?Number(document.getElementById("promotionBuyQty").value):null,reward_quantity:document.getElementById("promotionRewardQty").value?Number(document.getElementById("promotionRewardQty").value):null,reward_discount_percent:document.getElementById("promotionRewardDiscount").value===""?null:Number(document.getElementById("promotionRewardDiscount").value),starts_at:localToIso(document.getElementById("promotionStartsAt").value),expires_at:localToIso(document.getElementById("promotionExpiresAt").value),priority:Number(document.getElementById("promotionPriority").value||100),badge:document.getElementById("promotionBadge").value.trim()||null,is_active:document.getElementById("promotionActive").checked,stackable_with_promo_code:document.getElementById("promotionStackable").checked};try{await managementApi("promotions",id?"PATCH":"POST",body,id||null);closePromotion();toast(id?"Акция изменена":"Акция создана");await loadPromotions()}catch(err){toast(err.message,true)}}
+async function deletePromotionById(id){if(!confirm("Удалить эту акцию?"))return;try{await managementApi("promotions","DELETE",null,id);toast("Акция удалена");await loadPromotions()}catch(e){toast(e.message,true)}}
+async function loadPromoCodes(){promoCodesList.innerHTML='<div class="state"><div class="state-icon">⏳</div><div class="state-title">Загружаем промокоды</div></div>';try{const r=await managementApi("promo_codes");managementPromoCodes=r.promo_codes||[];renderPromoCodes()}catch(e){promoCodesList.innerHTML=`<div class="state"><div class="state-icon">⚠️</div><div class="state-title">Ошибка</div><div class="state-text">${escapeHtml(e.message)}</div></div>`;toast(e.message,true)}}
+function renderPromoCodes(){if(!managementPromoCodes.length){promoCodesList.innerHTML='<div class="state"><div class="state-icon">🏷️</div><div class="state-title">Промокодов пока нет</div></div>';return}promoCodesList.innerHTML=managementPromoCodes.map(p=>`<div class="promo-card"><div class="promo-card-head"><div><div class="promo-card-title">${escapeHtml(p.code)} <span class="discount-pill">${p.discount_type==='fixed'?`−${formatPrice(p.discount_value)}`:`−${p.discount_value}%`}</span></div><div class="promo-meta">${p.min_order_amount>0?`От ${formatPrice(p.min_order_amount)} · `:'Без минимальной суммы'}${p.usage_limit?`Использовано ${p.usage_count||0}/${p.usage_limit}`:'Без лимита'}<br>${p.starts_at||p.expires_at?`${fmtDateTime(p.starts_at)} — ${fmtDateTime(p.expires_at)}`:'Без ограничения по датам'}${p.one_use_per_user?' · 1 раз на пользователя':''}</div></div><div class="promo-actions"><button class="mini-button" data-edit-code="${p.id}">✏️</button><button class="mini-button danger" data-delete-code="${p.id}">🗑</button></div></div><div style="margin-top:10px"><span class="status-pill ${p.is_active?'':'off'}">${p.is_active?'АКТИВЕН':'ВЫКЛЮЧЕН'}</span></div></div>`).join("")}
+function openPromoCode(p=null){document.getElementById("promoCodeModalTitle").textContent=p?"Изменить промокод":"Новый промокод";document.getElementById("promoCodeId").value=p?.id||"";document.getElementById("promoCodeValue").value=p?.code||"";document.getElementById("promoCodeDiscountValue").value=p?.discount_value??10;document.getElementById("promoCodeDiscountType").value=p?.discount_type||"percent";document.getElementById("promoCodeMinOrder").value=p?.min_order_amount??0;document.getElementById("promoCodeMaxDiscount").value=p?.max_discount??"";document.getElementById("promoCodeUsageLimit").value=p?.usage_limit??"";document.getElementById("promoCodeStartsAt").value=toLocalInput(p?.starts_at);document.getElementById("promoCodeExpiresAt").value=toLocalInput(p?.expires_at);document.getElementById("promoCodeActive").checked=p?.is_active!==false;document.getElementById("promoCodeOneUse").checked=p?.one_use_per_user===true;promoCodeModal.classList.add("open")}
+function closePromoCode(){promoCodeModal.classList.remove("open")}
+async function savePromoCodeForm(e){e.preventDefault();const id=document.getElementById("promoCodeId").value;const body={code:document.getElementById("promoCodeValue").value.trim().toUpperCase(),discount_value:Number(document.getElementById("promoCodeDiscountValue").value||0),discount_type:document.getElementById("promoCodeDiscountType").value,min_order_amount:Number(document.getElementById("promoCodeMinOrder").value||0),max_discount:document.getElementById("promoCodeMaxDiscount").value===""?null:Number(document.getElementById("promoCodeMaxDiscount").value),usage_limit:document.getElementById("promoCodeUsageLimit").value===""?null:Number(document.getElementById("promoCodeUsageLimit").value),starts_at:localToIso(document.getElementById("promoCodeStartsAt").value),expires_at:localToIso(document.getElementById("promoCodeExpiresAt").value),is_active:document.getElementById("promoCodeActive").checked,one_use_per_user:document.getElementById("promoCodeOneUse").checked};try{await managementApi("promo_codes",id?"PATCH":"POST",body,id||null);closePromoCode();toast(id?"Промокод изменён":"Промокод создан");await loadPromoCodes()}catch(err){toast(err.message,true)}}
+async function deletePromoCodeById(id){if(!confirm("Удалить этот промокод?"))return;try{await managementApi("promo_codes","DELETE",null,id);toast("Промокод удалён");await loadPromoCodes()}catch(e){toast(e.message,true)}}
+async function loadOrders(){ordersList.innerHTML='<div class="state"><div class="state-icon">⏳</div><div class="state-title">Загружаем заказы</div></div>';try{const r=await managementApi("orders");managementOrders=r.orders||[];renderOrders()}catch(e){ordersList.innerHTML=`<div class="state"><div class="state-icon">⚠️</div><div class="state-title">Не удалось загрузить заказы</div><div class="state-text">${escapeHtml(e.message)}</div></div>`;toast(e.message,true)}}
+function renderOrders(){if(!managementOrders.length){ordersList.innerHTML='<div class="state"><div class="state-icon">📦</div><div class="state-title">Заказов пока нет</div></div>';return}ordersList.innerHTML=managementOrders.map(o=>`<div class="order-card"><div class="order-head"><div><div class="order-number">Заказ #${escapeHtml(o.order_number)} <span class="status-pill ${o.status==='cancelled'?'off':''}">${escapeHtml(o.status)}</span></div><div class="order-meta">${fmtDateTime(o.created_at)} · ${escapeHtml(o.customer_name||'Без имени')} · ${escapeHtml(o.method||'')}<br>${o.phone?escapeHtml(o.phone):''}${o.promo_code?` · 🏷️ ${escapeHtml(o.promo_code)}`:''}</div></div><div class="order-total">${formatPrice(o.total)}</div></div>${Number(o.discount||0)>0?`<div class="order-meta"><span class="order-discount">Скидка −${formatPrice(o.discount)}</span> · Товары ${formatPrice(o.subtotal)} · Доставка ${formatPrice(o.delivery_fee)}</div>`:''}<div style="margin-top:10px"><select class="order-select" data-order-status="${o.id}"><option value="new" ${o.status==='new'?'selected':''}>Новый</option><option value="confirmed" ${o.status==='confirmed'?'selected':''}>Подтверждён</option><option value="completed" ${o.status==='completed'?'selected':''}>Выполнен</option><option value="cancelled" ${o.status==='cancelled'?'selected':''}>Отменён</option></select></div></div>`).join("")}
+
+const promotionsNavButton=document.getElementById("promotionsNavButton"),promoCodesNavButton=document.getElementById("promoCodesNavButton"),ordersNavButton=document.getElementById("ordersNavButton");
+catalogNavButton.addEventListener("click",()=>{hideExtraPanels();catalogPanel.classList.remove("hidden");setActiveNav(catalogNavButton);});
+adminsNavButton.addEventListener("click",()=>{hideExtraPanels();catalogPanel.classList.add("hidden");adminPanel.classList.add("open");setActiveNav(adminsNavButton);loadAdmins();});
+promotionsNavButton.addEventListener("click",()=>{showManagementPanel(promotionsPanel,promotionsNavButton);loadManagementProducts();loadPromotions()});
+promoCodesNavButton.addEventListener("click",()=>{showManagementPanel(promoCodesPanel,promoCodesNavButton);loadPromoCodes()});
+ordersNavButton.addEventListener("click",()=>{showManagementPanel(ordersPanel,ordersNavButton);loadOrders()});
+document.getElementById("addPromotionButton").addEventListener("click",()=>openPromotion());
+document.getElementById("closePromotionButton").addEventListener("click",closePromotion);document.getElementById("cancelPromotionButton").addEventListener("click",closePromotion);document.getElementById("promotionForm").addEventListener("submit",savePromotionForm);
+promotionsList.addEventListener("click",e=>{const edit=e.target.closest("[data-edit-promo]");const del=e.target.closest("[data-delete-promo]");if(edit)openPromotion(managementPromotions.find(p=>String(p.id)===String(edit.dataset.editPromo)));if(del)deletePromotionById(del.dataset.deletePromo)});
+document.getElementById("addPromoCodeButton").addEventListener("click",()=>openPromoCode());document.getElementById("closePromoCodeButton").addEventListener("click",closePromoCode);document.getElementById("cancelPromoCodeButton").addEventListener("click",closePromoCode);document.getElementById("promoCodeForm").addEventListener("submit",savePromoCodeForm);
+promoCodesList.addEventListener("click",e=>{const edit=e.target.closest("[data-edit-code]");const del=e.target.closest("[data-delete-code]");if(edit)openPromoCode(managementPromoCodes.find(p=>String(p.id)===String(edit.dataset.editCode)));if(del)deletePromoCodeById(del.dataset.deleteCode)});
+document.getElementById("refreshOrdersButton").addEventListener("click",loadOrders);ordersList.addEventListener("change",async e=>{const s=e.target.closest("[data-order-status]");if(!s)return;try{await managementApi("orders","PATCH",{status:s.value},s.dataset.orderStatus);toast("Статус заказа обновлён")}catch(err){toast(err.message,true);await loadOrders()}});
+[promotionModal,promoCodeModal].forEach(m=>m.addEventListener("click",e=>{if(e.target===m)m.classList.remove("open")}));
 
 /* ============================================================
    TELEGRAM USER
