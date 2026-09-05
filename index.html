@@ -2331,6 +2331,7 @@ function removeCompletely(name){
 
 function clearAll(){ 
   cart = []; 
+  promoState = { code:"", valid:false, discount:0, message:"" };
   renderCart(); 
   updateCardCounters(); 
   updateModalControls(); 
@@ -2354,13 +2355,8 @@ function renderCart(){
       else if (subtotal < 2000) deliveryFee = 99;
   }
 
-  const promoVal = IS_TELEGRAM_USER ? document.getElementById('ckPromo')?.value.trim().toUpperCase() : "";
-  const promoKey = `promo_${userId}_${promoVal}`;
-  let promoDiscount = 0;
-  if (IS_TELEGRAM_USER && promoVal === 'LOYAL200' && !localStorage.getItem(promoKey)) {
-    promoDiscount = 200;
-  }
-
+  const promoVal = IS_TELEGRAM_USER && promoState.valid ? promoState.code : "";
+  const promoDiscount = IS_TELEGRAM_USER && promoState.valid ? Math.max(0, Number(promoState.discount || 0)) : 0;
   const total = Math.max(0, subtotal + deliveryFee - promoDiscount);
 
   if (!n) {
@@ -2502,42 +2498,99 @@ const applyPromoBtn = document.getElementById("applyPromoBtn");
 const ckPromo = document.getElementById("ckPromo");
 const promoMessage = document.getElementById("promoMessage");
 
+let promoState = {
+  code: "",
+  valid: false,
+  discount: 0,
+  message: ""
+};
+
 function updatePromoVisibility(){
   const visible = IS_TELEGRAM_USER && !!cart.length;
   cartPromoSection?.classList.toggle("hidden", !visible);
 
   if(!visible){
     if(ckPromo) ckPromo.value = "";
+    promoState = { code: "", valid: false, discount: 0, message: "" };
     promoMessage?.classList.add("hidden");
   }
 }
 
-applyPromoBtn.onclick = () => {
-    if(!IS_TELEGRAM_USER) return;
+async function validatePromoFromSupabase(code){
+  const subtotal = cart.reduce((s,i) => s + i.priceNum * i.qty, 0);
+  const telegramId = Number(TG_USER?.id);
 
-    const promo = ckPromo.value.trim().toUpperCase();
-    ckPromo.value = promo;
+  if(!IS_TELEGRAM_USER || !code || !Number.isFinite(telegramId)){
+    return { valid:false, discount:0, message:"Промокод недействителен" };
+  }
 
-    if (promo === 'LOYAL200') {
-        const promoKey = `promo_${userId}_${promo}`;
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/validate_promo_code`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "apikey": SUPABASE_ANON_KEY,
+      "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
+    },
+    body: JSON.stringify({
+      p_code: code,
+      p_subtotal: subtotal,
+      p_user_id: null,
+      p_telegram_id: telegramId
+    })
+  });
 
-        if (localStorage.getItem(promoKey)) {
-            promoMessage.classList.remove("hidden");
-            promoMessage.textContent = t('promoUsed');
-            promoMessage.style.color = 'var(--danger)';
-        } else {
-            promoMessage.classList.remove("hidden");
-            promoMessage.textContent = t('promoApplied');
-            promoMessage.style.color = 'var(--success)';
-        }
-    } else if (promo) {
-        promoMessage.classList.remove("hidden");
-        promoMessage.textContent = t('promoInvalid');
-        promoMessage.style.color = 'var(--danger)';
-    } else {
-        promoMessage.classList.add("hidden");
-    }
+  const data = await response.json().catch(() => null);
+  if(!response.ok){
+    throw new Error(data?.message || data?.error || "Не удалось проверить промокод");
+  }
+
+  const result = Array.isArray(data) ? data[0] : data;
+  return {
+    valid: !!result?.valid,
+    discount: Number(result?.discount || 0),
+    message: result?.message || (result?.valid ? "Промокод применен" : "Промокод недействителен")
+  };
+}
+
+applyPromoBtn.onclick = async () => {
+  if(!IS_TELEGRAM_USER) return;
+
+  const promo = ckPromo.value.trim().toUpperCase();
+  ckPromo.value = promo;
+
+  if(!promo){
+    promoState = { code:"", valid:false, discount:0, message:"" };
+    promoMessage.classList.add("hidden");
     renderCart();
+    return;
+  }
+
+  applyPromoBtn.disabled = true;
+
+  try{
+    const result = await validatePromoFromSupabase(promo);
+
+    promoState = {
+      code: promo,
+      valid: result.valid,
+      discount: result.valid ? result.discount : 0,
+      message: result.message
+    };
+
+    promoMessage.classList.remove("hidden");
+    promoMessage.textContent = result.valid
+      ? `${result.message}. Скидка ${money(result.discount)}`
+      : result.message;
+    promoMessage.style.color = result.valid ? "var(--success)" : "var(--danger)";
+  }catch(err){
+    promoState = { code: promo, valid:false, discount:0, message: err?.message || "Не удалось проверить промокод" };
+    promoMessage.classList.remove("hidden");
+    promoMessage.textContent = promoState.message;
+    promoMessage.style.color = "var(--danger)";
+  }finally{
+    applyPromoBtn.disabled = false;
+    renderCart();
+  }
 };
 
 function updateMainButton(){
@@ -2552,10 +2605,8 @@ function updateMainButton(){
       else if (subtotal < 2000) deliveryFee = 99;
   }
   
-  const promoVal = IS_TELEGRAM_USER ? document.getElementById('ckPromo')?.value.trim().toUpperCase() : "";
-  const promoKey = `promo_${userId}_${promoVal}`;
-  let promoDiscount = (IS_TELEGRAM_USER && promoVal === 'LOYAL200' && !localStorage.getItem(promoKey)) ? 200 : 0;
-  
+  const promoVal = IS_TELEGRAM_USER && promoState.valid ? promoState.code : "";
+  const promoDiscount = IS_TELEGRAM_USER && promoState.valid ? Math.max(0, Number(promoState.discount || 0)) : 0;
   const total = Math.max(0, subtotal + deliveryFee - promoDiscount);
 
   if(!cart.length || checkoutStep === "success"){
@@ -2660,10 +2711,8 @@ async function performSubmit(){
       else if (subtotal < 2000) deliveryFee = 99;
   }
   
-  const promoVal = IS_TELEGRAM_USER ? document.getElementById('ckPromo')?.value.trim().toUpperCase() : "";
-  const promoKey = `promo_${userId}_${promoVal}`;
-  let promoDiscount = (IS_TELEGRAM_USER && promoVal === 'LOYAL200' && !localStorage.getItem(promoKey)) ? 200 : 0;
-  
+  const promoVal = IS_TELEGRAM_USER && promoState.valid ? promoState.code : "";
+  const promoDiscount = IS_TELEGRAM_USER && promoState.valid ? Math.max(0, Number(promoState.discount || 0)) : 0;
   const total = Math.max(0, subtotal + deliveryFee - promoDiscount);
 
   const data = {
@@ -2680,6 +2729,7 @@ async function performSubmit(){
     discount: promoDiscount,
     total: total,
     telegram: TG?.initDataUnsafe?.user || null,
+    telegram_id: TG_USER?.id || null,
     initData: TG?.initData || "",
     source: ORDER_SOURCE,
     language: currentLanguage
@@ -2698,10 +2748,7 @@ async function performSubmit(){
     const j = await r.json().catch(() => ({}));
     if(!r.ok || j.ok === false) throw new Error(j.error || t("orderError"));
 
-    if(IS_TELEGRAM_USER && promoDiscount > 0) {
-       localStorage.setItem(promoKey, 'true');
-    }
-
+    promoState = { code:"", valid:false, discount:0, message:"" };
     cart = [];
     renderCart();
     updateCardCounters();
