@@ -1347,6 +1347,18 @@ body.dark-theme .topbar {
   </div>
 </section>
 
+<section class="section hidden" id="promotionsSection">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <h2 data-i18n="promotionsTitle">🔥 Акции</h2>
+        <p data-i18n="promotionsSubtitle">Специальные предложения, которые действуют сейчас.</p>
+      </div>
+    </div>
+    <div class="feature" id="promotionsGrid"></div>
+  </div>
+</section>
+
 <section class="section">
   <div class="wrap">
     <div class="section-head">
@@ -1692,7 +1704,12 @@ const I18N = {
     deliveryFree: "Бесплатно",
     promoDiscountText: "Скидка по промокоду",
     readMore: "Развернуть",
-    collapse: "Свернуть"
+    collapse: "Свернуть",
+    promotionsTitle: "🔥 Акции",
+    promotionsSubtitle: "Специальные предложения, которые действуют сейчас.",
+    promotionFrom: "Акция",
+    freeDeliveryPromo: "Бесплатная доставка",
+    automaticDiscountText: "Скидка по акции"
   },
   en: {
     pageTitle: 'Pastry house "Malina"',
@@ -1775,7 +1792,12 @@ const I18N = {
     deliveryFree: "Free",
     promoDiscountText: "Promo discount",
     readMore: "Read more",
-    collapse: "Collapse"
+    collapse: "Collapse",
+    promotionsTitle: "🔥 Promotions",
+    promotionsSubtitle: "Special offers that are active right now.",
+    promotionFrom: "Promotion",
+    freeDeliveryPromo: "Free delivery",
+    automaticDiscountText: "Promotion discount"
   }
 };
 
@@ -1895,6 +1917,7 @@ let activeFilter = "Все";
 let currentFiltered = [];
 let currentHits = [];
 let cart = [];
+let activePromotions = [];
 let isCartOpen = false;
 let checkoutStep = "items";
 
@@ -1933,12 +1956,112 @@ async function loadCatalog(){
       sortOrder: Number(product.sort_order || 0)
     })).filter(product => product.name);
     
+    await loadPromotions();
     renderAll();
   }catch(error){
     allProducts = [];
     renderAll();
     prodGrid.innerHTML = `<div class="empty">Не удалось загрузить каталог.</div>`;
   }
+}
+
+async function loadPromotions(){
+  activePromotions = [];
+  try{
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_active_promotions`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": SUPABASE_ANON_KEY,
+        "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
+      },
+      body: "{}"
+    });
+    if(!response.ok) return;
+    const data = await response.json();
+    activePromotions = Array.isArray(data) ? data : [];
+  }catch{}
+}
+
+function promotionAppliesToProduct(promo, product){
+  if(!promo || !product) return false;
+  if(promo.promotion_type === "product_discount") return String(promo.target_product_id) === String(product.id);
+  if(promo.promotion_type === "category_discount") return String(promo.target_category || "").toLowerCase() === String(product.category || "").toLowerCase();
+  return false;
+}
+
+function productPromoPrice(product){
+  const original = priceNum(product.price);
+  const promos = activePromotions.filter(p => promotionAppliesToProduct(p, product));
+  if(!promos.length) return {original, price:original, promo:null, discount:0};
+  let best = {original, price:original, promo:null, discount:0};
+  for(const promo of promos){
+    let discount = promo.discount_type === "percent" ? original * Number(promo.discount_value || 0) / 100 : Number(promo.discount_value || 0);
+    if(promo.max_discount != null) discount = Math.min(discount, Number(promo.max_discount));
+    discount = Math.min(original, Math.max(0, discount));
+    if(discount > best.discount) best = {original, price:Math.max(0, original-discount), promo, discount};
+  }
+  return best;
+}
+
+function automaticPromoQuote(){
+  const subtotal = cart.reduce((s,i) => s + i.priceNum * i.qty, 0);
+  let discount = 0;
+  let deliveryFree = false;
+  let promo = null;
+  const method = document.querySelector('input[name="method"]:checked')?.value || "Доставка";
+  for(const p of activePromotions){
+    if(subtotal < Number(p.min_order_amount || 0)) continue;
+    let d = 0;
+    if(p.promotion_type === "order_discount") d = p.discount_type === "percent" ? subtotal * Number(p.discount_value||0)/100 : Number(p.discount_value||0);
+    else if(p.promotion_type === "product_discount" || p.promotion_type === "category_discount") {
+      for(const item of cart){
+        const product = allProducts.find(x => x.name === item.name);
+        if(!promotionAppliesToProduct(p, product)) continue;
+        const line = item.priceNum * item.qty;
+        d += p.discount_type === "percent" ? line * Number(p.discount_value||0)/100 : Math.min(line, Number(p.discount_value||0) * item.qty);
+      }
+    } else if(p.promotion_type === "bogo" || p.promotion_type === "second_item_discount") {
+      for(const item of cart){
+        const product = allProducts.find(x => x.name === item.name);
+        if(p.target_product_id && String(p.target_product_id) !== String(product?.id)) continue;
+        if(!p.target_product_id && p.target_category && String(p.target_category).toLowerCase() !== String(product?.category||"").toLowerCase()) continue;
+        const buy = Math.max(1, Number(p.buy_quantity || 2));
+        const reward = Math.max(1, Number(p.reward_quantity || 1));
+        if(item.qty < buy) continue;
+        const rewardQty = p.promotion_type === "bogo" ? Math.floor(item.qty/(buy+reward))*reward : Math.floor(item.qty/buy);
+        const pct = p.promotion_type === "bogo" ? 100 : Number(p.reward_discount_percent ?? 50);
+        d = Math.max(d, item.priceNum * rewardQty * pct / 100);
+      }
+    } else if(p.promotion_type === "free_delivery" && method === "Доставка") {
+      deliveryFree = true;
+      promo = promo || p;
+      continue;
+    }
+    if(p.max_discount != null) d = Math.min(d, Number(p.max_discount));
+    d = Math.min(subtotal, Math.max(0, d));
+    if(d > discount){ discount = d; promo = p; }
+  }
+  let deliveryFee = 0;
+  if(method === "Доставка"){ if(subtotal < 500) deliveryFee=199; else if(subtotal<1000) deliveryFee=149; else if(subtotal<2000) deliveryFee=99; }
+  if(deliveryFree) deliveryFee = 0;
+  return {subtotal, discount:Math.round(discount*100)/100, deliveryFee, promo, deliveryFree};
+}
+
+function renderPromotions(){
+  const section = document.getElementById("promotionsSection");
+  const grid = document.getElementById("promotionsGrid");
+  if(!section || !grid) return;
+  const visible = activePromotions.filter(p => p.promotion_type === "free_delivery" || p.promotion_type === "order_discount" || p.promotion_type === "product_discount" || p.promotion_type === "category_discount" || p.promotion_type === "bogo" || p.promotion_type === "second_item_discount");
+  section.classList.toggle("hidden", !visible.length);
+  grid.innerHTML = visible.slice(0,6).map(p => {
+    let value = "";
+    if(p.promotion_type === "free_delivery") value = t("freeDeliveryPromo");
+    else if(p.promotion_type === "bogo") value = "2+1";
+    else if(p.promotion_type === "second_item_discount") value = `−${Number(p.reward_discount_percent || 50)}%`;
+    else value = p.discount_type === "percent" ? `−${Number(p.discount_value||0)}%` : `−${money(Number(p.discount_value||0))}`;
+    return `<div class="feature-card"><div class="feature-icon">${escapeHtml(p.badge || "%")}</div><h3>${escapeHtml(p.name)}</h3><p>${escapeHtml(p.description || value)}</p><strong style="color:var(--accent);font-size:16px;">${escapeHtml(value)}</strong></div>`;
+  }).join("");
 }
 
 function money(n){
@@ -2013,19 +2136,23 @@ function getQtyControlsHtml(name, out) {
 function getCardFootHtml(p) {
   const out = isOutOfStock(p);
   const qty = cart.find(c => c.name === p.name)?.qty || 0;
-  const pr = priceNum(p.price);
+  const promo = productPromoPrice(p);
+  const pr = promo.price;
+  const originalPr = promo.original;
 
   let priceHtml = '';
   if (qty > 0) {
      priceHtml = `
        <div class="price-info">
          <div style="font-size:12px; font-weight:normal; color:var(--tg-muted); line-height:1.2; margin-bottom:2px;">
-           ${money(pr)} x ${qty} шт.
+           ${promo.discount > 0 ? `<span style="text-decoration:line-through;opacity:.55;">${money(originalPr)}</span> → ` : ""}${money(pr)} x ${qty} шт.
          </div>
-         <div class="price">${money(pr * qty)}</div>
+         <div class="price">${money(pr * qty)}${promo.discount > 0 ? ` <span style="font-size:11px;color:var(--success);">−${Math.round((promo.discount/originalPr)*100)}%</span>` : ""}</div>
        </div>`;
   } else {
-     priceHtml = `<span class="price">${escapeHtml(p.price)}</span>`;
+     priceHtml = promo.discount > 0
+       ? `<span class="price"><span style="text-decoration:line-through;opacity:.5;font-size:12px;margin-right:6px;">${money(originalPr)}</span>${money(pr)} <span style="font-size:11px;color:var(--success);">−${Math.round((promo.discount/originalPr)*100)}%</span></span>`
+       : `<span class="price">${escapeHtml(p.price)}</span>`;
   }
 
   return `
@@ -2099,6 +2226,7 @@ function renderAll(){
   renderFilters();
   renderCatalog();
   renderHits();
+  renderPromotions();
 }
 
 function updateCardCounters() {
@@ -2355,8 +2483,10 @@ function renderCart(){
       else if (subtotal < 2000) deliveryFee = 99;
   }
 
+  const autoQuote = automaticPromoQuote();
   const promoVal = IS_TELEGRAM_USER && promoState.valid ? promoState.code : "";
-  const promoDiscount = IS_TELEGRAM_USER && promoState.valid ? Math.max(0, Number(promoState.discount || 0)) : 0;
+  const promoDiscount = IS_TELEGRAM_USER && promoState.valid ? Math.max(0, Number(promoState.discount || 0)) : autoQuote.discount;
+  if(!promoState.valid) deliveryFee = autoQuote.deliveryFee;
   const total = Math.max(0, subtotal + deliveryFee - promoDiscount);
 
   if (!n) {
@@ -2419,7 +2549,7 @@ function renderCart(){
         <div class="cart-item" style="border-color: var(--success); background: rgba(16, 185, 129, 0.05);">
           <div class="cart-thumb" style="background: transparent; color: var(--success); font-size: 24px; display: grid; place-items: center;">%</div>
           <div class="cart-info">
-            <strong style="color: var(--success)">${t("promoDiscountText")}</strong>
+            <strong style="color: var(--success)">${promoState.valid ? t("promoDiscountText") : t("automaticDiscountText")}</strong>
           </div>
           <div class="cart-actions" style="justify-content: flex-end;">
             <div class="cart-line" style="color: var(--success)">- ${money(promoDiscount)}</div>
@@ -2605,8 +2735,10 @@ function updateMainButton(){
       else if (subtotal < 2000) deliveryFee = 99;
   }
   
+  const autoQuote = automaticPromoQuote();
   const promoVal = IS_TELEGRAM_USER && promoState.valid ? promoState.code : "";
-  const promoDiscount = IS_TELEGRAM_USER && promoState.valid ? Math.max(0, Number(promoState.discount || 0)) : 0;
+  const promoDiscount = IS_TELEGRAM_USER && promoState.valid ? Math.max(0, Number(promoState.discount || 0)) : autoQuote.discount;
+  if(!promoState.valid) deliveryFee = autoQuote.deliveryFee;
   const total = Math.max(0, subtotal + deliveryFee - promoDiscount);
 
   if(!cart.length || checkoutStep === "success"){
@@ -2711,8 +2843,10 @@ async function performSubmit(){
       else if (subtotal < 2000) deliveryFee = 99;
   }
   
+  const autoQuote = automaticPromoQuote();
   const promoVal = IS_TELEGRAM_USER && promoState.valid ? promoState.code : "";
-  const promoDiscount = IS_TELEGRAM_USER && promoState.valid ? Math.max(0, Number(promoState.discount || 0)) : 0;
+  const promoDiscount = IS_TELEGRAM_USER && promoState.valid ? Math.max(0, Number(promoState.discount || 0)) : autoQuote.discount;
+  if(!promoState.valid) deliveryFee = autoQuote.deliveryFee;
   const total = Math.max(0, subtotal + deliveryFee - promoDiscount);
 
   const data = {
