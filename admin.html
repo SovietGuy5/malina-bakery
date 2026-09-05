@@ -2,12 +2,23 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#ffffff">
+
+<meta
+    name="viewport"
+    content="width=device-width,initial-scale=1,viewport-fit=cover"
+>
+
+<meta
+    name="theme-color"
+    content="#0d0b10"
+>
+
 <title>Кондитерский дом «Малина» — управление</title>
+
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
+
 :root{
   color-scheme: light;
   --tg-bg:#f8fafc;
@@ -252,10 +263,8 @@ body.pending #appShell{display:none}body.pending #accessDenied{display:flex}
   .modal,.management-modal{align-items:flex-end;padding:0}.modal-sheet,.management-dialog{width:100%;max-height:92vh;border-radius:22px 22px 0 0;padding:16px 14px calc(16px + env(safe-area-inset-bottom));border-left:0;border-right:0}
   .add-admin-form{grid-template-columns:1fr}.admin-nav{top:56px}
 }
+
 </style>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
 
 <body class="pending">
@@ -267,18 +276,43 @@ body.pending #appShell{display:none}body.pending #accessDenied{display:flex}
     <div id="accessError" class="access-code"></div>
   </div>
 </div>
-
 <div id="appShell">
+
+
+<!-- ============================================================
+     HEADER
+     ============================================================ -->
+
 <header class="header">
+
     <div class="header-title">
-        <h1>Управление</h1>
-        <p>Кондитерский дом «Малина»</p>
+
+        <h1>
+            🍰 Управление
+        </h1>
+
+        <p>
+            Кондитерский дом «Малина» · @MalinaBakeryBot
+        </p>
+
     </div>
+
     <div class="user-badge">
+
         <span class="user-dot"></span>
-        <span id="userName">Админ</span>
+
+        <span id="userName">
+            Администратор
+        </span>
+
     </div>
+
 </header>
+
+
+<!-- ============================================================
+     NAVIGATION
+     ============================================================ -->
 
 <nav class="admin-nav" aria-label="Разделы">
     <button id="catalogNavButton" class="nav-button active" type="button"><span>🍰</span><b>Каталог</b></button>
@@ -288,29 +322,123 @@ body.pending #appShell{display:none}body.pending #accessDenied{display:flex}
     <button id="adminsNavButton" class="nav-button" type="button"><span>👥</span><b>Команда</b></button>
 </nav>
 
-<section id="catalogPanel" class="catalog-panel">
+
+<!-- ============================================================
+     CATALOG PANEL
+     ============================================================ -->
+
+<section
+    id="catalogPanel"
+    class="catalog-panel"
+>
+
+
+    <!-- TOOLBAR -->
+
     <section class="toolbar">
-        <input id="search" class="search" type="search" placeholder="Поиск товара..." autocomplete="off">
-        <button id="addButton" class="add-button" type="button">+ Добавить</button>
+
+        <input
+            id="search"
+            class="search"
+            type="search"
+            placeholder="Поиск товара..."
+            autocomplete="off"
+        >
+
+        <button
+            id="addButton"
+            class="add-button"
+            type="button"
+        >
+            + Добавить
+        </button>
+
     </section>
 
-    <div id="filters" class="filters"></div>
+
+    <!-- FILTERS -->
+
+    <div
+        id="filters"
+        class="filters"
+    ></div>
+
+
+    <!-- STATS -->
 
     <section class="stats">
-        <div class="stat"><div id="totalCount" class="stat-value">0</div><div class="stat-label">Всего</div></div>
-        <div class="stat"><div id="stockCount" class="stat-value">0</div><div class="stat-label">В наличии</div></div>
-        <div class="stat"><div id="outCount" class="stat-value">0</div><div class="stat-label">Нет в наличии</div></div>
+
+        <div class="stat">
+
+            <div
+                id="totalCount"
+                class="stat-value"
+            >
+                0
+            </div>
+
+            <div class="stat-label">
+                Всего товаров
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div
+                id="stockCount"
+                class="stat-value"
+            >
+                0
+            </div>
+
+            <div class="stat-label">
+                В наличии
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div
+                id="outCount"
+                class="stat-value"
+            >
+                0
+            </div>
+
+            <div class="stat-label">
+                Нет в наличии
+            </div>
+
+        </div>
+
     </section>
 
-    <main id="products" class="products"></main>
+
+    <!-- PRODUCTS -->
+
+    <main
+        id="products"
+        class="products"
+    ></main>
+
 </section>
 
+
+<!-- ============================================================
+     MALINA MANAGEMENT PANELS
+     ============================================================ -->
 <section id="promotionsPanel" class="extra-panel" hidden>
   <div class="management-page-head">
     <div>
+      <div class="panel-kicker">Малина · автоматические предложения</div>
       <div class="panel-title">🔥 Акции</div>
+      <div class="panel-subtitle">Создайте акцию за несколько понятных шагов. Всё лишнее спрятано.</div>
     </div>
-    <button id="addPromotionButton" class="panel-action" type="button">＋ Создать</button>
+    <button id="addPromotionButton" class="panel-action" type="button">＋ Новая акция</button>
   </div>
   <div id="promotionsList" class="panel-list"></div>
 </section>
@@ -318,9 +446,11 @@ body.pending #appShell{display:none}body.pending #accessDenied{display:flex}
 <section id="promoCodesPanel" class="extra-panel" hidden>
   <div class="management-page-head">
     <div>
+      <div class="panel-kicker">Малина · специальные предложения</div>
       <div class="panel-title">🏷️ Промокоды</div>
+      <div class="panel-subtitle">Код, размер скидки, минимальная сумма и срок действия — больше ничего не нужно.</div>
     </div>
-    <button id="addPromoCodeButton" class="panel-action" type="button">＋ Создать</button>
+    <button id="addPromoCodeButton" class="panel-action" type="button">＋ Новый промокод</button>
   </div>
   <div id="promoCodesList" class="panel-list"></div>
 </section>
@@ -328,7 +458,9 @@ body.pending #appShell{display:none}body.pending #accessDenied{display:flex}
 <section id="ordersPanel" class="extra-panel" hidden>
   <div class="management-page-head">
     <div>
+      <div class="panel-kicker">Малина · контроль заказов</div>
       <div class="panel-title">📦 Заказы</div>
+      <div class="panel-subtitle">Меняйте статус заказа — клиент получит уведомление в Telegram.</div>
     </div>
     <button id="refreshOrdersButton" class="panel-action" type="button">↻ Обновить</button>
   </div>
@@ -338,7 +470,10 @@ body.pending #appShell{display:none}body.pending #accessDenied{display:flex}
 <div id="promotionModal" class="management-modal">
   <div class="management-dialog">
     <div class="management-dialog-head">
-      <div id="promotionModalTitle" class="management-dialog-title">Новая акция</div>
+      <div>
+        <div id="promotionModalTitle" class="management-dialog-title">Новая акция</div>
+        <div class="management-dialog-subtitle">Сначала выберите, что получает клиент. Остальные поля появятся сами.</div>
+      </div>
       <button id="closePromotionButton" class="management-close" type="button">×</button>
     </div>
 
@@ -346,20 +481,20 @@ body.pending #appShell{display:none}body.pending #accessDenied{display:flex}
       <input id="promotionId" type="hidden">
 
       <div class="simple-section">
-        <div class="simple-label">Объект акции</div>
+        <div class="simple-label">Что даём клиенту?</div>
         <div class="promo-choice-group-label">На десерты и заказ</div>
         <div class="quick-choice-row">
           <button type="button" class="quick-choice active" data-promo-type="product_discount"><span>🍰</span><strong>Товар</strong></button>
           <button type="button" class="quick-choice" data-promo-type="category_discount"><span>🧁</span><strong>Категория</strong></button>
-          <button type="button" class="quick-choice" data-promo-type="order_discount"><span>🛍️</span><strong>Заказ</strong></button>
-          <button type="button" class="quick-choice" data-promo-type="second_item_discount"><span>🍰×2</span><strong>Второй</strong></button>
-          <button type="button" class="quick-choice" data-promo-type="bogo"><span>2+1</span><strong>2+1</strong></button>
+          <button type="button" class="quick-choice" data-promo-type="order_discount"><span>🛍️</span><strong>Весь заказ</strong></button>
+          <button type="button" class="quick-choice" data-promo-type="second_item_discount"><span>🍰×2</span><strong>Второй товар</strong></button>
+          <button type="button" class="quick-choice" data-promo-type="bogo"><span>2+1</span><strong>Третий бесплатно</strong></button>
         </div>
         <div class="promo-choice-group-label delivery-choice-label">На доставку</div>
         <div class="quick-choice-row delivery-choice-row">
           <button type="button" class="quick-choice" data-promo-type="free_delivery"><span>🚚</span><strong>Бесплатно</strong></button>
           <button type="button" class="quick-choice" data-promo-type="delivery_discount"><span>−</span><strong>Скидка</strong></button>
-          <button type="button" class="quick-choice" data-promo-type="delivery_price"><span>₽</span><strong>Фикс. цена</strong></button>
+          <button type="button" class="quick-choice" data-promo-type="delivery_price"><span>₽</span><strong>Цена доставки</strong></button>
         </div>
         <select id="promotionType" class="visually-hidden" aria-hidden="true" tabindex="-1">
           <option value="product_discount">product_discount</option>
@@ -379,41 +514,31 @@ body.pending #appShell{display:none}body.pending #accessDenied{display:flex}
           <div class="field full"><label for="promotionName">Название</label><input id="promotionName" required placeholder="Например: 20% на чизкейки"></div>
           <div class="field hidden-field" id="promotionProductField"><label for="promotionProduct">Товар</label><select id="promotionProduct"><option value="">Выберите товар</option></select></div>
           <div class="field hidden-field" id="promotionCategoryField"><label for="promotionCategory">Категория</label><input id="promotionCategory" placeholder="Чизкейки"></div>
-          <div class="field" id="promotionDiscountTypeField">
-              <label for="promotionValue">Размер скидки</label>
-              <div class="form-row" style="gap:4px">
-                  <select id="promotionDiscountType"><option value="percent">%</option><option value="fixed">₽</option></select>
-                  <input id="promotionValue" type="number" min="0" step="0.01" value="20" placeholder="20">
-              </div>
-          </div>
-          <div class="field hidden-field" id="promotionBuyField"><label for="promotionBuyQty">Покупка (шт)</label><input id="promotionBuyQty" type="number" min="1" step="1" value="2"></div>
-          <div class="field hidden-field" id="promotionRewardField"><label for="promotionRewardQty">В подарок (шт)</label><input id="promotionRewardQty" type="number" min="1" step="1" value="1"></div>
+          <div class="field" id="promotionDiscountTypeField"><label for="promotionDiscountType">Размер скидки</label><div class="inline-control compact"><select id="promotionDiscountType"><option value="percent">%</option><option value="fixed">₽</option></select><input id="promotionValue" type="number" min="0" step="0.01" value="20" placeholder="20"></div></div>
+          <div class="field hidden-field" id="promotionBuyField"><label for="promotionBuyQty">Количество для покупки</label><input id="promotionBuyQty" type="number" min="1" step="1" value="2"></div>
+          <div class="field hidden-field" id="promotionRewardField"><label for="promotionRewardQty">Количество в подарок</label><input id="promotionRewardQty" type="number" min="1" step="1" value="1"></div>
           <div class="field hidden-field" id="promotionRewardDiscountField"><label for="promotionRewardDiscount">Скидка на второй</label><div class="suffix-control"><input id="promotionRewardDiscount" type="number" min="0" max="100" step="1" value="50"><span>%</span></div></div>
           <div class="field hidden-field" id="promotionDeliveryPriceField"><label for="promotionDeliveryPrice">Цена доставки</label><div class="suffix-control"><input id="promotionDeliveryPrice" type="number" min="0" step="1" value="100"><span>₽</span></div></div>
-          <div class="field" id="promotionMinOrderField"><label for="promotionMinOrder">Мин. сумма заказа</label><div class="suffix-control"><input id="promotionMinOrder" type="number" min="0" step="1" value="0"><span>₽</span></div></div>
-          <div class="field hidden-field" id="promotionMaxDiscountField"><label for="promotionMaxDiscount">Макс. скидка</label><div class="suffix-control"><input id="promotionMaxDiscount" type="number" min="0" step="1" placeholder="Без лимита"><span>₽</span></div></div>
+          <div class="field" id="promotionMinOrderField"><label for="promotionMinOrder">Минимальная сумма заказа</label><div class="suffix-control"><input id="promotionMinOrder" type="number" min="0" step="1" value="0"><span>₽</span></div></div>
+          <div class="field hidden-field" id="promotionMaxDiscountField"><label for="promotionMaxDiscount">Максимальная скидка</label><div class="suffix-control"><input id="promotionMaxDiscount" type="number" min="0" step="1" placeholder="Без лимита"><span>₽</span></div></div>
         </div>
       </div>
 
       <div class="simple-section">
-        <div class="simple-label">Период и метка</div>
-        <div class="date-row">
+        <div class="simple-label">Период и вид на сайте</div>
+        <div class="date-row compact-date-row">
           <div class="field"><label for="promotionStartsAt">С</label><input id="promotionStartsAt" type="datetime-local"></div>
+          <div class="date-arrow">→</div>
           <div class="field"><label for="promotionExpiresAt">До</label><input id="promotionExpiresAt" type="datetime-local"></div>
-          <div class="field full"><label for="promotionBadge">Метка на сайте</label><input id="promotionBadge" placeholder="🔥 АКЦИЯ"></div>
+          <div class="field badge-field"><label for="promotionBadge">Метка</label><input id="promotionBadge" placeholder="🔥 АКЦИЯ"></div>
         </div>
       </div>
 
-      <label class="soft-toggle">
-          <input id="promotionActive" type="checkbox" checked>
-          <span class="soft-toggle-track"></span>
-          <div><strong>Акция включена</strong></div>
-      </label>
-
-      <div class="management-form-actions">
-          <button id="cancelPromotionButton" class="management-secondary" type="button">Отмена</button>
-          <button class="panel-action" type="submit">Сохранить</button>
+      <div class="simple-bottom-row">
+        <label class="soft-toggle"><input id="promotionActive" type="checkbox" checked><span class="soft-toggle-track"></span><span><strong>Акция включена</strong><small>Начнёт применяться автоматически</small></span></label>
       </div>
+
+      <div class="management-form-actions"><button id="cancelPromotionButton" class="management-secondary" type="button">Отмена</button><button class="panel-action" type="submit">Сохранить</button></div>
     </form>
   </div>
 </div>
@@ -421,7 +546,10 @@ body.pending #appShell{display:none}body.pending #accessDenied{display:flex}
 <div id="promoCodeModal" class="management-modal">
   <div class="management-dialog">
     <div class="management-dialog-head">
-      <div id="promoCodeModalTitle" class="management-dialog-title">Новый промокод</div>
+      <div>
+        <div id="promoCodeModalTitle" class="management-dialog-title">Новый промокод</div>
+        <div class="management-dialog-subtitle">Только параметры, которые реально влияют на применение промокода.</div>
+      </div>
       <button id="closePromoCodeButton" class="management-close" type="button">×</button>
     </div>
 
@@ -429,463 +557,3004 @@ body.pending #appShell{display:none}body.pending #accessDenied{display:flex}
       <input id="promoCodeId" type="hidden">
 
       <div class="simple-section">
+        <div class="simple-label">Код и размер скидки</div>
         <div class="management-grid">
-          <div class="field full"><label for="promoCodeValue">Код</label><input id="promoCodeValue" required placeholder="MALINA10" autocapitalize="characters"></div>
-          <div class="field"><label for="promoCodeDiscountType">Тип скидки</label><select id="promoCodeDiscountType"><option value="percent">%</option><option value="fixed">₽</option></select></div>
-          <div class="field"><label for="promoCodeDiscountValue">Размер</label><input id="promoCodeDiscountValue" type="number" min="0" step="0.01" value="10"></div>
-          <div class="field"><label for="promoCodeMinOrder">Мин. заказ</label><div class="suffix-control"><input id="promoCodeMinOrder" type="number" min="0" step="1" value="0"><span>₽</span></div></div>
-          <div class="field"><label for="promoCodeMaxDiscount">Макс. скидка</label><div class="suffix-control"><input id="promoCodeMaxDiscount" type="number" min="0" step="1" placeholder="Без лимита"><span>₽</span></div></div>
-          <div class="field"><label for="promoCodeUsageLimit">Лимит активаций</label><input id="promoCodeUsageLimit" type="number" min="1" step="1" placeholder="∞"></div>
+          <div class="field full"><label for="promoCodeValue">Промокод</label><input id="promoCodeValue" required placeholder="Например, MALINA10" autocapitalize="characters"></div>
+          <div class="field"><label for="promoCodeDiscountType">Тип скидки</label><select id="promoCodeDiscountType"><option value="percent">Проценты</option><option value="fixed">Рубли</option></select></div>
+          <div class="field"><label for="promoCodeDiscountValue">Размер скидки</label><input id="promoCodeDiscountValue" type="number" min="0" step="0.01" value="10"></div>
         </div>
       </div>
-      
+
       <div class="simple-section">
-        <label class="soft-toggle">
-            <input id="promoCodeOneUse" type="checkbox">
-            <span class="soft-toggle-track"></span>
-            <div><strong>1 раз на пользователя</strong></div>
-        </label>
+        <div class="simple-label">Когда и как можно использовать</div>
+        <div class="management-grid">
+          <div class="field"><label for="promoCodeMinOrder">Минимальная сумма заказа</label><div class="suffix-control"><input id="promoCodeMinOrder" type="number" min="0" step="1" value="0"><span>₽</span></div></div>
+          <div class="field"><label for="promoCodeMaxDiscount">Максимальная скидка</label><div class="suffix-control"><input id="promoCodeMaxDiscount" type="number" min="0" step="1" placeholder="Без лимита"><span>₽</span></div></div>
+          <div class="field"><label for="promoCodeUsageLimit">Лимит использований</label><input id="promoCodeUsageLimit" type="number" min="1" step="1" placeholder="Без лимита"></div>
+          <label class="soft-toggle inline-toggle"><input id="promoCodeOneUse" type="checkbox"><span class="soft-toggle-track"></span><span><strong>1 раз на пользователя</strong><small>Один аккаунт — одно применение</small></span></label>
+        </div>
       </div>
 
       <div class="simple-section">
         <div class="simple-label">Период</div>
-        <div class="date-row">
+        <div class="date-row compact-date-row two-fields">
           <div class="field"><label for="promoCodeStartsAt">С</label><input id="promoCodeStartsAt" type="datetime-local"></div>
+          <div class="date-arrow">→</div>
           <div class="field"><label for="promoCodeExpiresAt">До</label><input id="promoCodeExpiresAt" type="datetime-local"></div>
         </div>
       </div>
 
-      <label class="soft-toggle">
-          <input id="promoCodeActive" type="checkbox" checked>
-          <span class="soft-toggle-track"></span>
-          <div><strong>Промокод активен</strong></div>
-      </label>
-
-      <div class="management-form-actions">
-          <button id="cancelPromoCodeButton" class="management-secondary" type="button">Отмена</button>
-          <button class="panel-action" type="submit">Сохранить</button>
+      <div class="simple-bottom-row">
+        <label class="soft-toggle"><input id="promoCodeActive" type="checkbox" checked><span class="soft-toggle-track"></span><span><strong>Промокод включён</strong><small>Клиент сможет его применить</small></span></label>
       </div>
+
+      <div class="management-form-actions"><button id="cancelPromoCodeButton" class="management-secondary" type="button">Отмена</button><button class="panel-action" type="submit">Сохранить</button></div>
     </form>
   </div>
 </div>
 
-<section id="adminPanel" class="admin-panel">
-    <div class="admin-panel-card">
-        <div class="admin-panel-title-row">
-            <div class="panel-title">Команда</div>
-            <div class="owner-badge">ВЛАДЕЛЕЦ</div>
-        </div>
-        <div class="admin-panel-description">Добавление по Telegram ID.</div>
+<!-- ============================================================
+     ADMIN PANEL
+     ============================================================ -->
 
-        <form id="addAdminForm" class="add-admin-form">
-            <input id="adminTelegramId" class="admin-id-input" type="text" inputmode="numeric" autocomplete="off" placeholder="Telegram ID" required>
-            <button id="addAdminButton" class="add-admin-button" type="submit">+ Добавить</button>
+<section
+    id="adminPanel"
+    class="admin-panel"
+>
+
+    <div class="admin-panel-card">
+
+        <div class="admin-panel-title-row">
+
+            <div class="admin-panel-title">
+                👥 Администраторы
+            </div>
+
+            <div class="owner-badge">
+                👑 ВЛАДЕЛЕЦ
+            </div>
+
+        </div>
+
+        <div class="admin-panel-description">
+
+            Добавляйте пользователей Telegram,
+            которым разрешено управлять каталогом.
+            Для добавления нужен их Telegram ID.
+
+        </div>
+
+
+        <!-- ADD ADMIN -->
+
+        <form
+            id="addAdminForm"
+            class="add-admin-form"
+        >
+
+            <input
+                id="adminTelegramId"
+                class="admin-id-input"
+                type="text"
+                inputmode="numeric"
+                autocomplete="off"
+                placeholder="Telegram ID"
+                required
+            >
+
+            <button
+                id="addAdminButton"
+                class="add-admin-button"
+                type="submit"
+            >
+                + Добавить
+            </button>
+
         </form>
+
     </div>
 
-    <div class="admin-list-header">Список администраторов</div>
-    <div id="adminsList" class="admin-list"></div>
+
+    <!-- ADMIN LIST -->
+
+    <div class="admin-list-header">
+        Список администраторов
+    </div>
+
+    <div
+        id="adminsList"
+        class="admin-list"
+    >
+
+        <div class="admin-empty">
+
+            <div class="admin-empty-icon">
+                ⏳
+            </div>
+
+            <div class="admin-empty-title">
+                Загружаем администраторов
+            </div>
+
+            <div class="admin-empty-text">
+                Подождите немного...
+            </div>
+
+        </div>
+
+    </div>
+
 </section>
 
-<div id="modal" class="modal">
+
+<!-- ============================================================
+     PRODUCT MODAL
+     ============================================================ -->
+
+<div
+    id="modal"
+    class="modal"
+>
+
     <div class="modal-sheet">
+
         <div class="modal-header">
-            <div id="modalTitle" class="modal-title">Новый товар</div>
-            <button id="closeButton" class="close-button" type="button">×</button>
+
+            <div
+                id="modalTitle"
+                class="modal-title"
+            >
+                Новый товар
+            </div>
+
+            <button
+                id="closeButton"
+                class="close-button"
+                type="button"
+            >
+                ×
+            </button>
+
         </div>
 
-        <form id="productForm" class="form">
-            <input id="productId" type="hidden">
+
+        <form
+            id="productForm"
+            class="form"
+        >
+
+            <input
+                id="productId"
+                type="hidden"
+            >
+
+
+            <!-- NAME -->
 
             <div class="field">
-                <label for="name">Название *</label>
-                <input id="name" type="text" required placeholder="Например: Медовик">
+
+                <label for="name">
+                    Название *
+                </label>
+
+                <input
+                    id="name"
+                    type="text"
+                    required
+                    placeholder="Например: Медовик"
+                >
+
             </div>
+
+
+            <!-- CATEGORY / PRICE -->
 
             <div class="form-row">
-                <div class="field"><label for="category">Категория</label><input id="category" type="text" placeholder="Торты"></div>
-                <div class="field"><label for="price">Цена *</label><input id="price" type="number" min="0" step="0.01" required placeholder="1900"></div>
-            </div>
 
-            <div class="form-row">
-                <div class="field"><label for="weight">Вес / Объем</label><input id="weight" type="text" placeholder="1 кг"></div>
-                <div class="field"><label for="tag">Метка</label><input id="tag" type="text" placeholder="Хит"></div>
-            </div>
+                <div class="field">
 
-            <div class="field">
-                <label for="description">Описание</label>
-                <textarea id="description" placeholder="Описание товара..."></textarea>
-            </div>
+                    <label for="category">
+                        Категория
+                    </label>
 
-            <div class="field">
-                <label>Фотография</label>
-                <div id="currentImage" class="image-current">
-                    <div class="image-current-label">Текущая фотография</div>
-                    <img id="currentImageImg" src="" alt="">
+                    <input
+                        id="category"
+                        type="text"
+                        placeholder="Торты"
+                    >
+
                 </div>
+
+
+                <div class="field">
+
+                    <label for="price">
+                        Цена *
+                    </label>
+
+                    <input
+                        id="price"
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        required
+                        placeholder="1900"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- WEIGHT -->
+
+            <div class="field">
+
+                <label for="weight">
+                    Вес
+                </label>
+
+                <input
+                    id="weight"
+                    type="text"
+                    placeholder="1 кг"
+                >
+
+            </div>
+
+
+            <!-- DESCRIPTION -->
+
+            <div class="field">
+
+                <label for="description">
+                    Описание
+                </label>
+
+                <textarea
+                    id="description"
+                    placeholder="Описание товара..."
+                ></textarea>
+
+            </div>
+
+
+            <!-- IMAGE -->
+
+            <div class="field">
+
+                <label>
+                    Фотография
+                </label>
+
+
+                <div
+                    id="currentImage"
+                    class="image-current"
+                >
+
+                    <div class="image-current-label">
+                        Текущая фотография
+                    </div>
+
+                    <img
+                        id="currentImageImg"
+                        src=""
+                        alt=""
+                    >
+
+                </div>
+
+
                 <div class="image-upload">
-                    <div class="image-upload-icon">📷</div>
-                    <div class="image-upload-title">Загрузить фото</div>
-                    <div class="image-upload-subtitle">JPG, PNG, WEBP (до 10 MB)</div>
-                    <input id="imageFile" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
+
+                    <div class="image-upload-icon">
+                        📷
+                    </div>
+
+                    <div class="image-upload-title">
+                        Выбрать фотографию
+                    </div>
+
+                    <div class="image-upload-subtitle">
+                        JPG, PNG, WEBP или GIF<br>
+                        Максимум 10 MB
+                    </div>
+
+                    <input
+                        id="imageFile"
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp,image/gif"
+                    >
+
                 </div>
-                <div id="imagePreview" class="image-preview"><img id="imagePreviewImg" src="" alt=""></div>
-                <input id="imageUrl" type="hidden">
+
+
+                <div
+                    id="imagePreview"
+                    class="image-preview"
+                >
+
+                    <img
+                        id="imagePreviewImg"
+                        src=""
+                        alt=""
+                    >
+
+                </div>
+
+
+                <input
+                    id="imageUrl"
+                    type="hidden"
+                >
+
             </div>
 
+
+            <!-- TAG -->
+
             <div class="field">
-                <label for="sortOrder">Порядок сортировки</label>
-                <input id="sortOrder" type="number" step="1" value="0">
+
+                <label for="tag">
+                    Метка
+                </label>
+
+                <input
+                    id="tag"
+                    type="text"
+                    placeholder="Хит"
+                >
+
             </div>
+
+
+            <!-- SORT -->
+
+            <div class="field">
+
+                <label for="sortOrder">
+                    Порядок отображения
+                </label>
+
+                <input
+                    id="sortOrder"
+                    type="number"
+                    step="1"
+                    value="0"
+                >
+
+            </div>
+
+
+            <!-- STOCK -->
 
             <div class="switch-row">
+
                 <div class="switch-text">
-                    <strong>В наличии</strong>
-                    <span>Будет доступен для покупки</span>
+
+                    <strong>
+                        Товар в наличии
+                    </strong>
+
+                    <span>
+                        Если выключить, купить его будет нельзя
+                    </span>
+
                 </div>
-                <label class="switch"><input id="inStock" type="checkbox" checked><span class="slider"></span></label>
+
+
+                <label class="switch">
+
+                    <input
+                        id="inStock"
+                        type="checkbox"
+                        checked
+                    >
+
+                    <span class="slider"></span>
+
+                </label>
+
             </div>
+
+
+            <!-- ACTIONS -->
 
             <div class="form-actions">
-                <button id="cancelButton" class="cancel-button" type="button">Отмена</button>
-                <button id="saveButton" class="save-button" type="submit">Сохранить</button>
+
+                <button
+                    id="cancelButton"
+                    class="cancel-button"
+                    type="button"
+                >
+                    Отмена
+                </button>
+
+                <button
+                    id="saveButton"
+                    class="save-button"
+                    type="submit"
+                >
+                    Сохранить
+                </button>
+
             </div>
+
         </form>
+
     </div>
-</div>
-
-<div id="toast" class="toast"></div>
 
 </div>
 
+
+<!-- ============================================================
+     TOAST
+     ============================================================ -->
+
+<div
+    id="toast"
+    class="toast"
+></div>
+
+
+</div>
 <script>
 "use strict";
 
-const ADMIN_API_URL = "https://xheusnpmmmhbwwfcozbr.supabase.co/functions/v1/admin-products";
-const ADMIN_UPLOAD_URL = "https://xheusnpmmmhbwwfcozbr.supabase.co/functions/v1/admin-upload";
-const ADMINS_API_URL = "https://xheusnpmmmhbwwfcozbr.supabase.co/functions/v1/admin-admins";
+
+/* ============================================================
+   CONFIG
+   ============================================================ */
+
+const ADMIN_API_URL =
+    "https://xheusnpmmmhbwwfcozbr.supabase.co/functions/v1/admin-products";
+
+const ADMIN_UPLOAD_URL =
+    "https://xheusnpmmmhbwwfcozbr.supabase.co/functions/v1/admin-upload";
+
+const ADMINS_API_URL =
+    "https://xheusnpmmmhbwwfcozbr.supabase.co/functions/v1/admin-admins";
+
+
+/* ============================================================
+   TELEGRAM
+   ============================================================ */
+
+const TG =
+    window.Telegram?.WebApp || null;
+
+
+if (TG) {
+
+    TG.ready();
+
+    TG.expand();
+
+}
+
+
+/* ============================================================
+   STATE
+   ============================================================ */
+
+let products = [];
+
+let activeCategory = "Все";
+
+let editingId = null;
+
+let loading = false;
+
+let admins = [];
+
+let currentIsOwner = false;
+
+
+/* ============================================================
+   DOM
+   ============================================================ */
+
+const productsEl =
+    document.getElementById(
+        "products",
+    );
+
+const searchEl =
+    document.getElementById(
+        "search",
+    );
+
+const filtersEl =
+    document.getElementById(
+        "filters",
+    );
+
+const totalCountEl =
+    document.getElementById(
+        "totalCount",
+    );
+
+const stockCountEl =
+    document.getElementById(
+        "stockCount",
+    );
+
+const outCountEl =
+    document.getElementById(
+        "outCount",
+    );
+
+const modal =
+    document.getElementById(
+        "modal",
+    );
+
+const modalTitle =
+    document.getElementById(
+        "modalTitle",
+    );
+
+const form =
+    document.getElementById(
+        "productForm",
+    );
+
+const toastEl =
+    document.getElementById(
+        "toast",
+    );
+
+const userNameEl =
+    document.getElementById(
+        "userName",
+    );
+
+const imageFileEl =
+    document.getElementById(
+        "imageFile",
+    );
+
+const imagePreview =
+    document.getElementById(
+        "imagePreview",
+    );
+
+const imagePreviewImg =
+    document.getElementById(
+        "imagePreviewImg",
+    );
+
+const currentImage =
+    document.getElementById(
+        "currentImage",
+    );
+
+const currentImageImg =
+    document.getElementById(
+        "currentImageImg",
+    );
+
+const catalogPanel =
+    document.getElementById(
+        "catalogPanel",
+    );
+
+const adminPanel =
+    document.getElementById(
+        "adminPanel",
+    );
+
+const catalogNavButton =
+    document.getElementById(
+        "catalogNavButton",
+    );
+
+const adminsNavButton =
+    document.getElementById(
+        "adminsNavButton",
+    );
+
+const adminsList =
+    document.getElementById(
+        "adminsList",
+    );
+
+const addAdminForm =
+    document.getElementById(
+        "addAdminForm",
+    );
+
+const adminTelegramId =
+    document.getElementById(
+        "adminTelegramId",
+    );
+
+const addAdminButton =
+    document.getElementById(
+        "addAdminButton",
+    );
+
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+
+let toastTimer = null;
+
+
+function toast(
+    message,
+    error = false,
+) {
+
+    clearTimeout(
+        toastTimer,
+    );
+
+    toastEl.textContent =
+        message;
+
+    toastEl.classList.toggle(
+        "error",
+        error,
+    );
+
+    toastEl.classList.add(
+        "show",
+    );
+
+    toastTimer =
+        setTimeout(
+            () => {
+
+                toastEl.classList.remove(
+                    "show",
+                );
+
+            },
+            3000,
+        );
+
+}
+
+
+/* ============================================================
+   TELEGRAM INIT DATA
+   ============================================================ */
+
+function getTelegramInitData() {
+
+    return TG?.initData || "";
+
+}
+
+
+/* ============================================================
+   GENERIC API
+   ============================================================ */
+
+async function api(
+    method = "GET",
+    body = null,
+    id = null,
+) {
+
+    const url =
+        new URL(
+            ADMIN_API_URL,
+        );
+
+
+    if (id) {
+
+        url.searchParams.set(
+            "id",
+            id,
+        );
+
+    }
+
+
+    const headers = {
+
+        "Content-Type":
+            "application/json",
+
+        "X-Telegram-Init-Data":
+            getTelegramInitData(),
+
+    };
+
+
+    const response =
+        await fetch(
+            url.toString(),
+            {
+
+                method,
+
+                headers,
+
+                body:
+                    body !== null
+                        ? JSON.stringify(body)
+                        : undefined,
+
+            },
+        );
+
+
+    const text =
+        await response.text();
+
+
+    let data;
+
+
+    try {
+
+        data =
+            text
+                ? JSON.parse(text)
+                : {};
+
+    } catch {
+
+        throw new Error(
+            `Сервер вернул некорректный ответ: ${text}`,
+        );
+
+    }
+
+
+    if (
+        !response.ok ||
+        data.ok === false
+    ) {
+
+        throw new Error(
+            data.error ||
+            data.message ||
+            `HTTP ${response.status}`,
+        );
+
+    }
+
+
+    return data;
+
+}
+
+
+/* ============================================================
+   ADMIN API
+   ============================================================ */
+
+async function adminsApi(
+    method = "GET",
+    body = null,
+    telegramId = null,
+) {
+
+    const url =
+        new URL(
+            ADMINS_API_URL,
+        );
+
+
+    if (telegramId !== null) {
+
+        url.searchParams.set(
+            "telegram_id",
+            String(telegramId),
+        );
+
+    }
+
+
+    const headers = {
+
+        "Content-Type":
+            "application/json",
+
+        "X-Telegram-Init-Data":
+            getTelegramInitData(),
+
+    };
+
+
+    const response =
+        await fetch(
+            url.toString(),
+            {
+
+                method,
+
+                headers,
+
+                body:
+                    body !== null
+                        ? JSON.stringify(body)
+                        : undefined,
+
+            },
+        );
+
+
+    const text =
+        await response.text();
+
+
+    let data;
+
+
+    try {
+
+        data =
+            text
+                ? JSON.parse(text)
+                : {};
+
+    } catch {
+
+        throw new Error(
+            `Сервер администраторов вернул некорректный ответ: ${text}`,
+        );
+
+    }
+
+
+    if (
+        !response.ok ||
+        data.ok === false
+    ) {
+
+        throw new Error(
+            data.error ||
+            data.message ||
+            `HTTP ${response.status}`,
+        );
+
+    }
+
+
+    return data;
+
+}
+
+
+/* ============================================================
+   IMAGE UPLOAD
+   ============================================================ */
+
+async function uploadProductImage(
+    file,
+) {
+
+    if (!file) {
+        return null;
+    }
+
+
+    if (
+        file.size >
+        10 * 1024 * 1024
+    ) {
+
+        throw new Error(
+            "Изображение не должно быть больше 10 MB",
+        );
+
+    }
+
+
+    const allowedTypes = [
+
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+        "image/gif",
+
+    ];
+
+
+    if (
+        !allowedTypes.includes(
+            file.type,
+        )
+    ) {
+
+        throw new Error(
+            "Разрешены только JPG, PNG, WEBP и GIF",
+        );
+
+    }
+
+
+    if (
+        !TG?.initData
+    ) {
+
+        throw new Error(
+            "Откройте админку внутри Telegram",
+        );
+
+    }
+
+
+    const formData =
+        new FormData();
+
+
+    formData.append(
+        "file",
+        file,
+    );
+
+
+    const response =
+        await fetch(
+            ADMIN_UPLOAD_URL,
+            {
+
+                method: "POST",
+
+                headers: {
+
+                    "X-Telegram-Init-Data":
+                        TG.initData,
+
+                },
+
+                body:
+                    formData,
+
+            },
+        );
+
+
+    const text =
+        await response.text();
+
+
+    let data;
+
+
+    try {
+
+        data =
+            text
+                ? JSON.parse(text)
+                : {};
+
+    } catch {
+
+        throw new Error(
+            `Ошибка загрузки изображения: ${text}`,
+        );
+
+    }
+
+
+    if (
+        !response.ok ||
+        data.ok === false
+    ) {
+
+        throw new Error(
+            data.error ||
+            data.message ||
+            `Ошибка загрузки изображения (${response.status})`,
+        );
+
+    }
+
+
+    if (
+        !data.image?.url
+    ) {
+
+        throw new Error(
+            "Сервер не вернул URL изображения",
+        );
+
+    }
+
+
+    return data.image.url;
+
+}
+
+
+/* ============================================================
+   LOAD PRODUCTS
+   ============================================================ */
+
+async function loadProducts() {
+
+    if (loading) {
+        return;
+    }
+
+
+    loading = true;
+
+
+    productsEl.innerHTML = `
+        <div class="state">
+
+            <div class="state-icon">
+                ⏳
+            </div>
+
+            <div class="state-title">
+                Загружаем каталог
+            </div>
+
+            <div class="state-text">
+                Подождите немного...
+            </div>
+
+        </div>
+    `;
+
+
+    try {
+
+        const result =
+            await api(
+                "GET",
+            );
+
+
+        products =
+            Array.isArray(
+                result.products,
+            )
+                ? result.products
+                : [];
+
+
+        renderFilters();
+
+        renderStats();
+
+        renderProducts();
+
+    } catch (error) {
+
+        console.error(
+            error,
+        );
+
+
+        productsEl.innerHTML = `
+            <div class="state">
+
+                <div class="state-icon">
+                    ⚠️
+                </div>
+
+                <div class="state-title">
+                    Не удалось загрузить каталог
+                </div>
+
+                <div class="state-text">
+                    ${escapeHtml(
+                        error.message,
+                    )}
+                </div>
+
+            </div>
+        `;
+
+
+        toast(
+            error.message,
+            true,
+        );
+
+    } finally {
+
+        loading = false;
+
+    }
+
+}
+
+
+/* ============================================================
+   LOAD ADMINS
+   ============================================================ */
+
+async function loadAdmins() {
+
+    adminsList.innerHTML = `
+        <div class="admin-empty">
+
+            <div class="admin-empty-icon">
+                ⏳
+            </div>
+
+            <div class="admin-empty-title">
+                Загружаем администраторов
+            </div>
+
+            <div class="admin-empty-text">
+                Подождите немного...
+            </div>
+
+        </div>
+    `;
+
+
+    try {
+
+        const result =
+            await adminsApi(
+                "GET",
+            );
+
+
+        admins =
+            Array.isArray(
+                result.admins,
+            )
+                ? result.admins
+                : [];
+
+
+        currentIsOwner =
+            result.is_owner === true;
+
+
+        if (!currentIsOwner) {
+
+            adminPanel.innerHTML = `
+                <div class="admin-panel-card">
+
+                    <div class="admin-panel-title">
+                        🔒 Управление администраторами
+                    </div>
+
+                    <div
+                        class="admin-panel-description"
+                        style="margin-top:8px"
+                    >
+                        Только владелец может добавлять
+                        и удалять администраторов.
+                    </div>
+
+                </div>
+            `;
+
+            return;
+
+        }
+
+
+        renderAdmins();
+
+    } catch (error) {
+
+        console.error(
+            error,
+        );
+
+
+        adminsList.innerHTML = `
+            <div class="admin-empty">
+
+                <div class="admin-empty-icon">
+                    ⚠️
+                </div>
+
+                <div class="admin-empty-title">
+                    Не удалось загрузить администраторов
+                </div>
+
+                <div class="admin-empty-text">
+                    ${escapeHtml(
+                        error.message,
+                    )}
+                </div>
+
+            </div>
+        `;
+
+
+        toast(
+            error.message,
+            true,
+        );
+
+    }
+
+}
+
+
+/* ============================================================
+   RENDER ADMINS
+   ============================================================ */
+
+function renderAdmins() {
+
+    if (!admins.length) {
+
+        adminsList.innerHTML = `
+            <div class="admin-empty">
+
+                <div class="admin-empty-icon">
+                    👥
+                </div>
+
+                <div class="admin-empty-title">
+                    Администраторов пока нет
+                </div>
+
+                <div class="admin-empty-text">
+                    Добавьте первого администратора
+                    выше.
+                </div>
+
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    adminsList.innerHTML =
+        admins
+            .map(
+                admin => {
+
+                    const owner =
+                        admin.is_owner === true;
+
+
+                    const telegramId =
+                        String(
+                            admin.telegram_id ?? "",
+                        );
+
+
+                    const created =
+                        admin.created_at
+                            ? formatDate(
+                                admin.created_at,
+                            )
+                            : "";
+
+
+                    return `
+                        <div class="admin-item">
+
+                            <div class="admin-info">
+
+                                <div class="admin-name">
+
+                                    ${
+                                        owner
+                                            ? "👑"
+                                            : "👤"
+                                    }
+
+                                    <span>
+                                        ${
+                                            owner
+                                                ? "Владелец"
+                                                : "Администратор"
+                                        }
+                                    </span>
+
+                                    <span
+                                        class="admin-role ${
+                                            owner
+                                                ? "owner"
+                                                : ""
+                                        }"
+                                    >
+                                        ${
+                                            owner
+                                                ? "OWNER"
+                                                : "ADMIN"
+                                        }
+                                    </span>
+
+                                </div>
+
+                                <div class="admin-telegram-id">
+                                    Telegram ID:
+                                    ${escapeHtml(
+                                        telegramId,
+                                    )}
+                                </div>
+
+                                ${
+                                    created
+                                        ? `
+                                            <div class="admin-created">
+                                                Добавлен:
+                                                ${escapeHtml(
+                                                    created,
+                                                )}
+                                            </div>
+                                          `
+                                        : ""
+                                }
+
+                            </div>
+
+
+                            <button
+                                type="button"
+                                class="remove-admin-button"
+                                data-remove-admin="${escapeAttr(
+                                    telegramId,
+                                )}"
+                                title="${
+                                    owner
+                                        ? "Владельца нельзя удалить"
+                                        : "Удалить администратора"
+                                }"
+                                ${
+                                    owner
+                                        ? "disabled"
+                                        : ""
+                                }
+                            >
+                                🗑
+                            </button>
+
+                        </div>
+                    `;
+
+                },
+            )
+            .join("");
+
+}
+
+
+/* ============================================================
+   ADD ADMIN
+   ============================================================ */
+
+async function addAdmin() {
+
+    if (!currentIsOwner) {
+
+        toast(
+            "Только владелец может добавлять администраторов",
+            true,
+        );
+
+        return;
+
+    }
+
+
+    const telegramId =
+        adminTelegramId.value.trim();
+
+
+    if (!telegramId) {
+
+        toast(
+            "Введите Telegram ID",
+            true,
+        );
+
+        return;
+
+    }
+
+
+    if (
+        !/^\d+$/.test(
+            telegramId,
+        )
+    ) {
+
+        toast(
+            "Telegram ID должен содержать только цифры",
+            true,
+        );
+
+        return;
+
+    }
+
+
+    addAdminButton.disabled = true;
+
+    addAdminButton.textContent =
+        "Добавление...";
+
+
+    try {
+
+        await adminsApi(
+            "POST",
+            {
+                telegram_id:
+                    Number(
+                        telegramId,
+                    ),
+            },
+        );
+
+
+        adminTelegramId.value =
+            "";
+
+
+        toast(
+            "Администратор добавлен",
+        );
+
+
+        await loadAdmins();
+
+    } catch (error) {
+
+        console.error(
+            error,
+        );
+
+
+        toast(
+            error.message ||
+            "Не удалось добавить администратора",
+            true,
+        );
+
+    } finally {
+
+        addAdminButton.disabled =
+            false;
+
+        addAdminButton.textContent =
+            "+ Добавить";
+
+    }
+
+}
+
+
+/* ============================================================
+   DELETE ADMIN
+   ============================================================ */
+
+async function removeAdmin(
+    telegramId,
+) {
+
+    if (!currentIsOwner) {
+
+        toast(
+            "Недостаточно прав",
+            true,
+        );
+
+        return;
+
+    }
+
+
+    const admin =
+        admins.find(
+            item =>
+                String(
+                    item.telegram_id,
+                ) ===
+                String(
+                    telegramId,
+                ),
+        );
+
+
+    if (
+        admin?.is_owner === true
+    ) {
+
+        toast(
+            "Владельца удалить нельзя",
+            true,
+        );
+
+        return;
+
+    }
+
+
+    const confirmed =
+        confirm(
+            `Удалить администратора с Telegram ID ${telegramId}?\n\nПосле удаления он больше не сможет управлять каталогом.`,
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    try {
+
+        await adminsApi(
+            "DELETE",
+            null,
+            telegramId,
+        );
+
+
+        toast(
+            "Администратор удалён",
+        );
+
+
+        await loadAdmins();
+
+    } catch (error) {
+
+        console.error(
+            error,
+        );
+
+
+        toast(
+            error.message ||
+            "Не удалось удалить администратора",
+            true,
+        );
+
+    }
+
+}
+
+
+/* ============================================================
+   SWITCH PANELS
+   ============================================================ */
+
+function showCatalog() {
+
+    catalogPanel.classList.remove(
+        "hidden",
+    );
+
+    adminPanel.classList.remove(
+        "open",
+    );
+
+    catalogNavButton.classList.add(
+        "active",
+    );
+
+    adminsNavButton.classList.remove(
+        "active",
+    );
+
+}
+
+
+function showAdmins() {
+
+    catalogPanel.classList.add(
+        "hidden",
+    );
+
+    adminPanel.classList.add(
+        "open",
+    );
+
+    catalogNavButton.classList.remove(
+        "active",
+    );
+
+    adminsNavButton.classList.add(
+        "active",
+    );
+
+
+    loadAdmins();
+
+}
+
+
+/* ============================================================
+   FILTERS
+   ============================================================ */
+
+function renderFilters() {
+
+    const categories = [
+
+        "Все",
+
+        ...new Set(
+            products
+                .map(
+                    product =>
+                        product.category,
+                )
+                .filter(Boolean),
+        ),
+
+    ];
+
+
+    if (
+        !categories.includes(
+            activeCategory,
+        )
+    ) {
+
+        activeCategory =
+            "Все";
+
+    }
+
+
+    filtersEl.innerHTML =
+        categories
+            .map(
+                category => `
+                    <button
+                        type="button"
+                        class="filter ${
+                            category === activeCategory
+                                ? "active"
+                                : ""
+                        }"
+                        data-category="${escapeAttr(
+                            category,
+                        )}"
+                    >
+                        ${escapeHtml(
+                            category,
+                        )}
+                    </button>
+                `,
+            )
+            .join("");
+
+}
+
+
+/* ============================================================
+   STATS
+   ============================================================ */
+
+function renderStats() {
+
+    const total =
+        products.length;
+
+
+    const stock =
+        products.filter(
+            product =>
+                product.in_stock,
+        ).length;
+
+
+    const out =
+        total - stock;
+
+
+    totalCountEl.textContent =
+        total;
+
+
+    stockCountEl.textContent =
+        stock;
+
+
+    outCountEl.textContent =
+        out;
+
+}
+
+
+/* ============================================================
+   FILTERED PRODUCTS
+   ============================================================ */
+
+function getFilteredProducts() {
+
+    const query =
+        searchEl.value
+            .trim()
+            .toLowerCase();
+
+
+    return products.filter(
+        product => {
+
+            const categoryMatch =
+                activeCategory === "Все" ||
+                product.category ===
+                    activeCategory;
+
+
+            const searchMatch =
+                !query ||
+
+                String(
+                    product.name || "",
+                )
+                    .toLowerCase()
+                    .includes(
+                        query,
+                    ) ||
+
+                String(
+                    product.description || "",
+                )
+                    .toLowerCase()
+                    .includes(
+                        query,
+                    ) ||
+
+                String(
+                    product.category || "",
+                )
+                    .toLowerCase()
+                    .includes(
+                        query,
+                    );
+
+
+            return (
+                categoryMatch &&
+                searchMatch
+            );
+
+        },
+    );
+
+}
+
+
+/* ============================================================
+   RENDER PRODUCTS
+   ============================================================ */
+
+function renderProducts() {
+
+    const filtered =
+        getFilteredProducts();
+
+
+    if (!filtered.length) {
+
+        productsEl.innerHTML = `
+            <div class="state">
+
+                <div class="state-icon">
+                    🍰
+                </div>
+
+                <div class="state-title">
+                    Товаров пока нет
+                </div>
+
+                <div class="state-text">
+                    Добавьте первый товар в каталог.
+                </div>
+
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    productsEl.innerHTML =
+        filtered
+            .map(
+                product =>
+                    productCard(
+                        product,
+                    ),
+            )
+            .join("");
+
+}
+
+
+/* ============================================================
+   PRODUCT CARD
+   ============================================================ */
+
+function productCard(
+    product,
+) {
+
+    const image =
+        product.image_url
+            ? `
+                <img
+                    src="${escapeAttr(
+                        product.image_url,
+                    )}"
+                    alt=""
+                    loading="lazy"
+                    onerror="
+                        this.style.display='none';
+                    "
+                >
+              `
+            : "🍰";
+
+
+    const stockBadge =
+        product.in_stock
+            ? `
+                <span class="badge badge-stock">
+                    ● В наличии
+                </span>
+              `
+            : `
+                <span class="badge badge-out">
+                    ● Нет в наличии
+                </span>
+              `;
+
+
+    const category =
+        product.category
+            ? `
+                <span class="badge badge-category">
+                    ${escapeHtml(
+                        product.category,
+                    )}
+                </span>
+              `
+            : "";
+
+
+    const tag =
+        product.tag
+            ? `
+                <span class="badge badge-tag">
+                    ${escapeHtml(
+                        product.tag,
+                    )}
+                </span>
+              `
+            : "";
+
+
+    const description =
+        product.description
+            ? escapeHtml(
+                product.description,
+            )
+            : "Описание отсутствует";
+
+
+    return `
+        <article
+            class="product"
+            data-id="${escapeAttr(
+                product.id,
+            )}"
+        >
+
+            <div class="product-image">
+                ${image}
+            </div>
+
+
+            <div class="product-content">
+
+                <div class="product-name">
+                    ${escapeHtml(
+                        product.name,
+                    )}
+                </div>
+
+
+                <div class="product-description">
+                    ${description}
+                </div>
+
+
+                <div class="product-meta">
+
+                    <span class="price">
+                        ${formatPrice(
+                            product.price,
+                        )}
+                    </span>
+
+                    ${stockBadge}
+
+                    ${category}
+
+                    ${tag}
+
+                </div>
+
+            </div>
+
+
+            <div class="product-actions">
+
+                <button
+                    type="button"
+                    class="icon-button"
+                    title="Изменить"
+                    data-action="edit"
+                    data-id="${escapeAttr(
+                        product.id,
+                    )}"
+                >
+                    ✏️
+                </button>
+
+
+                <button
+                    type="button"
+                    class="icon-button"
+                    title="${
+                        product.in_stock
+                            ? "Убрать из наличия"
+                            : "Вернуть в наличие"
+                    }"
+                    data-action="stock"
+                    data-id="${escapeAttr(
+                        product.id,
+                    )}"
+                >
+                    ${
+                        product.in_stock
+                            ? "📦"
+                            : "🔄"
+                    }
+                </button>
+
+
+                <button
+                    type="button"
+                    class="icon-button danger"
+                    title="Удалить"
+                    data-action="delete"
+                    data-id="${escapeAttr(
+                        product.id,
+                    )}"
+                >
+                    🗑
+                </button>
+
+            </div>
+
+        </article>
+    `;
+
+}
+
+
+/* ============================================================
+   CREATE MODAL
+   ============================================================ */
+
+function openCreateModal() {
+
+    editingId = null;
+
+
+    modalTitle.textContent =
+        "Новый товар";
+
+
+    form.reset();
+
+
+    document.getElementById(
+        "productId",
+    ).value = "";
+
+
+    document.getElementById(
+        "inStock",
+    ).checked = true;
+
+
+    document.getElementById(
+        "sortOrder",
+    ).value = "0";
+
+
+    document.getElementById(
+        "imageUrl",
+    ).value = "";
+
+
+    imageFileEl.value = "";
+
+
+    imagePreview.classList.remove(
+        "show",
+    );
+
+
+    imagePreviewImg.src =
+        "";
+
+
+    currentImage.classList.remove(
+        "show",
+    );
+
+
+    currentImageImg.src =
+        "";
+
+
+    modal.classList.add(
+        "open",
+    );
+
+}
+
+
+/* ============================================================
+   EDIT MODAL
+   ============================================================ */
+
+function openEditModal(
+    product,
+) {
+
+    editingId =
+        product.id;
+
+
+    modalTitle.textContent =
+        "Редактирование товара";
+
+
+    document.getElementById(
+        "productId",
+    ).value =
+        product.id || "";
+
+
+    document.getElementById(
+        "name",
+    ).value =
+        product.name || "";
+
+
+    document.getElementById(
+        "category",
+    ).value =
+        product.category || "";
+
+
+    document.getElementById(
+        "price",
+    ).value =
+        product.price ?? "";
+
+
+    document.getElementById(
+        "weight",
+    ).value =
+        product.weight || "";
+
+
+    document.getElementById(
+        "description",
+    ).value =
+        product.description || "";
+
+
+    document.getElementById(
+        "imageUrl",
+    ).value =
+        product.image_url || "";
+
+
+    document.getElementById(
+        "tag",
+    ).value =
+        product.tag || "";
+
+
+    document.getElementById(
+        "sortOrder",
+    ).value =
+        product.sort_order ?? 0;
+
+
+    document.getElementById(
+        "inStock",
+    ).checked =
+        product.in_stock !== false;
+
+
+    imageFileEl.value = "";
+
+
+    imagePreview.classList.remove(
+        "show",
+    );
+
+
+    imagePreviewImg.src =
+        "";
+
+
+    if (
+        product.image_url
+    ) {
+
+        currentImage.classList.add(
+            "show",
+        );
+
+
+        currentImageImg.src =
+            product.image_url;
+
+    } else {
+
+        currentImage.classList.remove(
+            "show",
+        );
+
+
+        currentImageImg.src =
+            "";
+
+    }
+
+
+    modal.classList.add(
+        "open",
+    );
+
+}
+
+
+/* ============================================================
+   CLOSE MODAL
+   ============================================================ */
+
+function closeModal() {
+
+    modal.classList.remove(
+        "open",
+    );
+
+
+    editingId = null;
+
+}
+
+
+/* ============================================================
+   SAVE PRODUCT
+   ============================================================ */
+
+async function saveProduct() {
+
+    const saveButton =
+        document.getElementById(
+            "saveButton",
+        );
+
+
+    const name =
+        document.getElementById(
+            "name",
+        ).value.trim();
+
+
+    const price =
+        Number(
+            document.getElementById(
+                "price",
+            ).value,
+        );
+
+
+    if (!name) {
+
+        toast(
+            "Введите название товара",
+            true,
+        );
+
+        return;
+
+    }
+
+
+    if (
+        !Number.isFinite(price) ||
+        price < 0
+    ) {
+
+        toast(
+            "Введите корректную цену",
+            true,
+        );
+
+        return;
+
+    }
+
+
+    saveButton.disabled =
+        true;
+
+
+    try {
+
+        const imageFile =
+            imageFileEl.files?.[0];
+
+
+        let uploadedImageUrl =
+            null;
+
+
+        if (imageFile) {
+
+            saveButton.textContent =
+                "Загрузка фото...";
+
+
+            uploadedImageUrl =
+                await uploadProductImage(
+                    imageFile,
+                );
+
+        }
+
+
+        const oldImageUrl =
+            document.getElementById(
+                "imageUrl",
+            ).value.trim();
+
+
+        const product = {
+
+            name,
+
+            category:
+                document.getElementById(
+                    "category",
+                ).value.trim() || null,
+
+            price,
+
+            weight:
+                document.getElementById(
+                    "weight",
+                ).value.trim() || null,
+
+            description:
+                document.getElementById(
+                    "description",
+                ).value.trim() || null,
+
+            image_url:
+                uploadedImageUrl ||
+                oldImageUrl ||
+                null,
+
+            tag:
+                document.getElementById(
+                    "tag",
+                ).value.trim() || null,
+
+            sort_order:
+                Number(
+                    document.getElementById(
+                        "sortOrder",
+                    ).value || 0,
+                ),
+
+            in_stock:
+                document.getElementById(
+                    "inStock",
+                ).checked,
+
+        };
+
+
+        saveButton.textContent =
+            "Сохранение...";
+
+
+        if (editingId) {
+
+            await api(
+                "PUT",
+                product,
+                editingId,
+            );
+
+
+            toast(
+                "Товар изменён",
+            );
+
+        } else {
+
+            await api(
+                "POST",
+                product,
+            );
+
+
+            toast(
+                "Товар добавлен",
+            );
+
+        }
+
+
+        closeModal();
+
+
+        await loadProducts();
+
+    } catch (error) {
+
+        console.error(
+            error,
+        );
+
+
+        toast(
+            error.message ||
+            "Не удалось сохранить товар",
+            true,
+        );
+
+    } finally {
+
+        saveButton.disabled =
+            false;
+
+        saveButton.textContent =
+            "Сохранить";
+
+    }
+
+}
+
+
+/* ============================================================
+   DELETE PRODUCT
+   ============================================================ */
+
+async function deleteProduct(
+    product,
+) {
+
+    const confirmed =
+        confirm(
+            `Удалить товар «${product.name}»?\n\nЭто действие нельзя отменить.`,
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    try {
+
+        await api(
+            "DELETE",
+            null,
+            product.id,
+        );
+
+
+        toast(
+            "Товар удалён",
+        );
+
+
+        await loadProducts();
+
+    } catch (error) {
+
+        console.error(
+            error,
+        );
+
+
+        toast(
+            error.message,
+            true,
+        );
+
+    }
+
+}
+
+
+/* ============================================================
+   TOGGLE STOCK
+   ============================================================ */
+
+async function toggleStock(
+    product,
+) {
+
+    try {
+
+        await api(
+            "PUT",
+            {
+
+                name:
+                    product.name,
+
+                category:
+                    product.category ||
+                    null,
+
+                description:
+                    product.description ||
+                    null,
+
+                weight:
+                    product.weight ||
+                    null,
+
+                price:
+                    Number(
+                        product.price || 0,
+                    ),
+
+                image_url:
+                    product.image_url ||
+                    null,
+
+                tag:
+                    product.tag ||
+                    null,
+
+                in_stock:
+                    !product.in_stock,
+
+                sort_order:
+                    Number(
+                        product.sort_order ||
+                        0,
+                    ),
+
+            },
+            product.id,
+        );
+
+
+        toast(
+            product.in_stock
+                ? "Товар убран из наличия"
+                : "Товар снова в наличии",
+        );
+
+
+        await loadProducts();
+
+    } catch (error) {
+
+        console.error(
+            error,
+        );
+
+
+        toast(
+            error.message,
+            true,
+        );
+
+    }
+
+}
+
+
+/* ============================================================
+   IMAGE PREVIEW
+   ============================================================ */
+
+imageFileEl.addEventListener(
+    "change",
+    () => {
+
+        const file =
+            imageFileEl.files?.[0];
+
+
+        if (!file) {
+
+            imagePreview.classList.remove(
+                "show",
+            );
+
+            imagePreviewImg.src =
+                "";
+
+            return;
+
+        }
+
+
+        if (
+            file.size >
+            10 * 1024 * 1024
+        ) {
+
+            toast(
+                "Изображение не должно быть больше 10 MB",
+                true,
+            );
+
+
+            imageFileEl.value =
+                "";
+
+
+            imagePreview.classList.remove(
+                "show",
+            );
+
+
+            return;
+
+        }
+
+
+        const allowedTypes = [
+
+            "image/jpeg",
+            "image/png",
+            "image/webp",
+            "image/gif",
+
+        ];
+
+
+        if (
+            !allowedTypes.includes(
+                file.type,
+            )
+        ) {
+
+            toast(
+                "Разрешены JPG, PNG, WEBP и GIF",
+                true,
+            );
+
+
+            imageFileEl.value =
+                "";
+
+
+            imagePreview.classList.remove(
+                "show",
+            );
+
+
+            return;
+
+        }
+
+
+        const url =
+            URL.createObjectURL(
+                file,
+            );
+
+
+        imagePreviewImg.src =
+            url;
+
+
+        imagePreview.classList.add(
+            "show",
+        );
+
+    },
+);
+
+
+/* ============================================================
+   NAV EVENTS
+   ============================================================ */
+
+/* ============================================================
+   ADMIN FORM
+   ============================================================ */
+
+addAdminForm.addEventListener(
+    "submit",
+    event => {
+
+        event.preventDefault();
+
+        addAdmin();
+
+    },
+);
+
+
+/* ============================================================
+   ADMIN LIST EVENTS
+   ============================================================ */
+
+adminsList.addEventListener(
+    "click",
+    event => {
+
+        const button =
+            event.target.closest(
+                "[data-remove-admin]",
+            );
+
+
+        if (!button) {
+            return;
+        }
+
+
+        const telegramId =
+            button.dataset.removeAdmin;
+
+
+        if (!telegramId) {
+            return;
+        }
+
+
+        removeAdmin(
+            telegramId,
+        );
+
+    },
+);
+
+
+/* ============================================================
+   PRODUCT EVENTS
+   ============================================================ */
+
+document
+    .getElementById(
+        "addButton",
+    )
+    .addEventListener(
+        "click",
+        openCreateModal,
+    );
+
+
+document
+    .getElementById(
+        "closeButton",
+    )
+    .addEventListener(
+        "click",
+        closeModal,
+    );
+
+
+document
+    .getElementById(
+        "cancelButton",
+    )
+    .addEventListener(
+        "click",
+        closeModal,
+    );
+
+
+form.addEventListener(
+    "submit",
+    event => {
+
+        event.preventDefault();
+
+        saveProduct();
+
+    },
+);
+
+
+searchEl.addEventListener(
+    "input",
+    renderProducts,
+);
+
+
+filtersEl.addEventListener(
+    "click",
+    event => {
+
+        const button =
+            event.target.closest(
+                ".filter",
+            );
+
+
+        if (!button) {
+            return;
+        }
+
+
+        activeCategory =
+            button.dataset.category ||
+            "Все";
+
+
+        renderFilters();
+
+        renderProducts();
+
+    },
+);
+
+
+productsEl.addEventListener(
+    "click",
+    event => {
+
+        const button =
+            event.target.closest(
+                "[data-action]",
+            );
+
+
+        if (!button) {
+            return;
+        }
+
+
+        const id =
+            button.dataset.id;
+
+
+        const product =
+            products.find(
+                item =>
+                    String(item.id) ===
+                    String(id),
+            );
+
+
+        if (!product) {
+            return;
+        }
+
+
+        const action =
+            button.dataset.action;
+
+
+        if (
+            action === "edit"
+        ) {
+
+            openEditModal(
+                product,
+            );
+
+        }
+
+
+        if (
+            action === "delete"
+        ) {
+
+            deleteProduct(
+                product,
+            );
+
+        }
+
+
+        if (
+            action === "stock"
+        ) {
+
+            toggleStock(
+                product,
+            );
+
+        }
+
+    },
+);
+
+
+/* ============================================================
+   MODAL BACKDROP
+   ============================================================ */
+
+modal.addEventListener(
+    "click",
+    event => {
+
+        if (
+            event.target === modal
+        ) {
+
+            closeModal();
+
+        }
+
+    },
+);
+
+
+/* ============================================================
+   ESCAPE
+   ============================================================ */
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key === "Escape" &&
+            modal.classList.contains(
+                "open",
+            )
+        ) {
+
+            closeModal();
+
+        }
+
+    },
+);
+
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
+
+function formatPrice(
+    value,
+) {
+
+    return (
+        Number(
+            value || 0,
+        )
+            .toLocaleString(
+                "ru-RU",
+                {
+                    maximumFractionDigits: 2,
+                },
+            ) +
+        " ₽"
+    );
+
+}
+
+
+function formatDate(
+    value,
+) {
+
+    try {
+
+        return new Date(
+            value,
+        ).toLocaleString(
+            "ru-RU",
+            {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+            },
+        );
+
+    } catch {
+
+        return String(
+            value,
+        );
+
+    }
+
+}
+
+
+function escapeHtml(
+    value,
+) {
+
+    return String(
+        value ?? "",
+    )
+        .replace(
+            /&/g,
+            "&amp;",
+        )
+        .replace(
+            /</g,
+            "&lt;",
+        )
+        .replace(
+            />/g,
+            "&gt;",
+        )
+        .replace(
+            /"/g,
+            "&quot;",
+        )
+        .replace(
+            /'/g,
+            "&#039;",
+        );
+
+}
+
+
+function escapeAttr(
+    value,
+) {
+
+    return escapeHtml(
+        value,
+    );
+
+}
+
+
+
+/* ============================================================
+   MALINA PROMOTIONS / PROMO CODES / ORDERS MANAGEMENT
+   ============================================================ */
 const MANAGEMENT_API_URL = "https://xheusnpmmmhbwwfcozbr.supabase.co/functions/v1/admin-management";
-
-const TG = window.Telegram?.WebApp || null;
-if (TG) { TG.ready(); TG.expand(); }
-
-let products = [], activeCategory = "Все", editingId = null, loading = false, admins = [], currentIsOwner = false;
-let managementProducts = [], managementPromotions = [], managementPromoCodes = [], managementOrders = [];
-
-const productsEl = document.getElementById("products");
-const searchEl = document.getElementById("search");
-const filtersEl = document.getElementById("filters");
-const totalCountEl = document.getElementById("totalCount");
-const stockCountEl = document.getElementById("stockCount");
-const outCountEl = document.getElementById("outCount");
-const modal = document.getElementById("modal");
-const modalTitle = document.getElementById("modalTitle");
-const form = document.getElementById("productForm");
-const toastEl = document.getElementById("toast");
-const userNameEl = document.getElementById("userName");
-const imageFileEl = document.getElementById("imageFile");
-const imagePreview = document.getElementById("imagePreview");
-const imagePreviewImg = document.getElementById("imagePreviewImg");
-const currentImage = document.getElementById("currentImage");
-const currentImageImg = document.getElementById("currentImageImg");
-
-const catalogPanel = document.getElementById("catalogPanel");
-const adminPanel = document.getElementById("adminPanel");
 const promotionsPanel = document.getElementById("promotionsPanel");
 const promoCodesPanel = document.getElementById("promoCodesPanel");
 const ordersPanel = document.getElementById("ordersPanel");
-
-const catalogNavButton = document.getElementById("catalogNavButton");
-const adminsNavButton = document.getElementById("adminsNavButton");
-const promotionsNavButton = document.getElementById("promotionsNavButton");
-const promoCodesNavButton = document.getElementById("promoCodesNavButton");
-const ordersNavButton = document.getElementById("ordersNavButton");
-
-const adminsList = document.getElementById("adminsList");
-const addAdminForm = document.getElementById("addAdminForm");
-const adminTelegramId = document.getElementById("adminTelegramId");
-const addAdminButton = document.getElementById("addAdminButton");
-
 const promotionsList = document.getElementById("promotionsList");
 const promoCodesList = document.getElementById("promoCodesList");
 const ordersList = document.getElementById("ordersList");
 const promotionModal = document.getElementById("promotionModal");
 const promoCodeModal = document.getElementById("promoCodeModal");
+let managementProducts = [], managementPromotions = [], managementPromoCodes = [], managementOrders = [];
 
-let toastTimer = null;
-function toast(message, error = false) {
-    clearTimeout(toastTimer);
-    toastEl.textContent = message;
-    toastEl.className = `toast show ${error ? 'error' : ''}`;
-    toastTimer = setTimeout(() => toastEl.classList.remove("show"), 3000);
-}
-
-function getTelegramInitData() { return TG?.initData || ""; }
-
-async function api(method = "GET", body = null, id = null) {
-    const url = new URL(ADMIN_API_URL);
-    if (id) url.searchParams.set("id", id);
-    const headers = { "Content-Type": "application/json", "X-Telegram-Init-Data": getTelegramInitData() };
-    const response = await fetch(url.toString(), { method, headers, body: body !== null ? JSON.stringify(body) : undefined });
-    const text = await response.text();
-    let data; try { data = text ? JSON.parse(text) : {}; } catch { throw new Error(`Сервер вернул некорректный ответ`); }
-    if (!response.ok || data.ok === false) throw new Error(data.error || data.message || `HTTP ${response.status}`);
-    return data;
-}
-
-async function adminsApi(method = "GET", body = null, telegramId = null) {
-    const url = new URL(ADMINS_API_URL);
-    if (telegramId !== null) url.searchParams.set("telegram_id", String(telegramId));
-    const headers = { "Content-Type": "application/json", "X-Telegram-Init-Data": getTelegramInitData() };
-    const response = await fetch(url.toString(), { method, headers, body: body !== null ? JSON.stringify(body) : undefined });
-    const text = await response.text();
-    let data; try { data = text ? JSON.parse(text) : {}; } catch { throw new Error(`Ошибка сервера администраторов`); }
-    if (!response.ok || data.ok === false) throw new Error(data.error || data.message || `HTTP ${response.status}`);
-    return data;
-}
-
-async function uploadProductImage(file) {
-    if (!file) return null;
-    if (file.size > 10 * 1024 * 1024) throw new Error("Изображение не должно быть больше 10 MB");
-    if (!["image/jpeg", "image/png", "image/webp", "image/gif"].includes(file.type)) throw new Error("Разрешены только JPG, PNG, WEBP и GIF");
-    if (!TG?.initData) throw new Error("Откройте админку внутри Telegram");
-    
-    const formData = new FormData();
-    formData.append("file", file);
-    const response = await fetch(ADMIN_UPLOAD_URL, { method: "POST", headers: { "X-Telegram-Init-Data": TG.initData }, body: formData });
-    const text = await response.text();
-    let data; try { data = text ? JSON.parse(text) : {}; } catch { throw new Error(`Ошибка загрузки изображения`); }
-    if (!response.ok || data.ok === false) throw new Error(data.error || data.message || `Ошибка загрузки`);
-    if (!data.image?.url) throw new Error("Сервер не вернул URL изображения");
-    return data.image.url;
-}
-
-async function loadProducts() {
-    if (loading) return;
-    loading = true;
-    productsEl.innerHTML = `<div class="state"><div class="state-icon">⏳</div><div class="state-title">Загружаем каталог</div></div>`;
-    try {
-        const result = await api("GET");
-        products = Array.isArray(result.products) ? result.products : [];
-        renderFilters(); renderStats(); renderProducts();
-    } catch (error) {
-        productsEl.innerHTML = `<div class="state"><div class="state-icon">⚠️</div><div class="state-title">Ошибка</div><div class="state-text">${escapeHtml(error.message)}</div></div>`;
-    } finally { loading = false; }
-}
-
-async function loadAdmins() {
-    adminsList.innerHTML = `<div class="state"><div class="state-icon">⏳</div><div class="state-title">Загружаем команду</div></div>`;
-    try {
-        const result = await adminsApi("GET");
-        admins = Array.isArray(result.admins) ? result.admins : [];
-        currentIsOwner = result.is_owner === true;
-        if (!currentIsOwner) {
-            adminPanel.innerHTML = `<div class="admin-panel-card"><div class="panel-title">🔒 Доступ закрыт</div><div class="admin-panel-description">Только владелец управляет командой.</div></div>`;
-            return;
-        }
-        renderAdmins();
-    } catch (error) {
-        adminsList.innerHTML = `<div class="state"><div class="state-icon">⚠️</div><div class="state-title">Ошибка</div></div>`;
-    }
-}
-
-function renderAdmins() {
-    if (!admins.length) { adminsList.innerHTML = `<div class="state"><div class="state-title">Команда пуста</div></div>`; return; }
-    adminsList.innerHTML = admins.map(admin => {
-        const owner = admin.is_owner === true;
-        return `<div class="admin-item">
-            <div>
-                <div class="admin-name">${owner ? "👑 Владелец" : "👤 Администратор"}</div>
-                <div class="admin-telegram-id">ID: ${escapeHtml(String(admin.telegram_id || ''))}</div>
-            </div>
-            <button type="button" class="remove-admin-button" data-remove-admin="${admin.telegram_id}" ${owner ? "disabled" : ""}>🗑</button>
-        </div>`;
-    }).join("");
-}
-
-async function addAdmin() {
-    if (!currentIsOwner) return;
-    const telegramId = adminTelegramId.value.trim();
-    if (!/^\d+$/.test(telegramId)) { toast("Неверный ID", true); return; }
-    addAdminButton.disabled = true;
-    try {
-        await adminsApi("POST", { telegram_id: Number(telegramId) });
-        adminTelegramId.value = ""; toast("Администратор добавлен"); await loadAdmins();
-    } catch (error) { toast(error.message, true); } 
-    finally { addAdminButton.disabled = false; }
-}
-
-async function removeAdmin(telegramId) {
-    if (!currentIsOwner) return;
-    if (!confirm(`Удалить администратора ${telegramId}?`)) return;
-    try {
-        await adminsApi("DELETE", null, telegramId);
-        toast("Удалён"); await loadAdmins();
-    } catch (error) { toast(error.message, true); }
-}
-
-function setActiveNav(btn) {
-    document.querySelectorAll(".admin-nav .nav-button").forEach(x => x.classList.remove("active"));
-    if (btn) btn.classList.add("active");
-}
-
-function hideExtraPanels() {
-    promotionsPanel.hidden = true; promoCodesPanel.hidden = true; ordersPanel.hidden = true;
-    catalogPanel.classList.remove("hidden"); adminPanel.classList.remove("open");
-}
-
-function showManagementPanel(panel, btn) {
-    catalogPanel.classList.add("hidden"); adminPanel.classList.remove("open");
-    promotionsPanel.hidden = true; promoCodesPanel.hidden = true; ordersPanel.hidden = true;
-    panel.hidden = false; setActiveNav(btn);
-}
-
-function renderFilters() {
-    const categories = ["Все", ...new Set(products.map(p => p.category).filter(Boolean))];
-    if (!categories.includes(activeCategory)) activeCategory = "Все";
-    filtersEl.innerHTML = categories.map(c => `<button class="filter ${c === activeCategory ? "active" : ""}" data-category="${escapeAttr(c)}">${escapeHtml(c)}</button>`).join("");
-}
-
-function renderStats() {
-    const total = products.length; const stock = products.filter(p => p.in_stock).length;
-    totalCountEl.textContent = total; stockCountEl.textContent = stock; outCountEl.textContent = total - stock;
-}
-
-function getFilteredProducts() {
-    const q = searchEl.value.trim().toLowerCase();
-    return products.filter(p => (activeCategory === "Все" || p.category === activeCategory) &&
-        (!q || (p.name||"").toLowerCase().includes(q) || (p.category||"").toLowerCase().includes(q)));
-}
-
-function renderProducts() {
-    const filtered = getFilteredProducts();
-    if (!filtered.length) { productsEl.innerHTML = `<div class="state"><div class="state-icon">🍰</div><div class="state-title">Пусто</div></div>`; return; }
-    productsEl.innerHTML = filtered.map(p => productCard(p)).join("");
-}
-
-function formatPrice(v) { return Number(v || 0).toLocaleString("ru-RU") + " ₽"; }
-function formatDate(v) { try { return new Date(v).toLocaleString("ru-RU", { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit" }); } catch { return v; } }
-function escapeHtml(v) { return String(v ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); }
-function escapeAttr(v) { return escapeHtml(v); }
-
-function productCard(product) {
-    return `<article class="product">
-        <div class="product-image">${product.image_url ? `<img src="${escapeAttr(product.image_url)}" loading="lazy">` : "🍰"}</div>
-        <div class="product-content">
-            <div class="product-name">${escapeHtml(product.name)}</div>
-            <div class="product-description">${escapeHtml(product.description || "Без описания")}</div>
-            <div class="product-meta">
-                <span class="price">${formatPrice(product.price)}</span>
-                <span class="badge ${product.in_stock ? 'badge-stock' : 'badge-out'}">${product.in_stock ? 'В наличии' : 'Нет в наличии'}</span>
-            </div>
-        </div>
-        <div class="product-actions">
-            <button class="icon-button" data-action="edit" data-id="${product.id}">✏️</button>
-            <button class="icon-button" data-action="stock" data-id="${product.id}">${product.in_stock ? "📦" : "🔄"}</button>
-            <button class="icon-button danger" data-action="delete" data-id="${product.id}">🗑</button>
-        </div>
-    </article>`;
-}
-
-function openCreateModal() {
-    editingId = null; modalTitle.textContent = "Новый товар"; form.reset();
-    document.getElementById("productId").value = "";
-    imagePreview.classList.remove("show"); currentImage.classList.remove("show");
-    modal.classList.add("open");
-}
-
-function openEditModal(product) {
-    editingId = product.id; modalTitle.textContent = "Редактирование";
-    ["productId", "name", "category", "price", "weight", "description", "imageUrl", "tag", "sortOrder"].forEach(id => {
-        const mappedKey = id === "productId" ? "id" : id === "imageUrl" ? "image_url" : id === "sortOrder" ? "sort_order" : id;
-        document.getElementById(id).value = product[mappedKey] ?? "";
-    });
-    document.getElementById("inStock").checked = product.in_stock !== false;
-    imagePreview.classList.remove("show");
-    if (product.image_url) { currentImage.classList.add("show"); document.getElementById("currentImageImg").src = product.image_url; }
-    else currentImage.classList.remove("show");
-    modal.classList.add("open");
-}
-
-function closeModal() { modal.classList.remove("open"); editingId = null; }
-
-async function saveProduct() {
-    const name = document.getElementById("name").value.trim();
-    const price = Number(document.getElementById("price").value);
-    if (!name || price < 0) { toast("Проверьте поля", true); return; }
-    
-    document.getElementById("saveButton").disabled = true;
-    try {
-        let uploadedUrl = null;
-        if (imageFileEl.files?.[0]) uploadedUrl = await uploadProductImage(imageFileEl.files[0]);
-        
-        const p = {
-            name, category: document.getElementById("category").value.trim() || null,
-            price, weight: document.getElementById("weight").value.trim() || null,
-            description: document.getElementById("description").value.trim() || null,
-            image_url: uploadedUrl || document.getElementById("imageUrl").value.trim() || null,
-            tag: document.getElementById("tag").value.trim() || null,
-            sort_order: Number(document.getElementById("sortOrder").value || 0),
-            in_stock: document.getElementById("inStock").checked
-        };
-        
-        if (editingId) await api("PUT", p, editingId); else await api("POST", p);
-        closeModal(); toast(editingId ? "Изменено" : "Добавлено"); await loadProducts();
-    } catch (e) { toast(e.message, true); }
-    finally { document.getElementById("saveButton").disabled = false; }
-}
-
-async function deleteProduct(product) {
-    if (!confirm(`Удалить «${product.name}»?`)) return;
-    try { await api("DELETE", null, product.id); toast("Удалено"); await loadProducts(); } catch (e) { toast(e.message, true); }
-}
-
-async function toggleStock(product) {
-    try {
-        await api("PUT", { ...product, in_stock: !product.in_stock }, product.id);
-        toast(product.in_stock ? "Скрыто" : "В наличии"); await loadProducts();
-    } catch (e) { toast(e.message, true); }
-}
-
-/* Event Listeners */
-imageFileEl.addEventListener("change", () => {
-    const file = imageFileEl.files?.[0];
-    if (file) {
-        imagePreviewImg.src = URL.createObjectURL(file);
-        imagePreview.classList.add("show");
-    } else imagePreview.classList.remove("show");
-});
-
-addAdminForm.addEventListener("submit", e => { e.preventDefault(); addAdmin(); });
-adminsList.addEventListener("click", e => { if (e.target.dataset.removeAdmin) removeAdmin(e.target.dataset.removeAdmin); });
-
-document.getElementById("addButton").addEventListener("click", openCreateModal);
-document.getElementById("closeButton").addEventListener("click", closeModal);
-document.getElementById("cancelButton").addEventListener("click", closeModal);
-form.addEventListener("submit", e => { e.preventDefault(); saveProduct(); });
-searchEl.addEventListener("input", renderProducts);
-filtersEl.addEventListener("click", e => { if (e.target.dataset.category) { activeCategory = e.target.dataset.category; renderFilters(); renderProducts(); } });
-
-productsEl.addEventListener("click", e => {
-    const btn = e.target.closest("[data-action]");
-    if (!btn) return;
-    const p = products.find(x => String(x.id) === btn.dataset.id);
-    if (!p) return;
-    if (btn.dataset.action === "edit") openEditModal(p);
-    if (btn.dataset.action === "delete") deleteProduct(p);
-    if (btn.dataset.action === "stock") toggleStock(p);
-});
-
-modal.addEventListener("click", e => { if (e.target === modal) closeModal(); });
-
-/* Management API */
 async function managementApi(resource, method="GET", body=null, id=null){
   const url=new URL(MANAGEMENT_API_URL); url.searchParams.set("resource",resource); if(id) url.searchParams.set("id",id);
   const r=await fetch(url,{method,headers:{"Content-Type":"application/json","X-Telegram-Init-Data":getTelegramInitData()},body:body?JSON.stringify(body):undefined});
   const text=await r.text(); let data={}; try{data=text?JSON.parse(text):{}}catch{throw new Error(text||`HTTP ${r.status}`)}
   if(!r.ok||data.ok===false) throw new Error(data.error||`HTTP ${r.status}`); return data;
 }
-
+function setActiveNav(btn){document.querySelectorAll(".admin-nav .nav-button").forEach(x=>x.classList.remove("active")); if(btn)btn.classList.add("active");}
+function hideExtraPanels(){promotionsPanel.hidden=true;promoCodesPanel.hidden=true;ordersPanel.hidden=true;catalogPanel.classList.remove("hidden");adminPanel.classList.remove("open");}
+function showManagementPanel(panel,btn){catalogPanel.classList.add("hidden");adminPanel.classList.remove("open");promotionsPanel.hidden=true;promoCodesPanel.hidden=true;ordersPanel.hidden=true;panel.hidden=false;setActiveNav(btn);}
+function fmtDateTime(v){if(!v)return "Без ограничения";const d=new Date(v);return Number.isNaN(d.getTime())?"—":d.toLocaleString("ru-RU",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"})}
+function toLocalInput(v){if(!v)return "";const d=new Date(v);if(Number.isNaN(d.getTime()))return "";const z=n=>String(n).padStart(2,"0");return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}T${z(d.getHours())}:${z(d.getMinutes())}`}
+function localToIso(v){return v?new Date(v).toISOString():null}
+function promotionTypeLabel(t){return ({product_discount:"На товар",category_discount:"На категорию",order_discount:"На весь заказ",bogo:"2 + 1",second_item_discount:"На второй товар",free_delivery:"Бесплатная доставка",delivery_discount:"Скидка на доставку",delivery_price:"Доставка за фиксированную цену"})[t]||t}
+function promotionDiscountLabel(p){if(p.promotion_type==="free_delivery")return "Доставка бесплатно";if(p.promotion_type==="delivery_discount")return p.discount_type==="fixed"?`−${formatPrice(p.discount_value)} доставки`:`−${p.discount_value}% доставки`;if(p.promotion_type==="delivery_price")return `Доставка ${formatPrice(p.discount_value)}`;if(p.promotion_type==="bogo")return `${p.buy_quantity||2}+${p.reward_quantity||1}`;if(p.promotion_type==="second_item_discount")return `Второй −${p.reward_discount_percent??50}%`;return p.discount_type==="fixed"?`−${formatPrice(p.discount_value)}`:`−${p.discount_value}%`}
+async function loadManagementProducts(){try{const r=await managementApi("products");managementProducts=r.products||[];const s=document.getElementById("promotionProduct");s.innerHTML='<option value="">Выберите товар</option>'+managementProducts.map(p=>`<option value="${escapeAttr(p.id)}">${escapeHtml(p.name)} · ${formatPrice(p.price)}</option>`).join("")}catch(e){console.warn(e)}}
+async function loadPromotions(){promotionsList.innerHTML='<div class="state"><div class="state-icon">⏳</div><div class="state-title">Загружаем акции…</div></div>';try{const r=await managementApi("promotions");managementPromotions=r.promotions||[];renderPromotions()}catch(e){promotionsList.innerHTML=`<div class="state"><div class="state-icon">⚠️</div><div class="state-title">Не удалось загрузить акции</div><div class="state-text">${escapeHtml(e.message)}</div></div>`;toast(e.message,true)}}
+function renderPromotions(){if(!managementPromotions.length){promotionsList.innerHTML='<div class="state"><div class="state-icon">🔥</div><div class="state-title">Акций пока нет</div><div class="state-text">Создайте первую акцию — она начнёт применяться автоматически после сохранения.</div></div>';return}promotionsList.innerHTML=managementPromotions.map(p=>{const target=p.target_product_id?` · ${escapeHtml(managementProducts.find(x=>String(x.id)===String(p.target_product_id))?.name||"Товар")}`:(p.target_category?` · ${escapeHtml(p.target_category)}`:"");const dates=(p.starts_at||p.expires_at)?`${fmtDateTime(p.starts_at)} → ${fmtDateTime(p.expires_at)}`:"Без ограничения по датам";return `<div class="promo-card"><div class="promo-card-head"><div><div class="promo-card-title">${escapeHtml(p.name)} ${p.badge?`<span class="discount-pill">${escapeHtml(p.badge)}</span>`:""}</div><div class="promo-meta"><strong>${escapeHtml(promotionTypeLabel(p.promotion_type))}</strong> · ${escapeHtml(promotionDiscountLabel(p))}${target}<br>${p.min_order_amount>0?`От ${formatPrice(p.min_order_amount)} · `:""}${dates}</div></div><div class="promo-actions"><button class="mini-button" title="Изменить" data-edit-promo="${p.id}">✏️</button><button class="mini-button danger" title="Удалить" data-delete-promo="${p.id}">🗑</button></div></div><div style="margin-top:10px"><span class="status-pill ${p.is_active?'':'off'}">${p.is_active?'ВКЛЮЧЕНА':'ВЫКЛЮЧЕНА'}</span></div></div>`}).join("")}
 function syncPromotionUI(){
   const type=document.getElementById("promotionType").value;
   document.querySelectorAll("[data-promo-type]").forEach(b=>b.classList.toggle("active",b.dataset.promoType===type));
@@ -897,34 +3566,114 @@ function syncPromotionUI(){
   show("promotionRewardField",type==="bogo");
   show("promotionRewardDiscountField",type==="second_item_discount");
   show("promotionDeliveryPriceField",type==="delivery_price");
+  show("promotionMinOrderField",true);
   show("promotionMaxDiscountField",!["free_delivery","delivery_price"].includes(type));
+  if(type==="bogo") document.getElementById("promotionCategory").value="";
+  if(["free_delivery","delivery_discount","delivery_price"].includes(type)){
+    document.getElementById("promotionProduct").value="";
+    document.getElementById("promotionCategory").value="";
+  }
 }
+function openPromotion(p=null){document.getElementById("promotionModalTitle").textContent=p?"Изменить акцию":"Новая акция";document.getElementById("promotionId").value=p?.id||"";document.getElementById("promotionName").value=p?.name||"";document.getElementById("promotionType").value=p?.promotion_type||"product_discount";document.getElementById("promotionValue").value=p?.discount_value??20;document.getElementById("promotionDiscountType").value=p?.discount_type||"percent";document.getElementById("promotionProduct").value=p?.target_product_id||"";document.getElementById("promotionCategory").value=p?.target_category||"";document.getElementById("promotionMinOrder").value=p?.min_order_amount??0;document.getElementById("promotionMaxDiscount").value=p?.max_discount??"";document.getElementById("promotionBuyQty").value=p?.buy_quantity??2;document.getElementById("promotionRewardQty").value=p?.reward_quantity??1;document.getElementById("promotionRewardDiscount").value=p?.reward_discount_percent??100;document.getElementById("promotionDeliveryPrice").value=(p?.promotion_type==="delivery_price"?p?.discount_value:100)??100;document.getElementById("promotionStartsAt").value=toLocalInput(p?.starts_at);document.getElementById("promotionExpiresAt").value=toLocalInput(p?.expires_at);document.getElementById("promotionBadge").value=p?.badge||"";document.getElementById("promotionActive").checked=p?.is_active!==false;syncPromotionUI();promotionModal.classList.add("open")}
+function closePromotion(){promotionModal.classList.remove("open")}
+async function savePromotionForm(e){e.preventDefault();const type=document.getElementById("promotionType").value;const body={name:document.getElementById("promotionName").value.trim(),promotion_type:type,discount_type:document.getElementById("promotionDiscountType").value,discount_value:Number(document.getElementById("promotionValue").value||0),target_product_id:document.getElementById("promotionProduct").value||null,target_category:document.getElementById("promotionCategory").value.trim()||null,min_order_amount:Number(document.getElementById("promotionMinOrder").value||0),max_discount:document.getElementById("promotionMaxDiscount").value===""?null:Number(document.getElementById("promotionMaxDiscount").value),buy_quantity:["bogo","second_item_discount"].includes(type)?Number(document.getElementById("promotionBuyQty").value||2):null,reward_quantity:type==="bogo"?Number(document.getElementById("promotionRewardQty").value||1):null,reward_discount_percent:type==="second_item_discount"?Number(document.getElementById("promotionRewardDiscount").value||50):null,starts_at:localToIso(document.getElementById("promotionStartsAt").value),expires_at:localToIso(document.getElementById("promotionExpiresAt").value),badge:document.getElementById("promotionBadge").value.trim()||null,is_active:document.getElementById("promotionActive").checked};if(type==="delivery_price"){body.discount_type="fixed";body.discount_value=Number(document.getElementById("promotionDeliveryPrice").value||0);}if(!body.name){toast("Введите название акции",true);return}if(type==="category_discount"&&!body.target_category){toast("Укажите категорию",true);return}if(["product_discount","second_item_discount","bogo"].includes(type)&&!body.target_product_id&&!body.target_category){toast("Выберите товар",true);return}try{const id=document.getElementById("promotionId").value;await managementApi("promotions",id?"PATCH":"POST",body,id||null);closePromotion();toast(id?"Акция изменена":"Акция создана");await loadPromotions()}catch(err){toast(err.message,true)}}
+async function deletePromotionById(id){if(!confirm("Удалить эту акцию?"))return;try{await managementApi("promotions","DELETE",null,id);toast("Акция удалена");await loadPromotions()}catch(e){toast(e.message,true)}}
+async function loadPromoCodes(){promoCodesList.innerHTML='<div class="state"><div class="state-icon">⏳</div><div class="state-title">Загружаем промокоды…</div></div>';try{const r=await managementApi("promo_codes");managementPromoCodes=r.promo_codes||[];renderPromoCodes()}catch(e){promoCodesList.innerHTML=`<div class="state"><div class="state-icon">⚠️</div><div class="state-title">Ошибка</div><div class="state-text">${escapeHtml(e.message)}</div></div>`;toast(e.message,true)}}
+function renderPromoCodes(){if(!managementPromoCodes.length){promoCodesList.innerHTML='<div class="state"><div class="state-icon">🏷️</div><div class="state-title">Промокодов пока нет</div><div class="state-text">Создайте первый код для специального предложения.</div></div>';return}promoCodesList.innerHTML=managementPromoCodes.map(p=>{const dates=(p.starts_at||p.expires_at)?`${fmtDateTime(p.starts_at)} → ${fmtDateTime(p.expires_at)}`:"Без ограничения по датам";return `<div class="promo-card"><div class="promo-card-head"><div><div class="promo-card-title">${escapeHtml(p.code)} <span class="discount-pill">${p.discount_type==='fixed'?`−${formatPrice(p.discount_value)}`:`−${p.discount_value}%`}</span></div><div class="promo-meta">${p.min_order_amount>0?`От ${formatPrice(p.min_order_amount)} · `:"Без минимальной суммы"}${p.usage_limit?`Использовано ${p.usage_count||0}/${p.usage_limit}`:"Без лимита использований"}<br>${dates}${p.one_use_per_user?' · 1 раз на пользователя':''}</div></div><div class="promo-actions"><button class="mini-button" title="Изменить" data-edit-code="${p.id}">✏️</button><button class="mini-button danger" title="Удалить" data-delete-code="${p.id}">🗑</button></div></div><div style="margin-top:10px"><span class="status-pill ${p.is_active?'':'off'}">${p.is_active?'ВКЛЮЧЕН':'ВЫКЛЮЧЕН'}</span></div></div>`}).join("")}
+function openPromoCode(p=null){document.getElementById("promoCodeModalTitle").textContent=p?"Изменить промокод":"Новый промокод";document.getElementById("promoCodeId").value=p?.id||"";document.getElementById("promoCodeValue").value=p?.code||"";document.getElementById("promoCodeDiscountValue").value=p?.discount_value??10;document.getElementById("promoCodeDiscountType").value=p?.discount_type||"percent";document.getElementById("promoCodeMinOrder").value=p?.min_order_amount??0;document.getElementById("promoCodeMaxDiscount").value=p?.max_discount??"";document.getElementById("promoCodeUsageLimit").value=p?.usage_limit??"";document.getElementById("promoCodeStartsAt").value=toLocalInput(p?.starts_at);document.getElementById("promoCodeExpiresAt").value=toLocalInput(p?.expires_at);document.getElementById("promoCodeActive").checked=p?.is_active!==false;document.getElementById("promoCodeOneUse").checked=p?.one_use_per_user===true;promoCodeModal.classList.add("open")}
+function closePromoCode(){promoCodeModal.classList.remove("open")}
+async function savePromoCodeForm(e){e.preventDefault();const code=document.getElementById("promoCodeValue").value.trim().toUpperCase();const value=Number(document.getElementById("promoCodeDiscountValue").value||0);if(!code||value<=0){toast("Введите код и размер скидки",true);return}const id=document.getElementById("promoCodeId").value;const body={code,discount_value:value,discount_type:document.getElementById("promoCodeDiscountType").value,min_order_amount:Number(document.getElementById("promoCodeMinOrder").value||0),max_discount:document.getElementById("promoCodeMaxDiscount").value===""?null:Number(document.getElementById("promoCodeMaxDiscount").value),usage_limit:document.getElementById("promoCodeUsageLimit").value===""?null:Number(document.getElementById("promoCodeUsageLimit").value),starts_at:localToIso(document.getElementById("promoCodeStartsAt").value),expires_at:localToIso(document.getElementById("promoCodeExpiresAt").value),is_active:document.getElementById("promoCodeActive").checked,one_use_per_user:document.getElementById("promoCodeOneUse").checked};try{await managementApi("promo_codes",id?"PATCH":"POST",body,id||null);closePromoCode();toast(id?"Промокод изменён":"Промокод создан");await loadPromoCodes()}catch(err){toast(err.message,true)}}
+async function deletePromoCodeById(id){if(!confirm("Удалить этот промокод?"))return;try{await managementApi("promo_codes","DELETE",null,id);toast("Промокод удалён");await loadPromoCodes()}catch(e){toast(e.message,true)}}
+async function loadOrders(){ordersList.innerHTML='<div class="state"><div class="state-icon">⏳</div><div class="state-title">Загружаем заказы…</div></div>';try{const r=await managementApi("orders");managementOrders=r.orders||[];renderOrders()}catch(e){ordersList.innerHTML=`<div class="state"><div class="state-icon">⚠️</div><div class="state-title">Не удалось загрузить заказы</div><div class="state-text">${escapeHtml(e.message)}</div></div>`;toast(e.message,true)}}
+const ORDER_STATUS_LABELS={new:"Новый",confirmed:"Подтверждён",completed:"Выполнен",cancelled:"Отменён"};
+function renderOrders(){if(!managementOrders.length){ordersList.innerHTML='<div class="state"><div class="state-icon">📦</div><div class="state-title">Заказов пока нет</div></div>';return}ordersList.innerHTML=managementOrders.map(o=>`<div class="order-card"><div class="order-head"><div><div class="order-number">Заказ #${escapeHtml(o.order_number)} <span class="status-pill ${o.status==='cancelled'?'off':''}">${escapeHtml(ORDER_STATUS_LABELS[o.status]||o.status)}</span></div><div class="order-meta">${fmtDateTime(o.created_at)} · ${escapeHtml(o.customer_name||'Без имени')} · ${escapeHtml(o.method||'')}${o.address?`<br>${escapeHtml(o.address)}`:''}<br>${o.phone?escapeHtml(o.phone):''}${o.promo_code?` · 🏷️ ${escapeHtml(o.promo_code)}`:''}</div></div><div class="order-total">${formatPrice(o.total)}</div></div>${Number(o.discount||0)>0?`<div class="order-meta"><span class="order-discount">Скидка −${formatPrice(o.discount)}</span> · Товары ${formatPrice(o.subtotal)} · Доставка ${formatPrice(o.delivery_fee)}</div>`:''}<div style="margin-top:12px"><select class="order-select" data-order-status="${o.id}"><option value="new" ${o.status==='new'?'selected':''}>Новый</option><option value="confirmed" ${o.status==='confirmed'?'selected':''}>Подтверждён</option><option value="completed" ${o.status==='completed'?'selected':''}>Выполнен</option><option value="cancelled" ${o.status==='cancelled'?'selected':''}>Отменён</option></select></div></div>`).join("")}
 
-catalogNavButton.addEventListener("click", () => { hideExtraPanels(); setActiveNav(catalogNavButton); });
-adminsNavButton.addEventListener("click", () => { hideExtraPanels(); adminPanel.classList.add("open"); setActiveNav(adminsNavButton); loadAdmins(); });
-promotionsNavButton.addEventListener("click", () => { showManagementPanel(promotionsPanel, promotionsNavButton); });
-promoCodesNavButton.addEventListener("click", () => { showManagementPanel(promoCodesPanel, promoCodesNavButton); });
-ordersNavButton.addEventListener("click", () => { showManagementPanel(ordersPanel, ordersNavButton); });
-
+const promotionsNavButton=document.getElementById("promotionsNavButton"),promoCodesNavButton=document.getElementById("promoCodesNavButton"),ordersNavButton=document.getElementById("ordersNavButton");
+catalogNavButton.addEventListener("click",()=>{hideExtraPanels();catalogPanel.classList.remove("hidden");setActiveNav(catalogNavButton)});
+adminsNavButton.addEventListener("click",()=>{hideExtraPanels();catalogPanel.classList.add("hidden");adminPanel.classList.add("open");setActiveNav(adminsNavButton);loadAdmins()});
+promotionsNavButton.addEventListener("click",()=>{showManagementPanel(promotionsPanel,promotionsNavButton);loadManagementProducts().then(loadPromotions)});
+promoCodesNavButton.addEventListener("click",()=>{showManagementPanel(promoCodesPanel,promoCodesNavButton);loadPromoCodes()});
+ordersNavButton.addEventListener("click",()=>{showManagementPanel(ordersPanel,ordersNavButton);loadOrders()});
+document.getElementById("addPromotionButton").addEventListener("click",async()=>{if(!managementProducts.length)await loadManagementProducts();openPromotion()});
 document.querySelectorAll("[data-promo-type]").forEach(b=>b.addEventListener("click",()=>{document.getElementById("promotionType").value=b.dataset.promoType;syncPromotionUI()}));
-[promotionModal, promoCodeModal].forEach(m => m.addEventListener("click", e => { if (e.target === m) m.classList.remove("open"); }));
-document.getElementById("closePromotionButton").addEventListener("click", () => promotionModal.classList.remove("open"));
-document.getElementById("cancelPromotionButton").addEventListener("click", () => promotionModal.classList.remove("open"));
-document.getElementById("closePromoCodeButton").addEventListener("click", () => promoCodeModal.classList.remove("open"));
-document.getElementById("cancelPromoCodeButton").addEventListener("click", () => promoCodeModal.classList.remove("open"));
+document.getElementById("closePromotionButton").addEventListener("click",closePromotion);document.getElementById("cancelPromotionButton").addEventListener("click",closePromotion);document.getElementById("promotionForm").addEventListener("submit",savePromotionForm);
+promotionsList.addEventListener("click",e=>{const edit=e.target.closest("[data-edit-promo]"),del=e.target.closest("[data-delete-promo]");if(edit)openPromotion(managementPromotions.find(p=>String(p.id)===String(edit.dataset.editPromo)));if(del)deletePromotionById(del.dataset.deletePromo)});
+document.getElementById("addPromoCodeButton").addEventListener("click",()=>openPromoCode());document.getElementById("closePromoCodeButton").addEventListener("click",closePromoCode);document.getElementById("cancelPromoCodeButton").addEventListener("click",closePromoCode);document.getElementById("promoCodeForm").addEventListener("submit",savePromoCodeForm);
+promoCodesList.addEventListener("click",e=>{const edit=e.target.closest("[data-edit-code]"),del=e.target.closest("[data-delete-code]");if(edit)openPromoCode(managementPromoCodes.find(p=>String(p.id)===String(edit.dataset.editCode)));if(del)deletePromoCodeById(del.dataset.deleteCode)});
+document.getElementById("refreshOrdersButton").addEventListener("click",loadOrders);
+ordersList.addEventListener("change",async e=>{const s=e.target.closest("[data-order-status]");if(!s)return;const id=s.dataset.orderStatus;const before=managementOrders.find(o=>String(o.id)===String(id));const old=before?.status||s.dataset.previousStatus||"new";try{const result=await managementApi("orders","PATCH",{status:s.value},id);s.dataset.previousStatus=s.value;const item=managementOrders.find(o=>String(o.id)===String(id));if(item)item.status=s.value;const changed=old!==s.value;const n=result?.notification;let msg=changed?`Статус: ${ORDER_STATUS_LABELS[s.value]||s.value}`:"Статус заказа обновлён";if(changed){if(n?.sent)msg+=" · Клиенту отправлено уведомление";else if(n?.skipped)msg+=" · Telegram-уведомление не отправлено";else if(n?.reason)msg+=` · Уведомление не отправлено: ${n.reason}`;}toast(msg)}catch(err){toast(err.message,true);await loadOrders()}});
+[promotionModal,promoCodeModal].forEach(m=>m.addEventListener("click",e=>{if(e.target===m)m.classList.remove("open")}));
+syncPromotionUI();
 
-async function authorizeAdmin() {
-    if (!TG?.initData) { document.getElementById("accessError").textContent = "Откройте админку внутри Telegram."; return false; }
-    try { await api("GET"); document.body.classList.remove("pending"); return true; } 
-    catch (e) { document.getElementById("accessError").textContent = "Нет доступа."; return false; }
+/* ============================================================
+   TELEGRAM USER
+   ============================================================ */
+
+function showTelegramUser() {
+
+    try {
+
+        const user =
+            TG?.initDataUnsafe?.user;
+
+
+        if (!user) {
+            return;
+        }
+
+
+        const name =
+            user.first_name ||
+            user.username ||
+            "Администратор";
+
+
+        userNameEl.textContent =
+            name;
+
+    } catch {
+
+        // ignore
+
+    }
+
 }
 
-(async () => {
-    if (await authorizeAdmin()) {
-        try { userNameEl.textContent = TG.initDataUnsafe.user.first_name || "Админ"; } catch {}
-        await loadProducts();
-    }
+
+/* ============================================================
+   ACCESS GATE
+   ============================================================ */
+
+async function authorizeAdmin(){
+  const accessError=document.getElementById("accessError");
+  if(!TG?.initData){
+    accessError.textContent="Админка должна быть открыта внутри Telegram WebApp.";
+    return false;
+  }
+  try{
+    // admin-products performs the authoritative Telegram+admin membership check.
+    await api("GET");
+    document.body.classList.remove("pending");
+    return true;
+  }catch(error){
+    console.error("ADMIN ACCESS DENIED",error);
+    accessError.textContent=error?.message||"Недостаточно прав.";
+    return false;
+  }
+}
+
+/* ============================================================
+   START
+   ============================================================ */
+
+(async()=>{
+  if(await authorizeAdmin()){
+    showTelegramUser();
+    await loadProducts();
+  }
 })();
+
 </script>
+
 </body>
 </html>
