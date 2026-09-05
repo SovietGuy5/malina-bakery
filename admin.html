@@ -10,7 +10,7 @@
 
 <meta
     name="theme-color"
-    content="#f2f4f7"
+    content="#0d0b10"
 >
 
 <title>Кондитерский дом «Малина» — управление</title>
@@ -1428,10 +1428,152 @@ button:disabled {
 .simple-bottom-row{padding:13px 0}.soft-toggle{background:var(--bg)}
 .management-form-actions{padding-top:13px}
 @media(max-width:699px){.quick-choice-row{grid-template-columns:1fr 1fr}.date-row.compact-date-row,.date-row.compact-date-row.two-fields{grid-template-columns:1fr}.date-arrow{display:none}.inline-toggle{min-height:auto}.management-page-head .panel-action{width:100%}}
+
+/* ============================================================
+   MALINA ADMIN — DARK / TELEGRAM / RASPBERRY UI
+   ============================================================ */
+:root{
+  color-scheme:dark;
+  --bg:#0d0b10;
+  --bg-2:#121017;
+  --card:#17141c;
+  --card-2:#1c1821;
+  --text:#f7f3f7;
+  --muted:#a59ca8;
+  --line:rgba(255,255,255,.08);
+  --accent:#ff3b8d;
+  --accent-2:#ff5aa4;
+  --accent-soft:rgba(255,59,141,.12);
+  --success:#55d88a;
+  --danger:#ff6b7a;
+  --warning:#ffc95e;
+  --shadow:0 18px 55px rgba(0,0,0,.35);
+  --radius:22px;
+}
+*{box-sizing:border-box}
+html,body{background:var(--bg)!important;color:var(--text)!important}
+body{
+  margin:0!important;min-height:100vh!important;padding:0!important;
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif!important;
+  background:
+    radial-gradient(700px 300px at 12% -5%, rgba(255,59,141,.16), transparent 60%),
+    radial-gradient(520px 260px at 100% 0%, rgba(255,59,141,.08), transparent 58%),
+    var(--bg)!important;
+}
+body.pending #appShell{display:none!important}
+body.pending #accessDenied{display:flex!important}
+#appShell{min-height:100vh;display:grid;grid-template-columns:248px minmax(0,1fr)}
+.header{
+  grid-column:2;grid-row:1;display:flex;align-items:center;justify-content:space-between;
+  padding:28px 34px 12px;margin:0;gap:18px;
+}
+.header-title h1{font-size:28px;font-weight:900;letter-spacing:-.04em;color:var(--text)}
+.header-title p{margin-top:7px;color:var(--muted);font-size:12px}
+.user-badge{background:var(--card);border:1px solid var(--line);box-shadow:none;padding:9px 12px;color:var(--text)}
+.user-dot{background:var(--accent);box-shadow:0 0 14px rgba(255,59,141,.55)}
+.admin-nav{
+  position:sticky;top:0;z-index:20;grid-column:1;grid-row:1 / span 3;
+  height:100vh;padding:26px 16px;display:flex;flex-direction:column;gap:7px;
+  background:rgba(16,13,20,.92);border-right:1px solid var(--line);backdrop-filter:blur(18px);
+}
+.admin-nav:before{content:"МАЛИНА";display:block;padding:6px 12px 18px;font-size:11px;letter-spacing:.18em;font-weight:900;color:var(--accent)}
+.nav-button{width:100%;min-height:46px;padding:0 13px;border:1px solid transparent;border-radius:14px;background:transparent;color:var(--muted);text-align:left;box-shadow:none;font-weight:800;transition:.18s ease}
+.nav-button:hover{background:rgba(255,255,255,.035);color:var(--text)}
+.nav-button.active{background:var(--accent-soft);color:#fff;border-color:rgba(255,59,141,.28);box-shadow:inset 3px 0 0 var(--accent),0 8px 22px rgba(255,59,141,.08)}
+.catalog-panel,.extra-panel{grid-column:2;grid-row:2;padding:12px 34px 34px;max-width:1320px;width:100%}
+.extra-panel[hidden]{display:none!important}
+.catalog-panel.hidden{display:none!important}
+.toolbar{display:flex;gap:10px;margin:0 0 14px}
+.search{height:50px;background:var(--card)!important;border-color:var(--line)!important;color:var(--text)!important;border-radius:15px}
+.search::placeholder{color:#746d79}
+.add-button,.panel-action,.add-admin-button,.save-button{background:var(--accent)!important;color:#fff!important;border:0;box-shadow:0 10px 25px rgba(255,59,141,.18)}
+.add-button{height:50px;border-radius:15px;padding:0 18px;font-weight:900}
+.filters{margin-bottom:16px}
+.filter{background:var(--card);border-color:var(--line);color:var(--muted)}
+.filter.active{background:var(--accent-soft);border-color:rgba(255,59,141,.3);color:#fff}
+.stats{gap:10px;margin-bottom:16px}
+.stat{background:linear-gradient(180deg,var(--card-2),var(--card));border-color:var(--line);box-shadow:none}
+.stat-value{font-size:23px;color:#fff}
+.stat-label{color:var(--muted)}
+.products{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.product{background:var(--card);border-color:var(--line);border-radius:20px;box-shadow:none;transition:.18s ease}
+.product:hover{transform:translateY(-2px);border-color:rgba(255,59,141,.22);box-shadow:0 14px 34px rgba(0,0,0,.2)}
+.product-image{background:#211c26!important}
+.product-name{color:#fff}
+.badge-category{background:rgba(255,255,255,.05);color:#bdb5c0}
+.badge-tag,.discount-pill{background:var(--accent-soft)!important;color:var(--accent)!important}
+.icon-button,.mini-button{background:#211c26!important;color:#e9e3ea!important;border-color:var(--line)!important}
+.icon-button:hover,.mini-button:hover{border-color:rgba(255,59,141,.3)!important}
+.icon-button.danger,.mini-button.danger{color:var(--danger)!important}
+.state{padding:70px 20px;background:transparent}
+.state-title{color:#fff}.state-text{color:var(--muted)}
+.management-page-head{padding:10px 0 18px;border-bottom:1px solid var(--line);margin-bottom:18px}
+.management-page-head .panel-title{font-size:31px;color:#fff}
+.panel-kicker{color:var(--accent)!important}
+.panel-subtitle{color:var(--muted)!important}
+.panel-action{height:46px;border-radius:14px;font-weight:900}
+.promo-card,.order-card,.admin-panel-card,.admin-item{background:var(--card);border-color:var(--line);box-shadow:none;border-radius:20px}
+.promo-card:hover,.order-card:hover{transform:translateY(-2px);border-color:rgba(255,59,141,.18)}
+.promo-meta,.order-meta,.admin-panel-description,.admin-telegram-id,.admin-created{color:var(--muted)!important}
+.status-pill{background:rgba(85,216,138,.12);color:var(--success)}
+.status-pill.off{background:rgba(255,107,122,.12);color:var(--danger)}
+.order-total{color:#fff}
+.order-select,.admin-id-input,.field input,.field textarea,.field select{background:#211c26!important;color:var(--text)!important;border-color:var(--line)!important}
+.order-select:focus,.admin-id-input:focus,.field input:focus,.field textarea:focus,.field select:focus{border-color:rgba(255,59,141,.5)!important;box-shadow:0 0 0 3px rgba(255,59,141,.08)}
+.admin-panel.open{grid-column:2;grid-row:2;padding:12px 34px 34px;max-width:1320px;width:100%}
+.admin-panel-card{padding:20px}
+.owner-badge{background:rgba(255,201,94,.1);color:var(--warning)}
+.admin-list-header{color:var(--muted)}
+.remove-admin-button{background:#211c26;color:var(--danger);border-color:var(--line)}
+.modal,.management-modal{background:rgba(5,4,7,.72)!important;backdrop-filter:blur(10px)}
+.modal-sheet,.management-dialog{background:#151219!important;border-color:var(--line)!important;box-shadow:0 30px 90px rgba(0,0,0,.5)!important}
+.management-dialog{border-radius:26px}
+.management-dialog-title,.modal-title{color:#fff}
+.management-dialog-subtitle{color:var(--muted)}
+.simple-section{border-top-color:var(--line)!important}
+.quick-choice{background:#211c26!important;border-color:var(--line)!important;color:var(--text)!important}
+.quick-choice.active{background:var(--accent-soft)!important;border-color:rgba(255,59,141,.5)!important;box-shadow:0 0 0 2px rgba(255,59,141,.08)}
+.soft-toggle{background:#211c26!important;border-color:var(--line)!important}
+.soft-toggle-track{background:#403a43}.soft-toggle input:checked + .soft-toggle-track{background:var(--accent)}
+.management-secondary,.cancel-button{background:#211c26!important;color:var(--text)!important;border-color:var(--line)!important}
+.image-upload{background:#211c26;border-color:var(--line)}
+.image-upload:hover{border-color:rgba(255,59,141,.5)}
+.toast{background:#211c26!important;border:1px solid var(--line);color:#fff}
+.toast.error{background:#361921!important}
+#accessDenied{display:none;min-height:100vh;align-items:center;justify-content:center;padding:24px}
+.access-card{width:min(440px,100%);padding:30px;border:1px solid var(--line);border-radius:26px;background:linear-gradient(180deg,#1a151e,#131017);box-shadow:var(--shadow);text-align:center}
+.access-icon{width:68px;height:68px;margin:0 auto 18px;border-radius:22px;display:grid;place-items:center;background:var(--accent-soft);font-size:29px}
+.access-title{font-size:26px;font-weight:900;letter-spacing:-.04em}
+.access-text{margin:9px auto 0;color:var(--muted);font-size:13px;line-height:1.55}
+.access-code{display:none;margin-top:14px;padding:10px 12px;border-radius:12px;background:#211c26;color:#ffd9e8;font-size:11px;text-align:left;word-break:break-word}
+@media(max-width:899px){
+  #appShell{display:block}
+  .header{padding:18px 16px 10px}.header-title h1{font-size:23px}.header-title p{font-size:11px}.user-badge{font-size:11px}
+  .admin-nav{position:sticky;top:0;height:auto;display:grid;grid-template-columns:repeat(5,1fr);padding:8px;gap:6px;border-right:0;border-bottom:1px solid var(--line);background:rgba(13,11,16,.94)}
+  .admin-nav:before{display:none}.nav-button{min-height:44px;padding:0 8px;text-align:center;font-size:11px}.catalog-panel,.extra-panel,.admin-panel.open{padding:10px 14px 28px;max-width:none}
+  .products{grid-template-columns:1fr}.management-page-head{padding-top:4px}.management-page-head .panel-title{font-size:27px}.panel-toolbar{flex-direction:column;align-items:stretch}.panel-action{width:100%}
+}
+@media(max-width:560px){
+  .header{align-items:flex-start}.user-badge{padding:8px}.user-badge span:last-child{max-width:85px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .admin-nav{grid-template-columns:repeat(5,minmax(0,1fr))}.nav-button{font-size:10px;min-height:42px}
+  .toolbar{flex-direction:column}.add-button{width:100%}.stats{grid-template-columns:repeat(3,minmax(0,1fr))}.stat{padding:11px 9px}.stat-label{font-size:10px}
+  .product{padding:10px}.product-image{flex-basis:72px;width:72px;height:72px}.product-name{font-size:14px}.product-description{font-size:11px}
+  .choice-grid,.quick-choice-row{grid-template-columns:1fr 1fr}.management-dialog{padding:15px;border-radius:20px}.management-grid{grid-template-columns:1fr}.management-grid .full{grid-column:auto}.date-row.compact-date-row,.date-row.compact-date-row.two-fields{grid-template-columns:1fr}.date-arrow{display:none}
+}
+
 </style>
 </head>
 
-<body>
+<body class="pending">
+<div id="accessDenied">
+  <div class="access-card">
+    <div class="access-icon">🔒</div>
+    <div class="access-title">Доступ запрещён</div>
+    <div class="access-text">Эта страница доступна только администраторам кондитерского дома «Малина».<br>Откройте админку из разрешённого Telegram-аккаунта.</div>
+    <div id="accessError" class="access-code"></div>
+  </div>
+</div>
+<div id="appShell">
 
 
 <!-- ============================================================
@@ -1644,6 +1786,8 @@ button:disabled {
           <button type="button" class="quick-choice" data-promo-type="second_item_discount"><span>🍰🍰</span><strong>Скидка на второй</strong></button>
           <button type="button" class="quick-choice" data-promo-type="bogo"><span>2+1</span><strong>Третий бесплатно</strong></button>
           <button type="button" class="quick-choice" data-promo-type="free_delivery"><span>🚚</span><strong>Доставка бесплатно</strong></button>
+          <button type="button" class="quick-choice" data-promo-type="delivery_discount"><span>−🚚</span><strong>Скидка на доставку</strong></button>
+          <button type="button" class="quick-choice" data-promo-type="delivery_price"><span>💳</span><strong>Доставка за X ₽</strong></button>
         </div>
         <select id="promotionType" class="visually-hidden" aria-hidden="true" tabindex="-1">
           <option value="product_discount">product_discount</option>
@@ -1652,6 +1796,8 @@ button:disabled {
           <option value="second_item_discount">second_item_discount</option>
           <option value="bogo">bogo</option>
           <option value="free_delivery">free_delivery</option>
+          <option value="delivery_discount">delivery_discount</option>
+          <option value="delivery_price">delivery_price</option>
         </select>
       </div>
 
@@ -1665,6 +1811,7 @@ button:disabled {
           <div class="field hidden-field" id="promotionBuyField"><label for="promotionBuyQty">Количество для покупки</label><input id="promotionBuyQty" type="number" min="1" step="1" value="2"></div>
           <div class="field hidden-field" id="promotionRewardField"><label for="promotionRewardQty">Количество в подарок</label><input id="promotionRewardQty" type="number" min="1" step="1" value="1"></div>
           <div class="field hidden-field" id="promotionRewardDiscountField"><label for="promotionRewardDiscount">Скидка на второй</label><div class="suffix-control"><input id="promotionRewardDiscount" type="number" min="0" max="100" step="1" value="50"><span>%</span></div></div>
+          <div class="field hidden-field" id="promotionDeliveryPriceField"><label for="promotionDeliveryPrice">Цена доставки</label><div class="suffix-control"><input id="promotionDeliveryPrice" type="number" min="0" step="1" value="100"><span>₽</span></div></div>
           <div class="field" id="promotionMinOrderField"><label for="promotionMinOrder">Минимальная сумма заказа</label><div class="suffix-control"><input id="promotionMinOrder" type="number" min="0" step="1" value="0"><span>₽</span></div></div>
           <div class="field hidden-field" id="promotionMaxDiscountField"><label for="promotionMaxDiscount">Максимальная скидка</label><div class="suffix-control"><input id="promotionMaxDiscount" type="number" min="0" step="1" placeholder="Без лимита"><span>₽</span></div></div>
         </div>
@@ -2144,6 +2291,7 @@ button:disabled {
 ></div>
 
 
+</div>
 <script>
 "use strict";
 
@@ -4695,36 +4843,33 @@ function showManagementPanel(panel,btn){catalogPanel.classList.add("hidden");adm
 function fmtDateTime(v){if(!v)return "Без ограничения";const d=new Date(v);return Number.isNaN(d.getTime())?"—":d.toLocaleString("ru-RU",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"})}
 function toLocalInput(v){if(!v)return "";const d=new Date(v);if(Number.isNaN(d.getTime()))return "";const z=n=>String(n).padStart(2,"0");return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}T${z(d.getHours())}:${z(d.getMinutes())}`}
 function localToIso(v){return v?new Date(v).toISOString():null}
-function promotionTypeLabel(t){return ({product_discount:"На товар",category_discount:"На категорию",order_discount:"На весь заказ",bogo:"2 + 1",second_item_discount:"На второй товар",free_delivery:"Бесплатная доставка"})[t]||t}
-function promotionDiscountLabel(p){if(p.promotion_type==="free_delivery")return "Доставка бесплатно";if(p.promotion_type==="bogo")return `${p.buy_quantity||2}+${p.reward_quantity||1}`;if(p.promotion_type==="second_item_discount")return `Второй −${p.reward_discount_percent??50}%`;return p.discount_type==="fixed"?`−${formatPrice(p.discount_value)}`:`−${p.discount_value}%`}
+function promotionTypeLabel(t){return ({product_discount:"На товар",category_discount:"На категорию",order_discount:"На весь заказ",bogo:"2 + 1",second_item_discount:"На второй товар",free_delivery:"Бесплатная доставка",delivery_discount:"Скидка на доставку",delivery_price:"Доставка за фиксированную цену"})[t]||t}
+function promotionDiscountLabel(p){if(p.promotion_type==="free_delivery")return "Доставка бесплатно";if(p.promotion_type==="delivery_discount")return p.discount_type==="fixed"?`−${formatPrice(p.discount_value)} доставки`:`−${p.discount_value}% доставки`;if(p.promotion_type==="delivery_price")return `Доставка ${formatPrice(p.discount_value)}`;if(p.promotion_type==="bogo")return `${p.buy_quantity||2}+${p.reward_quantity||1}`;if(p.promotion_type==="second_item_discount")return `Второй −${p.reward_discount_percent??50}%`;return p.discount_type==="fixed"?`−${formatPrice(p.discount_value)}`:`−${p.discount_value}%`}
 async function loadManagementProducts(){try{const r=await managementApi("products");managementProducts=r.products||[];const s=document.getElementById("promotionProduct");s.innerHTML='<option value="">Выберите товар</option>'+managementProducts.map(p=>`<option value="${escapeAttr(p.id)}">${escapeHtml(p.name)} · ${formatPrice(p.price)}</option>`).join("")}catch(e){console.warn(e)}}
 async function loadPromotions(){promotionsList.innerHTML='<div class="state"><div class="state-icon">⏳</div><div class="state-title">Загружаем акции…</div></div>';try{const r=await managementApi("promotions");managementPromotions=r.promotions||[];renderPromotions()}catch(e){promotionsList.innerHTML=`<div class="state"><div class="state-icon">⚠️</div><div class="state-title">Не удалось загрузить акции</div><div class="state-text">${escapeHtml(e.message)}</div></div>`;toast(e.message,true)}}
 function renderPromotions(){if(!managementPromotions.length){promotionsList.innerHTML='<div class="state"><div class="state-icon">🔥</div><div class="state-title">Акций пока нет</div><div class="state-text">Создайте первую акцию — она начнёт применяться автоматически после сохранения.</div></div>';return}promotionsList.innerHTML=managementPromotions.map(p=>{const target=p.target_product_id?` · ${escapeHtml(managementProducts.find(x=>String(x.id)===String(p.target_product_id))?.name||"Товар")}`:(p.target_category?` · ${escapeHtml(p.target_category)}`:"");const dates=(p.starts_at||p.expires_at)?`${fmtDateTime(p.starts_at)} → ${fmtDateTime(p.expires_at)}`:"Без ограничения по датам";return `<div class="promo-card"><div class="promo-card-head"><div><div class="promo-card-title">${escapeHtml(p.name)} ${p.badge?`<span class="discount-pill">${escapeHtml(p.badge)}</span>`:""}</div><div class="promo-meta"><strong>${escapeHtml(promotionTypeLabel(p.promotion_type))}</strong> · ${escapeHtml(promotionDiscountLabel(p))}${target}<br>${p.min_order_amount>0?`От ${formatPrice(p.min_order_amount)} · `:""}${dates}</div></div><div class="promo-actions"><button class="mini-button" title="Изменить" data-edit-promo="${p.id}">✏️</button><button class="mini-button danger" title="Удалить" data-delete-promo="${p.id}">🗑</button></div></div><div style="margin-top:10px"><span class="status-pill ${p.is_active?'':'off'}">${p.is_active?'ВКЛЮЧЕНА':'ВЫКЛЮЧЕНА'}</span></div></div>`}).join("")}
 function syncPromotionUI(){
   const type=document.getElementById("promotionType").value;
   document.querySelectorAll("[data-promo-type]").forEach(b=>b.classList.toggle("active",b.dataset.promoType===type));
-  const product=document.getElementById("promotionProductField");
-  const category=document.getElementById("promotionCategoryField");
-  const discountType=document.getElementById("promotionDiscountTypeField");
-  const buy=document.getElementById("promotionBuyField");
-  const reward=document.getElementById("promotionRewardField");
-  const rewardDisc=document.getElementById("promotionRewardDiscountField");
-  const minOrder=document.getElementById("promotionMinOrderField");
-  const max=document.getElementById("promotionMaxDiscountField");
-  product.classList.toggle("hidden-field", !["product_discount","second_item_discount","bogo"].includes(type));
-  category.classList.toggle("hidden-field", !["category_discount","second_item_discount"].includes(type));
-  // BOGO is currently product-based in the calculation function, so do not expose a category choice for it.
+  const show=(id,on)=>document.getElementById(id)?.classList.toggle("hidden-field",!on);
+  show("promotionProductField",["product_discount","second_item_discount","bogo"].includes(type));
+  show("promotionCategoryField",["category_discount","second_item_discount"].includes(type));
+  show("promotionDiscountTypeField",!["free_delivery","bogo","delivery_price"].includes(type));
+  show("promotionBuyField",type==="bogo");
+  show("promotionRewardField",type==="bogo");
+  show("promotionRewardDiscountField",type==="second_item_discount");
+  show("promotionDeliveryPriceField",type==="delivery_price");
+  show("promotionMinOrderField",true);
+  show("promotionMaxDiscountField",!["free_delivery","delivery_price"].includes(type));
   if(type==="bogo") document.getElementById("promotionCategory").value="";
-  discountType.classList.toggle("hidden-field",type==="free_delivery"||type==="bogo");
-  buy.classList.toggle("hidden-field",!(["bogo"].includes(type)));
-  reward.classList.toggle("hidden-field",type!=="bogo");
-  rewardDisc.classList.toggle("hidden-field",type!=="second_item_discount");
-  minOrder.classList.toggle("hidden-field",false);
-  max.classList.toggle("hidden-field",type==="free_delivery");
+  if(["free_delivery","delivery_discount","delivery_price"].includes(type)){
+    document.getElementById("promotionProduct").value="";
+    document.getElementById("promotionCategory").value="";
+  }
 }
-function openPromotion(p=null){document.getElementById("promotionModalTitle").textContent=p?"Изменить акцию":"Новая акция";document.getElementById("promotionId").value=p?.id||"";document.getElementById("promotionName").value=p?.name||"";document.getElementById("promotionType").value=p?.promotion_type||"product_discount";document.getElementById("promotionValue").value=p?.discount_value??20;document.getElementById("promotionDiscountType").value=p?.discount_type||"percent";document.getElementById("promotionProduct").value=p?.target_product_id||"";document.getElementById("promotionCategory").value=p?.target_category||"";document.getElementById("promotionMinOrder").value=p?.min_order_amount??0;document.getElementById("promotionMaxDiscount").value=p?.max_discount??"";document.getElementById("promotionBuyQty").value=p?.buy_quantity??2;document.getElementById("promotionRewardQty").value=p?.reward_quantity??1;document.getElementById("promotionRewardDiscount").value=p?.reward_discount_percent??100;document.getElementById("promotionStartsAt").value=toLocalInput(p?.starts_at);document.getElementById("promotionExpiresAt").value=toLocalInput(p?.expires_at);document.getElementById("promotionBadge").value=p?.badge||"";document.getElementById("promotionActive").checked=p?.is_active!==false;syncPromotionUI();promotionModal.classList.add("open")}
+function openPromotion(p=null){document.getElementById("promotionModalTitle").textContent=p?"Изменить акцию":"Новая акция";document.getElementById("promotionId").value=p?.id||"";document.getElementById("promotionName").value=p?.name||"";document.getElementById("promotionType").value=p?.promotion_type||"product_discount";document.getElementById("promotionValue").value=p?.discount_value??20;document.getElementById("promotionDiscountType").value=p?.discount_type||"percent";document.getElementById("promotionProduct").value=p?.target_product_id||"";document.getElementById("promotionCategory").value=p?.target_category||"";document.getElementById("promotionMinOrder").value=p?.min_order_amount??0;document.getElementById("promotionMaxDiscount").value=p?.max_discount??"";document.getElementById("promotionBuyQty").value=p?.buy_quantity??2;document.getElementById("promotionRewardQty").value=p?.reward_quantity??1;document.getElementById("promotionRewardDiscount").value=p?.reward_discount_percent??100;document.getElementById("promotionDeliveryPrice").value=(p?.promotion_type==="delivery_price"?p?.discount_value:100)??100;document.getElementById("promotionStartsAt").value=toLocalInput(p?.starts_at);document.getElementById("promotionExpiresAt").value=toLocalInput(p?.expires_at);document.getElementById("promotionBadge").value=p?.badge||"";document.getElementById("promotionActive").checked=p?.is_active!==false;syncPromotionUI();promotionModal.classList.add("open")}
 function closePromotion(){promotionModal.classList.remove("open")}
-async function savePromotionForm(e){e.preventDefault();const type=document.getElementById("promotionType").value;const body={name:document.getElementById("promotionName").value.trim(),promotion_type:type,discount_type:document.getElementById("promotionDiscountType").value,discount_value:Number(document.getElementById("promotionValue").value||0),target_product_id:document.getElementById("promotionProduct").value||null,target_category:document.getElementById("promotionCategory").value.trim()||null,min_order_amount:Number(document.getElementById("promotionMinOrder").value||0),max_discount:document.getElementById("promotionMaxDiscount").value===""?null:Number(document.getElementById("promotionMaxDiscount").value),buy_quantity:["bogo","second_item_discount"].includes(type)?Number(document.getElementById("promotionBuyQty").value||2):null,reward_quantity:type==="bogo"?Number(document.getElementById("promotionRewardQty").value||1):null,reward_discount_percent:type==="second_item_discount"?Number(document.getElementById("promotionRewardDiscount").value||50):null,starts_at:localToIso(document.getElementById("promotionStartsAt").value),expires_at:localToIso(document.getElementById("promotionExpiresAt").value),badge:document.getElementById("promotionBadge").value.trim()||null,is_active:document.getElementById("promotionActive").checked};if(!body.name){toast("Введите название акции",true);return}if(type==="category_discount"&&!body.target_category){toast("Укажите категорию",true);return}if(["product_discount","second_item_discount","bogo"].includes(type)&&!body.target_product_id&&!body.target_category){toast("Выберите товар",true);return}try{const id=document.getElementById("promotionId").value;await managementApi("promotions",id?"PATCH":"POST",body,id||null);closePromotion();toast(id?"Акция изменена":"Акция создана");await loadPromotions()}catch(err){toast(err.message,true)}}
+async function savePromotionForm(e){e.preventDefault();const type=document.getElementById("promotionType").value;const body={name:document.getElementById("promotionName").value.trim(),promotion_type:type,discount_type:document.getElementById("promotionDiscountType").value,discount_value:Number(document.getElementById("promotionValue").value||0),target_product_id:document.getElementById("promotionProduct").value||null,target_category:document.getElementById("promotionCategory").value.trim()||null,min_order_amount:Number(document.getElementById("promotionMinOrder").value||0),max_discount:document.getElementById("promotionMaxDiscount").value===""?null:Number(document.getElementById("promotionMaxDiscount").value),buy_quantity:["bogo","second_item_discount"].includes(type)?Number(document.getElementById("promotionBuyQty").value||2):null,reward_quantity:type==="bogo"?Number(document.getElementById("promotionRewardQty").value||1):null,reward_discount_percent:type==="second_item_discount"?Number(document.getElementById("promotionRewardDiscount").value||50):null,starts_at:localToIso(document.getElementById("promotionStartsAt").value),expires_at:localToIso(document.getElementById("promotionExpiresAt").value),badge:document.getElementById("promotionBadge").value.trim()||null,is_active:document.getElementById("promotionActive").checked};if(type==="delivery_price"){body.discount_type="fixed";body.discount_value=Number(document.getElementById("promotionDeliveryPrice").value||0);}if(!body.name){toast("Введите название акции",true);return}if(type==="category_discount"&&!body.target_category){toast("Укажите категорию",true);return}if(["product_discount","second_item_discount","bogo"].includes(type)&&!body.target_product_id&&!body.target_category){toast("Выберите товар",true);return}try{const id=document.getElementById("promotionId").value;await managementApi("promotions",id?"PATCH":"POST",body,id||null);closePromotion();toast(id?"Акция изменена":"Акция создана");await loadPromotions()}catch(err){toast(err.message,true)}}
 async function deletePromotionById(id){if(!confirm("Удалить эту акцию?"))return;try{await managementApi("promotions","DELETE",null,id);toast("Акция удалена");await loadPromotions()}catch(e){toast(e.message,true)}}
 async function loadPromoCodes(){promoCodesList.innerHTML='<div class="state"><div class="state-icon">⏳</div><div class="state-title">Загружаем промокоды…</div></div>';try{const r=await managementApi("promo_codes");managementPromoCodes=r.promo_codes||[];renderPromoCodes()}catch(e){promoCodesList.innerHTML=`<div class="state"><div class="state-icon">⚠️</div><div class="state-title">Ошибка</div><div class="state-text">${escapeHtml(e.message)}</div></div>`;toast(e.message,true)}}
 function renderPromoCodes(){if(!managementPromoCodes.length){promoCodesList.innerHTML='<div class="state"><div class="state-icon">🏷️</div><div class="state-title">Промокодов пока нет</div><div class="state-text">Создайте первый код для специального предложения.</div></div>';return}promoCodesList.innerHTML=managementPromoCodes.map(p=>{const dates=(p.starts_at||p.expires_at)?`${fmtDateTime(p.starts_at)} → ${fmtDateTime(p.expires_at)}`:"Без ограничения по датам";return `<div class="promo-card"><div class="promo-card-head"><div><div class="promo-card-title">${escapeHtml(p.code)} <span class="discount-pill">${p.discount_type==='fixed'?`−${formatPrice(p.discount_value)}`:`−${p.discount_value}%`}</span></div><div class="promo-meta">${p.min_order_amount>0?`От ${formatPrice(p.min_order_amount)} · `:"Без минимальной суммы"}${p.usage_limit?`Использовано ${p.usage_count||0}/${p.usage_limit}`:"Без лимита использований"}<br>${dates}${p.one_use_per_user?' · 1 раз на пользователя':''}</div></div><div class="promo-actions"><button class="mini-button" title="Изменить" data-edit-code="${p.id}">✏️</button><button class="mini-button danger" title="Удалить" data-delete-code="${p.id}">🗑</button></div></div><div style="margin-top:10px"><span class="status-pill ${p.is_active?'':'off'}">${p.is_active?'ВКЛЮЧЕН':'ВЫКЛЮЧЕН'}</span></div></div>`}).join("")}
@@ -4789,12 +4934,37 @@ function showTelegramUser() {
 
 
 /* ============================================================
+   ACCESS GATE
+   ============================================================ */
+
+async function authorizeAdmin(){
+  const accessError=document.getElementById("accessError");
+  if(!TG?.initData){
+    accessError.textContent="Админка должна быть открыта внутри Telegram WebApp.";
+    return false;
+  }
+  try{
+    // admin-products performs the authoritative Telegram+admin membership check.
+    await api("GET");
+    document.body.classList.remove("pending");
+    return true;
+  }catch(error){
+    console.error("ADMIN ACCESS DENIED",error);
+    accessError.textContent=error?.message||"Недостаточно прав.";
+    return false;
+  }
+}
+
+/* ============================================================
    START
    ============================================================ */
 
-showTelegramUser();
-
-loadProducts();
+(async()=>{
+  if(await authorizeAdmin()){
+    showTelegramUser();
+    await loadProducts();
+  }
+})();
 
 </script>
 
