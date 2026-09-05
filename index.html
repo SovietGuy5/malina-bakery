@@ -934,6 +934,47 @@ body.dark-theme .topbar {
   margin:8px 0 16px
 }
 
+.promo-section{
+  margin:8px 0 14px;
+  padding:14px;
+  border:1px solid var(--tg-line);
+  background:var(--tg-card);
+  border-radius:16px;
+}
+
+.promo-section label{
+  display:block;
+  margin:0 0 8px;
+  font-size:12px;
+  font-weight:800;
+  color:var(--tg-muted);
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+
+.promo-row{
+  display:flex;
+  gap:8px;
+}
+
+.promo-row input{
+  flex:1;
+  min-width:0;
+}
+
+.promo-row .secondary{
+  flex-shrink:0;
+  padding-left:16px;
+  padding-right:16px;
+}
+
+.promo-message{
+  margin:8px 0 0;
+  font-size:12px;
+  line-height:1.4;
+  font-weight:700;
+}
+
 .summary{
   display:flex;
   justify-content:space-between;
@@ -1430,7 +1471,18 @@ body.dark-theme .topbar {
     <div id="cartViewItems">
       <div id="cartItems"></div>
       <div id="cartSummary">
-        <button class="clear" id="clearCart" data-i18n="clearCart">Очистить корзину</button>
+        
+        <div class="promo-section hidden" id="cartPromoSection">
+          <label data-i18n="promoLabel">Промокод</label>
+          <div class="promo-row">
+            <input id="ckPromo" name="promo" autocomplete="off" autocapitalize="characters"
+                   data-i18n-placeholder="promoPlaceholder" placeholder="Введите промокод">
+            <button type="button" id="applyPromoBtn" class="secondary" data-i18n="applyPromo">Применить</button>
+          </div>
+          <div id="promoMessage" class="promo-message hidden"></div>
+        </div>
+
+<button class="clear" id="clearCart" data-i18n="clearCart">Очистить корзину</button>
         <div class="summary">
           <span data-i18n="total">Итого</span>
           <span id="cartTotal">0 ₽</span>
@@ -1475,15 +1527,7 @@ body.dark-theme .topbar {
 
       <label data-i18n="commentLabel">Комментарий</label>
       <textarea id="ckComment" name="comment" data-i18n-placeholder="commentPlaceholder" placeholder="Пожелания к заказу"></textarea>
-
-      <label data-i18n="promoLabel">Промокод</label>
-      <div style="display: flex; gap: 8px; margin-bottom: 4px;">
-        <input id="ckPromo" name="promo" data-i18n-placeholder="promoPlaceholder" placeholder="Введите промокод" style="flex: 1;">
-        <button type="button" id="applyPromoBtn" class="secondary" data-i18n="applyPromo">Применить</button>
-      </div>
-      <div id="promoMessage" class="hint hidden" style="margin-bottom: 12px; font-weight: 700;"></div>
-
-      <button class="checkout" type="submit" id="submitOrder" data-i18n="submitOrder" style="margin-top: 10px;">Подтвердить заказ</button>
+<button class="checkout" type="submit" id="submitOrder" data-i18n="submitOrder" style="margin-top: 10px;">Подтвердить заказ</button>
       <div class="status" id="orderStatus"></div>
       <div class="hint" data-i18n="privacy" style="text-align: center;">
         Заказ отправляется в Telegram. Данные используются только для обработки заказа.
@@ -1503,7 +1547,9 @@ body.dark-theme .topbar {
 const TG = window.Telegram?.WebApp;
 const languageToggle = document.getElementById("languageToggle");
 const toast = document.getElementById("toast");
-const userId = TG?.initDataUnsafe?.user?.id || 'web';
+const TG_USER = TG?.initDataUnsafe?.user || null;
+const IS_TELEGRAM_USER = !!TG_USER;
+const userId = TG_USER?.id || 'web';
 
 /* =====================================================
    DARK THEME ADAPTATION
@@ -1796,8 +1842,8 @@ if(TG && TG.ready){
   TG.disableVerticalSwipes?.();
   TG.enableClosingConfirmation?.();
 
-  if(TG.initDataUnsafe?.user){
-    const u = TG.initDataUnsafe.user;
+  if(IS_TELEGRAM_USER){
+    const u = TG_USER;
     tgUserEl.innerHTML = `<span style="display:flex; align-items:center; gap:6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> ${escapeHtml(u.first_name || u.username)}</span>`;
   } else {
     setupWebAuth();
@@ -2308,11 +2354,12 @@ function renderCart(){
       else if (subtotal < 2000) deliveryFee = 99;
   }
 
-  let promoDiscount = 0;
-  const promoVal = document.getElementById('ckPromo')?.value.trim().toUpperCase();
+  const promoVal = IS_TELEGRAM_USER ? document.getElementById('ckPromo')?.value.trim().toUpperCase() : "";
   const promoKey = `promo_${userId}_${promoVal}`;
-  
-  if (promoVal === 'LOYAL200' && !localStorage.getItem(promoKey)) promoDiscount = 200;
+  let promoDiscount = 0;
+  if (IS_TELEGRAM_USER && promoVal === 'LOYAL200' && !localStorage.getItem(promoKey)) {
+    promoDiscount = 200;
+  }
 
   const total = Math.max(0, subtotal + deliveryFee - promoDiscount);
 
@@ -2387,6 +2434,7 @@ function renderCart(){
 
     cartItems.innerHTML = itemsHTML;
   }
+  updatePromoVisibility();
   updateMainButton();
 }
 
@@ -2449,15 +2497,30 @@ document.querySelectorAll('input[name="method"]').forEach(r =>
   })
 );
 
+const cartPromoSection = document.getElementById("cartPromoSection");
 const applyPromoBtn = document.getElementById("applyPromoBtn");
 const ckPromo = document.getElementById("ckPromo");
 const promoMessage = document.getElementById("promoMessage");
 
+function updatePromoVisibility(){
+  const visible = IS_TELEGRAM_USER && !!cart.length;
+  cartPromoSection?.classList.toggle("hidden", !visible);
+
+  if(!visible){
+    if(ckPromo) ckPromo.value = "";
+    promoMessage?.classList.add("hidden");
+  }
+}
+
 applyPromoBtn.onclick = () => {
+    if(!IS_TELEGRAM_USER) return;
+
     const promo = ckPromo.value.trim().toUpperCase();
-    const promoKey = `promo_${userId}_${promo}`;
-    
+    ckPromo.value = promo;
+
     if (promo === 'LOYAL200') {
+        const promoKey = `promo_${userId}_${promo}`;
+
         if (localStorage.getItem(promoKey)) {
             promoMessage.classList.remove("hidden");
             promoMessage.textContent = t('promoUsed');
@@ -2474,7 +2537,7 @@ applyPromoBtn.onclick = () => {
     } else {
         promoMessage.classList.add("hidden");
     }
-    renderCart(); 
+    renderCart();
 };
 
 function updateMainButton(){
@@ -2489,9 +2552,9 @@ function updateMainButton(){
       else if (subtotal < 2000) deliveryFee = 99;
   }
   
-  const promoVal = document.getElementById('ckPromo')?.value.trim().toUpperCase();
+  const promoVal = IS_TELEGRAM_USER ? document.getElementById('ckPromo')?.value.trim().toUpperCase() : "";
   const promoKey = `promo_${userId}_${promoVal}`;
-  let promoDiscount = (promoVal === 'LOYAL200' && !localStorage.getItem(promoKey)) ? 200 : 0;
+  let promoDiscount = (IS_TELEGRAM_USER && promoVal === 'LOYAL200' && !localStorage.getItem(promoKey)) ? 200 : 0;
   
   const total = Math.max(0, subtotal + deliveryFee - promoDiscount);
 
@@ -2597,9 +2660,9 @@ async function performSubmit(){
       else if (subtotal < 2000) deliveryFee = 99;
   }
   
-  const promoVal = document.getElementById('ckPromo')?.value.trim().toUpperCase();
+  const promoVal = IS_TELEGRAM_USER ? document.getElementById('ckPromo')?.value.trim().toUpperCase() : "";
   const promoKey = `promo_${userId}_${promoVal}`;
-  let promoDiscount = (promoVal === 'LOYAL200' && !localStorage.getItem(promoKey)) ? 200 : 0;
+  let promoDiscount = (IS_TELEGRAM_USER && promoVal === 'LOYAL200' && !localStorage.getItem(promoKey)) ? 200 : 0;
   
   const total = Math.max(0, subtotal + deliveryFee - promoDiscount);
 
@@ -2635,7 +2698,7 @@ async function performSubmit(){
     const j = await r.json().catch(() => ({}));
     if(!r.ok || j.ok === false) throw new Error(j.error || t("orderError"));
 
-    if(promoDiscount > 0) {
+    if(IS_TELEGRAM_USER && promoDiscount > 0) {
        localStorage.setItem(promoKey, 'true');
     }
 
