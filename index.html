@@ -388,8 +388,10 @@ body.dark-theme .topbar {
 
 .hit-foot {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
+  gap: 8px;
   margin-top: 12px;
 }
 
@@ -523,6 +525,7 @@ body.dark-theme .topbar {
 
 .card-foot{
   display:flex;
+  flex-wrap: wrap;
   align-items:center;
   justify-content:space-between;
   gap:8px;
@@ -536,18 +539,27 @@ body.dark-theme .topbar {
   color: var(--tg-text);
 }
 
+.price-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
 .add{
-  width:36px;
+  min-width:36px;
   height:36px;
+  padding: 0 14px;
   border:0;
   border-radius:12px;
   background:var(--accent);
   color:#fff;
-  display:grid;
-  place-items:center;
+  display:flex;
+  align-items: center;
+  justify-content: center;
   transition: 0.15s;
-  font-size: 18px;
+  font-size: 14px;
   font-weight: bold;
+  white-space: nowrap;
 }
 
 .add:hover:not(:disabled){
@@ -559,7 +571,7 @@ body.dark-theme .topbar {
   background:transparent;
   color:var(--tg-muted);
   opacity:1;
-  font-size:24px;
+  font-size:18px;
 }
 
 .card.unavailable{
@@ -715,16 +727,20 @@ body.dark-theme .topbar {
 }
 
 .cart-fab .count{
-    min-width:24px;
-    height:24px;
-    padding:0 6px;
-    border-radius:999px;
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    min-width: 24px;
+    height: 24px;
+    padding: 0 6px;
+    border-radius: 999px;
     background: #fff !important;
     color: var(--accent) !important;
-    font-size:12px;
-    font-weight:800;
-    display:grid;
-    place-items:center;
+    font-size: 12px;
+    font-weight: 800;
+    display: grid;
+    place-items: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
 
 .cart-fab .total{
@@ -1093,14 +1109,13 @@ body.dark-theme .topbar {
   display:none!important
 }
 
-.toast{
+.toast {
   position:fixed;
   left:50%;
   bottom:calc(92px + env(safe-area-inset-bottom));
   transform:translate(-50%,18px);
   z-index:100;
   min-width:min(340px,calc(100% - 32px));
-  padding:14px 18px;
   border-radius:16px;
   background:var(--tg-text);
   color:var(--tg-bg);
@@ -1111,11 +1126,15 @@ body.dark-theme .topbar {
   opacity:0;
   pointer-events:none;
   transition:.25s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
-.toast.show{
+.toast.show {
   opacity:1;
-  transform:translate(-50%,0)
+  transform:translate(-50%,0);
+  pointer-events:auto;
 }
 
 #pmImage {
@@ -1610,7 +1629,7 @@ const I18N = {
     cartEmpty: "Корзина пуста.<br>Добавьте любимую позицию из каталога.",
     categoryEmpty: "В этой категории пока пусто.",
     hitsEmpty: "Хиты появятся здесь.",
-    addToCart: "Добавить",
+    addToCart: "В корзину",
     unavailable: "Сейчас недоступно",
     outOfStock: "НЕТ В НАЛИЧИИ",
     added: "добавлен в корзину",
@@ -1693,7 +1712,7 @@ const I18N = {
     cartEmpty: "Your cart is empty.<br>Add your favorite item from the catalog.",
     categoryEmpty: "There are no items in this category yet.",
     hitsEmpty: "Popular items will appear here.",
-    addToCart: "Add",
+    addToCart: "В корзину",
     unavailable: "Currently unavailable",
     outOfStock: "OUT OF STOCK",
     added: "added to cart",
@@ -1942,7 +1961,33 @@ function getQtyControlsHtml(name, out) {
       </div>
     `;
   }
-  return `<button class="add" data-qty-change="1" data-name="${escapeHtml(name)}" ${out ? "disabled" : ""} aria-label="${out ? t("outOfStock") : t("addToCart")}">${out ? "×" : `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>`}</button>`;
+  return `<button class="add" data-qty-change="1" data-name="${escapeHtml(name)}" ${out ? "disabled" : ""} aria-label="${out ? t("outOfStock") : t("addToCart")}">${out ? "×" : t("addToCart")}</button>`;
+}
+
+function getCardFootHtml(p) {
+  const out = isOutOfStock(p);
+  const qty = cart.find(c => c.name === p.name)?.qty || 0;
+  const pr = priceNum(p.price);
+
+  let priceHtml = '';
+  if (qty > 0) {
+     priceHtml = `
+       <div class="price-info">
+         <div style="font-size:12px; font-weight:normal; color:var(--tg-muted); line-height:1.2; margin-bottom:2px;">
+           ${money(pr)} x ${qty} шт.
+         </div>
+         <div class="price">${money(pr * qty)}</div>
+       </div>`;
+  } else {
+     priceHtml = `<span class="price">${escapeHtml(p.price)}</span>`;
+  }
+
+  return `
+    ${priceHtml}
+    <div class="controls-wrap">
+      ${getQtyControlsHtml(p.name, out)}
+    </div>
+  `;
 }
 
 function card(p){
@@ -1963,10 +2008,7 @@ function card(p){
           ${showReadMore ? `<button class="read-more-btn" onclick="toggleReadMore(this); event.stopPropagation();">${t("readMore")}</button>` : ""}
         </div>
         <div class="card-foot">
-          <span class="price">${escapeHtml(p.price)}</span>
-          <div class="controls-wrap">
-            ${getQtyControlsHtml(p.name, out)}
-          </div>
+          ${getCardFootHtml(p)}
         </div>
       </div>
     </article>
@@ -1988,10 +2030,7 @@ function hitCard(p) {
           <div class="meta">${escapeHtml(fullMeta)}</div>
         </div>
         <div class="hit-foot">
-          <span class="price">${escapeHtml(p.price)}</span>
-          <div class="controls-wrap">
-            ${getQtyControlsHtml(p.name, out)}
-          </div>
+          ${getCardFootHtml(p)}
         </div>
       </div>
     </article>
@@ -2019,10 +2058,12 @@ function renderAll(){
 function updateCardCounters() {
   document.querySelectorAll(".card, .hit-card").forEach(el => {
     const name = el.dataset.productName;
-    const out = el.classList.contains('unavailable');
-    const wrap = el.querySelector(".controls-wrap");
-    if (wrap) {
-      wrap.innerHTML = getQtyControlsHtml(name, out);
+    const p = allProducts.find(x => x.name === name);
+    if(p) {
+      const foot = el.querySelector(".card-foot, .hit-foot");
+      if(foot) {
+        foot.innerHTML = getCardFootHtml(p);
+      }
     }
   });
 }
@@ -2078,7 +2119,6 @@ function openProductModal(name) {
   
   document.getElementById("pmDesc").textContent = p.description || "";
   document.getElementById("pmWeight").textContent = p.weight || "";
-  document.getElementById("pmPrice").textContent = p.price;
   
   updateModalControls();
   
@@ -2098,19 +2138,85 @@ pmOverlay.onclick = closeProductModal;
 function updateModalControls() {
   if (!activeModalProduct) return;
   const out = isOutOfStock(activeModalProduct);
+  const qty = cart.find(c => c.name === activeModalProduct.name)?.qty || 0;
+  const pr = priceNum(activeModalProduct.price);
+  
+  const pmPriceEl = document.getElementById("pmPrice");
+  if(qty > 0) {
+    pmPriceEl.innerHTML = `<div style="font-size:12px; font-weight:normal; color:var(--tg-muted); line-height:1; margin-bottom:4px;">${money(pr)} x ${qty} шт.</div><div>${money(pr * qty)}</div>`;
+  } else {
+    pmPriceEl.textContent = activeModalProduct.price;
+  }
+
   document.getElementById("pmControls").innerHTML = getQtyControlsHtml(activeModalProduct.name, out);
 }
 
 /* =====================================================
-   CART & CHECKOUT LOGIC
+   TOAST NOTIFICATION (WITH TIMER AND UNDO)
 ===================================================== */
 let toastTimer;
-function showToast(message){
-  toast.textContent = message;
-  toast.classList.add("show");
+let toastInterval;
+let toastDuration = 4000;
+
+function showToast(message, isUndo = false, undoCallback = null) {
+  clearInterval(toastInterval);
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => toast.classList.remove("show"), 2200);
+
+  let html = `<div class="toast-content" style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;width:100%;text-align:left;">
+                <span>${message}</span>`;
+  if (isUndo) {
+    let secs = Math.ceil(toastDuration / 1000);
+    html += `<button id="undoBtn" style="background:transparent;color:inherit;border:1px solid rgba(255,255,255,0.4);padding:6px 12px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer;white-space:nowrap;transition:0.15s;">Отменить (${secs})</button>`;
+  }
+  html += `</div><div class="toast-timer-bar" id="toastBar" style="height:3px;background:rgba(255,255,255,0.4);width:100%;transform-origin:left;"></div>`;
+
+  toast.innerHTML = html;
+  toast.classList.add("show");
+
+  const toastBar = document.getElementById("toastBar");
+  const undoBtn = document.getElementById("undoBtn");
+
+  toastBar.style.transition = `none`;
+  toastBar.style.transform = 'scaleX(1)';
+  
+  // Force reflow
+  void toastBar.offsetWidth;
+  
+  toastBar.style.transition = `transform ${toastDuration}ms linear`;
+  toastBar.style.transform = 'scaleX(0)';
+
+  let start = Date.now();
+  
+  if (isUndo && undoBtn) {
+    undoBtn.onclick = () => {
+      if (undoCallback) undoCallback();
+      hideToast();
+    };
+    toastInterval = setInterval(() => {
+      let elapsed = Date.now() - start;
+      let rem = Math.ceil((toastDuration - elapsed) / 1000);
+      if (rem > 0) {
+        undoBtn.textContent = `Отменить (${rem})`;
+      }
+    }, 100);
+  }
+
+  toastTimer = setTimeout(() => {
+    clearInterval(toastInterval);
+    hideToast();
+  }, toastDuration);
 }
+
+function hideToast() {
+  toast.classList.remove("show");
+  setTimeout(() => {
+    if(!toast.classList.contains("show")) toast.innerHTML = '';
+  }, 300);
+}
+
+/* =====================================================
+   CART LOGIC
+===================================================== */
 
 function addToCartLogic(p){
   if(!p || isOutOfStock(p)) return;
@@ -2118,8 +2224,8 @@ function addToCartLogic(p){
   if(x) x.qty++;
   else {
     cart.push({ name:p.name, priceNum:priceNum(p.price), image:p.image, qty:1 });
-    showToast(`«${p.name}» ${t("added")}`);
   }
+  showToast(`«${p.name}» ${t("added")}`);
   renderCart();
   updateCardCounters();
   updateModalControls();
@@ -2129,11 +2235,59 @@ function removeFromCartLogic(name){
   const x = cart.find(i => i.name === name);
   if(x) {
     x.qty--;
-    if(x.qty <= 0) cart = cart.filter(i => i.name !== name);
+    let wasRemovedCompletely = x.qty <= 0;
+    
+    if (wasRemovedCompletely) {
+      cart = cart.filter(i => i.name !== name);
+    }
+
+    showToast(`Товар убран из корзины`, true, () => {
+      const existing = cart.find(i => i.name === name);
+      if (existing) {
+        existing.qty++;
+      } else {
+        const p = allProducts.find(prod => prod.name === name);
+        if (p) {
+          cart.push({ name:p.name, priceNum:priceNum(p.price), image:p.image, qty:1 });
+        }
+      }
+      renderCart();
+      updateCardCounters();
+      updateModalControls();
+    });
+
     renderCart();
     updateCardCounters();
     updateModalControls();
   }
+}
+
+function removeCompletely(name){
+  const x = cart.find(i => i.name === name);
+  if(!x) return;
+  const restoredQty = x.qty;
+  cart = cart.filter(i => i.name !== name);
+  
+  showToast(`Товар удален из корзины`, true, () => {
+     const p = allProducts.find(prod => prod.name === name);
+     if (p) {
+       cart.push({ name:p.name, priceNum:priceNum(p.price), image:p.image, qty:restoredQty });
+     }
+     renderCart();
+     updateCardCounters();
+     updateModalControls();
+  });
+
+  renderCart(); 
+  updateCardCounters();
+  updateModalControls();
+}
+
+function clearAll(){ 
+  cart = []; 
+  renderCart(); 
+  updateCardCounters(); 
+  updateModalControls(); 
 }
 
 function showDeliveryRules() {
@@ -2235,14 +2389,6 @@ function renderCart(){
   }
   updateMainButton();
 }
-
-function removeCompletely(name){ 
-  cart = cart.filter(i => i.name !== name); 
-  renderCart(); 
-  updateCardCounters();
-  updateModalControls();
-}
-function clearAll(){ cart = []; renderCart(); updateCardCounters(); updateModalControls(); }
 
 function updateBackButton(){
   if(!TG?.BackButton) return;
