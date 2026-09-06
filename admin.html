@@ -1626,7 +1626,7 @@ body.denied #accessDenied{display:flex!important}
 .menu-backdrop{display:none}
 .menu-drawer{display:none}
 @media (min-width:760px){.header{padding-left:22px;padding-right:22px}.admin-nav{padding:8px 22px}.catalog-panel,.extra-panel,.admin-panel.open{padding-left:22px;padding-right:22px}.products{grid-template-columns:repeat(3,minmax(0,1fr))}}
-@media (max-width:700px){.header{top:0}.admin-nav{top:61px}.header-title h1{font-size:17px}.header-title p{font-size:10px}.user-badge{font-size:10px;padding:6px 9px}.menu-trigger{display:flex}.admin-nav{overflow:visible}.admin-nav>.nav-button{display:none}.admin-nav>.nav-button.active{display:block;flex:1;text-align:center}.menu-backdrop.open{display:block;position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.42)}.menu-drawer{position:fixed;left:10px;right:10px;top:128px;z-index:90;display:none;padding:8px;background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}.menu-drawer.open{display:block}.menu-drawer .nav-button{display:flex;width:100%;align-items:center;justify-content:flex-start;min-height:46px;text-align:left}.products{grid-template-columns:1fr}.management-page-head{align-items:flex-start;flex-direction:column}.management-page-head .panel-action{width:100%}.stats{gap:7px}.stat{padding:10px}.stat-value{font-size:18px}.catalog-panel,.extra-panel,.admin-panel.open{padding:14px 12px 28px}.toolbar{position:sticky;top:109px;z-index:20;padding:7px 0;background:var(--bg)}.search{height:44px!important}.add-button{width:44px;padding:0;font-size:0}.add-button:after{content:'+';font-size:21px}.management-dialog,.modal-sheet{max-height:90vh}}
+@media (max-width:700px){.header{top:0}.admin-nav{top:61px}.header-title h1{font-size:17px}.header-title p{font-size:10px}.user-badge{font-size:10px;padding:6px 9px}.menu-trigger{display:flex}.admin-nav{overflow:visible}.admin-nav>.nav-button{display:none}.admin-nav>.nav-button.active{display:block;flex:1;text-align:center}.menu-backdrop.open{display:block;position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.42)}.menu-drawer{position:fixed;left:10px;right:10px;top:128px;z-index:90;display:none;padding:8px;background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}.menu-drawer.open{display:block}.menu-drawer .nav-button{display:flex;width:100%;align-items:center;justify-content:flex-start;min-height:46px;text-align:left}.products{grid-template-columns:1fr}.management-page-head{align-items:flex-start;flex-direction:column}.management-page-head .panel-action{width:100%}.stats{gap:7px}.stat{padding:10px}.stat-value{font-size:18px}.catalog-panel,.extra-panel,.admin-panel.open{padding:14px 12px 28px}.toolbar{position:sticky;top:0;z-index:30;padding:8px 0;background:var(--bg);backdrop-filter:blur(14px)}.search{height:44px!important}.add-button{width:44px;padding:0;font-size:0}.add-button:after{content:'+';font-size:21px}.management-dialog,.modal-sheet{max-height:90vh}}
 @media (prefers-color-scheme: dark){:root{--bg:#0f0e12;--card:#17151b;--card2:#1c1920;--text:#f5f3f6;--muted:#a69faa}}
 
 /* FINAL NAV + ACCESS FIX */
@@ -1776,7 +1776,7 @@ body:not(.pending):not(.denied) #accessLoading{display:none!important}
 @media(max-width:700px){
   .admin-nav{position:sticky;top:61px;padding:8px 12px!important}
   .admin-nav>.nav-button.active{flex:1!important}
-  .toolbar{display:grid!important;grid-template-columns:minmax(0,1fr) 96px!important;gap:8px!important;position:sticky;top:109px;z-index:20;padding:7px 0;background:var(--bg)}
+  .toolbar{display:grid!important;grid-template-columns:minmax(0,1fr) 96px!important;gap:8px!important;position:sticky;top:0;z-index:30;padding:8px 0;background:var(--bg);backdrop-filter:blur(14px)}
   .search,.add-button{width:100%!important;height:44px!important}
   .add-button{font-size:12px!important;padding:0 10px!important}
   .add-button:after{content:none!important}
@@ -2139,6 +2139,12 @@ body:not(.pending):not(.denied) #accessLoading{display:none!important}
 .order-section-title{font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:9px}
 .order-lines{display:grid;gap:7px}.order-lines>div,.order-totals>div{display:flex;justify-content:space-between;gap:12px;line-height:1.35}.order-lines span,.order-totals span{color:var(--muted);font-size:11px}.order-lines strong,.order-totals strong{font-size:12px;text-align:right;word-break:break-word}.order-items{display:grid;gap:7px}.order-item-row{display:flex;justify-content:space-between;gap:12px;padding:9px 10px;border-radius:12px;background:var(--bg)}.order-item-main{min-width:0;display:grid;gap:2px}.order-item-name{font-size:12px;font-weight:800;overflow-wrap:anywhere}.order-item-qty{font-size:10px;color:var(--muted)}.order-item-sum{font-size:12px;font-weight:900;white-space:nowrap}.order-empty-inline{font-size:11px;color:var(--muted)}.order-discounts{display:grid;gap:7px}.order-discount-row{display:flex;justify-content:space-between;gap:12px;align-items:center;font-size:11px}.order-discount-row strong{color:var(--accent)}.order-discount-row b{color:var(--text)}.order-totals{display:grid;gap:7px}.order-totals .total-discount span,.order-totals .total-discount strong{color:var(--accent)}.order-grand-total{margin-top:5px;padding-top:10px;border-top:1px solid var(--line)}.order-grand-total span{font-size:12px!important;color:var(--text)!important;font-weight:900}.order-grand-total strong{font-size:17px!important}
 @media(max-width:699px){.order-card-top{align-items:flex-start}.order-total{font-size:16px}.order-item-row{padding:8px 9px}}
+
+/* Order management polish */
+.order-actions{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;margin-top:10px}
+.order-delete-btn{height:40px;padding:0 13px;border-radius:12px;border:1px solid rgba(220,92,105,.28);background:rgba(220,92,105,.08);color:#e07883;font-weight:800;cursor:pointer;white-space:nowrap}
+.order-delete-btn:active{transform:scale(.98)}
+@media(max-width:520px){.order-actions{grid-template-columns:1fr}.order-delete-btn{width:100%}}
 </style>
 </head>
 
@@ -5551,7 +5557,7 @@ function renderOrders(){
         ${totalDiscount>0?`<div class="total-discount"><span>Скидка</span><strong>−${formatPrice(totalDiscount)}</strong></div>`:''}
         <div class="order-grand-total"><span>Итого</span><strong>${formatPrice(o.total||0)}</strong></div>
       </div>
-      <select class="order-select" data-order-status="${o.id}"><option value="new" ${o.status==='new'?'selected':''}>Новый</option><option value="confirmed" ${o.status==='confirmed'?'selected':''}>Подтверждён</option><option value="completed" ${o.status==='completed'?'selected':''}>Выполнен</option><option value="cancelled" ${o.status==='cancelled'?'selected':''}>Отменён</option></select>
+      <div class="order-actions"><select class="order-select" data-order-status="${o.id}"><option value="new" ${o.status==='new'?'selected':''}>Новый</option><option value="confirmed" ${o.status==='confirmed'?'selected':''}>Подтверждён</option><option value="completed" ${o.status==='completed'?'selected':''}>Выполнен</option><option value="cancelled" ${o.status==='cancelled'?'selected':''}>Отменён</option></select><button class="order-delete-btn" type="button" title="Удалить заказ" data-delete-order="${o.id}">Удалить заказ</button></div>
     </article>`;
   }).join('');
 }
@@ -5568,7 +5574,9 @@ document.getElementById("closePromotionButton").addEventListener("click",closePr
 promotionsList.addEventListener("click",e=>{const edit=e.target.closest("[data-edit-promo]"),del=e.target.closest("[data-delete-promo]");if(edit)openPromotion(managementPromotions.find(p=>String(p.id)===String(edit.dataset.editPromo)));if(del)deletePromotionById(del.dataset.deletePromo)});
 document.getElementById("addPromoCodeButton").addEventListener("click",()=>openPromoCode());document.getElementById("closePromoCodeButton").addEventListener("click",closePromoCode);document.getElementById("cancelPromoCodeButton").addEventListener("click",closePromoCode);document.getElementById("promoCodeForm").addEventListener("submit",savePromoCodeForm);
 promoCodesList.addEventListener("click",e=>{const edit=e.target.closest("[data-edit-code]"),del=e.target.closest("[data-delete-code]");if(edit)openPromoCode(managementPromoCodes.find(p=>String(p.id)===String(edit.dataset.editCode)));if(del)deletePromoCodeById(del.dataset.deleteCode)});
+async function deleteOrderById(id){if(!id)return;if(!confirm("Удалить этот заказ?\n\nЗаказ и его позиции будут удалены без возможности восстановления."))return;try{await managementApi("orders","DELETE",null,id);toast("Заказ удалён");await loadOrders()}catch(e){toast(e.message,true)}}
 document.getElementById("refreshOrdersButton").addEventListener("click",loadOrders);
+ordersList.addEventListener("click",e=>{const b=e.target.closest("[data-delete-order]");if(b)deleteOrderById(b.dataset.deleteOrder)});
 ordersList.addEventListener("change",async e=>{const s=e.target.closest("[data-order-status]");if(!s)return;const id=s.dataset.orderStatus;const before=managementOrders.find(o=>String(o.id)===String(id));const old=before?.status||s.dataset.previousStatus||"new";try{const result=await managementApi("orders","PATCH",{status:s.value},id);s.dataset.previousStatus=s.value;const item=managementOrders.find(o=>String(o.id)===String(id));if(item)item.status=s.value;const changed=old!==s.value;const n=result?.notification;let msg=changed?`Статус: ${ORDER_STATUS_LABELS[s.value]||s.value}`:"Статус заказа обновлён";if(changed){if(n?.sent)msg+=" · Клиенту отправлено уведомление";else if(n?.skipped)msg+=" · Telegram-уведомление не отправлено";else if(n?.reason)msg+=` · Уведомление не отправлено: ${n.reason}`;}toast(msg)}catch(err){toast(err.message,true);await loadOrders()}});
 [promotionModal,promoCodeModal].forEach(m=>m.addEventListener("click",e=>{if(e.target===m)m.classList.remove("open")}));
 syncPromotionUI();
