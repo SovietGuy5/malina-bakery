@@ -29,6 +29,11 @@
   --success: #10b981;
   --shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
   --r: 20px;
+  --hit-bg: #fff8fb;
+  --qty-bg: #f1f5f9;
+  --toast-bg: #ffffff;
+  --toast-text: #0f172a;
+  --toast-accent: #b02a5c;
 }
 
 body.dark-theme {
@@ -44,6 +49,11 @@ body.dark-theme {
   --accent: #c94b7a;
   --accent-dark: #e05e8e;
   --shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  --hit-bg: #252f3c;
+  --qty-bg: #18222d;
+  --toast-bg: #253142;
+  --toast-text: #ffffff;
+  --toast-accent: #e56a98;
 }
 
 *{
@@ -343,17 +353,17 @@ body.dark-theme .topbar {
 
 .hit-card {
   display: flex;
-  background: linear-gradient(135deg, var(--tg-card), var(--tg-soft));
-  border: 2px solid var(--accent);
+  background: var(--hit-bg);
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--tg-line));
   border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 8px 24px rgba(176, 42, 92, 0.1);
+  box-shadow: 0 8px 24px rgba(176, 42, 92, 0.08);
   transition: 0.3s;
 }
 
 .hit-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(176, 42, 92, 0.15);
+  box-shadow: 0 12px 32px rgba(176, 42, 92, 0.12);
 }
 
 .hit-img {
@@ -653,7 +663,8 @@ body.dark-theme .topbar {
 }
 
 .footer{
-  padding:40px 0 calc(40px + env(safe-area-inset-bottom));
+  padding:40px 0 24px;
+  background:var(--tg-bg);
   color:var(--tg-muted);
   font-size:13px;
   font-weight: 500;
@@ -667,6 +678,7 @@ body.dark-theme .topbar {
   flex-direction: column;
   align-items: center;
   gap: 12px;
+  background:transparent;
 }
 
 .footer-socials {
@@ -913,14 +925,21 @@ body.dark-theme .topbar {
 }
 
 .delivery-item {
-  cursor: pointer;
-  transition: 0.2s;
-  background: var(--tg-soft);
-  border-color: var(--accent);
+  cursor:pointer;
+  transition:.2s;
+  background:var(--tg-card);
+  border-color:color-mix(in srgb, var(--accent) 25%, var(--tg-line));
+  border-radius:14px;
+  padding:7px 9px;
+  grid-template-columns:42px 1fr auto;
+  gap:9px;
+  min-height:56px;
 }
-.delivery-item:hover {
-  background: var(--tg-line);
-}
+.delivery-item:hover { background:var(--tg-soft); }
+.delivery-item .cart-thumb { width:42px !important; height:42px !important; border-radius:12px !important; font-size:18px !important; }
+.delivery-item .cart-info strong { font-size:13px !important; }
+.delivery-item .cart-info small { margin-top:2px; font-size:11px; }
+.delivery-item .cart-line { font-size:13px !important; }
 
 .clear{
   width:100%;
@@ -936,21 +955,28 @@ body.dark-theme .topbar {
 
 .promo-section{
   margin:8px 0 14px;
-  padding:14px;
+  padding:0;
   border:1px solid var(--tg-line);
   background:var(--tg-card);
   border-radius:16px;
+  overflow:hidden;
+  box-shadow:0 4px 14px rgba(15,23,42,.04);
 }
+.promo-toggle{
+  width:100%; min-height:48px; border:0; background:transparent; color:var(--tg-text);
+  display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 14px;
+  font-size:14px; font-weight:700; text-align:left;
+}
+.promo-toggle-left{display:flex;align-items:center;gap:10px;}
+.promo-toggle-icon{width:30px;height:30px;border-radius:10px;display:grid;place-items:center;background:var(--tg-soft);color:var(--accent);font-size:14px;font-weight:900;}
+.promo-toggle-chevron{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;background:var(--tg-soft);color:var(--tg-muted);transition:transform .2s ease,background .2s ease;}
+.promo-section.open .promo-toggle-chevron{transform:rotate(180deg);background:rgba(176,42,92,.08);color:var(--accent);}
+.promo-content{display:grid;grid-template-rows:0fr;transition:grid-template-rows .24s ease;}
+.promo-section.open .promo-content{grid-template-rows:1fr;}
+.promo-content-inner{overflow:hidden;padding:0 12px;}
+.promo-section.open .promo-content-inner{padding:0 12px 12px;}
+.promo-label-text{display:block;margin:0 0 7px;font-size:11px;font-weight:700;color:var(--tg-muted);}
 
-.promo-section label{
-  display:block;
-  margin:0 0 8px;
-  font-size:12px;
-  font-weight:800;
-  color:var(--tg-muted);
-  text-transform:uppercase;
-  letter-spacing:.06em;
-}
 
 .promo-row{
   display:flex;
@@ -958,9 +984,9 @@ body.dark-theme .topbar {
 }
 
 .promo-row input{
-  flex:1;
-  min-width:0;
+  flex:1; min-width:0; height:46px; border:1px solid var(--tg-line); background:var(--tg-soft); border-radius:12px; padding:0 14px; outline:none; color:var(--tg-text); font-size:14px; font-weight:700; transition:border-color .2s,box-shadow .2s,background .2s;
 }
+.promo-row input:focus{border-color:var(--accent);background:var(--tg-card);box-shadow:0 0 0 3px rgba(176,42,92,.12);}
 
 .promo-row .secondary{
   flex-shrink:0;
@@ -982,6 +1008,21 @@ body.dark-theme .topbar {
   font-weight:800;
   margin:16px 0
 }
+
+.delivery-modal-backdrop{position:fixed;inset:0;background:rgba(15,23,42,.48);backdrop-filter:blur(10px);opacity:0;pointer-events:none;transition:.22s;z-index:120;padding:18px;display:flex;align-items:center;justify-content:center;}
+.delivery-modal-backdrop.open{opacity:1;pointer-events:auto;}
+.delivery-modal{width:min(430px,100%);background:var(--tg-card);color:var(--tg-text);border:1px solid var(--tg-line);border-radius:24px;box-shadow:0 24px 70px rgba(15,23,42,.24);transform:translateY(12px) scale(.97);transition:.22s;padding:20px;}
+.delivery-modal-backdrop.open .delivery-modal{transform:translateY(0) scale(1);}
+.delivery-modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;}
+.delivery-modal-title{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:800;letter-spacing:-.02em;}
+.delivery-modal-icon{width:38px;height:38px;border-radius:13px;display:grid;place-items:center;background:rgba(176,42,92,.1);font-size:19px;}
+.delivery-modal-close{width:34px;height:34px;border:0;border-radius:11px;background:var(--tg-soft);color:var(--tg-text);font-size:20px;display:grid;place-items:center;}
+.delivery-modal-subtitle{font-size:13px;line-height:1.5;color:var(--tg-muted);margin:0 0 14px;}
+.delivery-rules{display:grid;gap:8px;}
+.delivery-rule{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 12px;border-radius:14px;background:var(--tg-soft);border:1px solid var(--tg-line);font-size:13px;}
+.delivery-rule strong{font-size:14px;}
+.delivery-rule-save{color:var(--success);font-weight:800;white-space:nowrap;}
+.delivery-modal-note{margin:14px 0 0;padding:11px 12px;border-radius:13px;background:rgba(176,42,92,.06);color:var(--tg-muted);font-size:12px;line-height:1.45;}
 
 .checkout{
   width:100%;
@@ -1158,9 +1199,10 @@ body.dark-theme .topbar {
   z-index:100;
   min-width:min(340px,calc(100% - 32px));
   border-radius:16px;
-  background:var(--tg-text);
-  color:var(--tg-bg);
-  box-shadow:0 12px 30px rgba(0, 0, 0, 0.4);
+  background:var(--toast-bg);
+  color:var(--toast-text);
+  border:1px solid var(--tg-line);
+  box-shadow:0 14px 34px rgba(15, 23, 42, 0.18);
   font-size:14px;
   font-weight:700;
   text-align:center;
@@ -1193,7 +1235,7 @@ body.dark-theme .topbar {
   gap: 8px;
   padding: 4px;
   border-radius: 12px;
-  background: var(--tg-soft);
+  background: var(--qty-bg);
   border: 1px solid var(--tg-line);
   color: var(--tg-text);
 }
@@ -1379,7 +1421,7 @@ body.dark-theme .topbar {
     <div class="section-head">
       <div>
         <h2 data-i18n="promotionsTitle">🔥 Акции</h2>
-        <p data-i18n="promotionsSubtitle">Все действующие предложения в одном разделе.</p>
+        <p data-i18n="promotionsSubtitle">Специальные предложения, которые действуют сейчас.</p>
       </div>
     </div>
     <div class="feature" id="promotionsGrid"></div>
@@ -1413,7 +1455,7 @@ body.dark-theme .topbar {
       <div class="feature-card">
         <div class="feature-icon">📦</div>
         <h3 data-i18n="step4Title">Условия доставки</h3>
-        <p data-i18n="deliveryTiersInfo">Базовая доставка — 200 ₽. Скидка на доставку применяется по условиям акции.</p>
+        <p data-i18n="deliveryTiersInfo">До 500 ₽ — 200 ₽ | До 1000 ₽ — 150 ₽ | До 2000 ₽ — 100 ₽ | От 2000 ₽ — бесплатно</p>
       </div>
     </div>
   </div>
@@ -1457,6 +1499,18 @@ body.dark-theme .topbar {
 <div class="sheet-backdrop" id="cartOverlay"></div>
 
 <div class="sheet-backdrop" id="pmOverlay"></div>
+
+<div class="delivery-modal-backdrop" id="deliveryModalBackdrop" aria-hidden="true">
+  <div class="delivery-modal" role="dialog" aria-modal="true" aria-labelledby="deliveryModalTitle">
+    <div class="delivery-modal-head">
+      <div class="delivery-modal-title"><span class="delivery-modal-icon">📦</span><span id="deliveryModalTitle" data-i18n="deliveryPromoTitle">Акция на доставку</span></div>
+      <button type="button" class="delivery-modal-close" id="deliveryModalClose" aria-label="Закрыть">×</button>
+    </div>
+    <p class="delivery-modal-subtitle" id="deliveryModalSubtitle" data-i18n="deliveryPromoSubtitle">Чем больше сумма заказа, тем дешевле доставка.</p>
+    <div class="delivery-rules" id="deliveryRules"></div>
+    <div class="delivery-modal-note" id="deliveryModalNote"></div>
+  </div>
+</div>
 <aside class="sheet" id="pmDrawer">
   <div class="sheet-head">
     <div class="grab"></div>
@@ -1487,13 +1541,20 @@ body.dark-theme .topbar {
       <div id="cartSummary">
         
         <div class="promo-section hidden" id="cartPromoSection">
-          <label data-i18n="promoLabel">Промокод</label>
-          <div class="promo-row">
-            <input id="ckPromo" name="promo" autocomplete="off" autocapitalize="characters"
-                   data-i18n-placeholder="promoPlaceholder" placeholder="Введите промокод">
-            <button type="button" id="applyPromoBtn" class="secondary" data-i18n="applyPromo">Применить</button>
+          <button type="button" class="promo-toggle" id="promoToggle" aria-expanded="false">
+            <span class="promo-toggle-left"><span class="promo-toggle-icon">%</span><span data-i18n="promoToggle">Ввести промокод</span></span>
+            <span class="promo-toggle-chevron" aria-hidden="true">⌄</span>
+          </button>
+          <div class="promo-content">
+            <div class="promo-content-inner">
+              <span class="promo-label-text" data-i18n="promoLabel">Промокод</span>
+              <div class="promo-row">
+                <input id="ckPromo" name="promo" autocomplete="off" autocapitalize="characters" data-i18n-placeholder="promoPlaceholder" placeholder="Введите промокод">
+                <button type="button" id="applyPromoBtn" class="secondary" data-i18n="applyPromo">Применить</button>
+              </div>
+              <div id="promoMessage" class="promo-message hidden"></div>
+            </div>
           </div>
-          <div id="promoMessage" class="promo-message hidden"></div>
         </div>
 
 <button class="clear" id="clearCart" data-i18n="clearCart">Очистить корзину</button>
@@ -1655,7 +1716,11 @@ const I18N = {
     telegramChannel: "Канал Telegram: @MalinaDessert",
     telegramBot: "Бот Telegram: @MalinaBakeryBot",
     deliveryTiersTitle: "Стоимость доставки",
-    deliveryTiersInfo: "Базовая доставка — 200 ₽. Скидка на доставку применяется по условиям акции.",
+    deliveryTiersInfo: "До 500 ₽ — 200 ₽ | От 500 ₽ — 150 ₽ | От 1000 ₽ — 100 ₽ | От 1500 ₽ — 50 ₽ | От 2000 ₽ — бесплатно",
+    promoToggle: "Ввести промокод",
+    deliveryPromoTitle: "Акция на доставку",
+    deliveryPromoSubtitle: "Стоимость доставки автоматически уменьшается в зависимости от суммы заказа.",
+    deliveryPromoNote: "Скидка применяется автоматически. Самовывоз — бесплатно.",
     clearCart: "Очистить корзину",
     total: "Итого",
     checkout: "Оформить заказ",
@@ -1708,7 +1773,7 @@ const I18N = {
     readMore: "Развернуть",
     collapse: "Свернуть",
     promotionsTitle: "🔥 Акции",
-    promotionsSubtitle: "Все действующие предложения в одном разделе.",
+    promotionsSubtitle: "Специальные предложения, которые действуют сейчас.",
     promotionFrom: "Акция",
     freeDeliveryPromo: "Бесплатная доставка",
     automaticDiscountText: "Скидка по акции"
@@ -1743,7 +1808,11 @@ const I18N = {
     telegramChannel: "Telegram channel: @MalinaDessert",
     telegramBot: "Telegram bot: @MalinaBakeryBot",
     deliveryTiersTitle: "Delivery cost",
-    deliveryTiersInfo: "Base delivery — 200 ₽. Delivery discounts are applied according to active promotions.",
+    deliveryTiersInfo: "Under 500 ₽ — 200 ₽ | From 500 ₽ — 150 ₽ | From 1000 ₽ — 100 ₽ | From 1500 ₽ — 50 ₽ | From 2000 ₽ — free",
+    promoToggle: "Enter promo code",
+    deliveryPromoTitle: "Delivery promotion",
+    deliveryPromoSubtitle: "Delivery gets cheaper automatically as your order total increases.",
+    deliveryPromoNote: "The discount is applied automatically. Pickup is free.",
     clearCart: "Clear cart",
     total: "Total",
     checkout: "Checkout",
@@ -2007,45 +2076,103 @@ function productPromoPrice(product){
 }
 
 function deliveryBaseFee(subtotal, method){
-  return method === "Доставка" ? 200 : 0;
+  if(method !== "Доставка") return 0;
+  return 200;
+}
+
+function getDeliveryBundleRules(){
+  const promo = activePromotions.find(p => p.promotion_type === "delivery_bundle");
+  const raw = Array.isArray(promo?.delivery_rules) ? promo.delivery_rules : [];
+  const parsed = raw.map(r => ({
+    min: Number(r?.min_order_amount ?? r?.min ?? 0),
+    discount: Number(r?.discount ?? r?.discount_value ?? r?.value ?? 0)
+  })).filter(r => Number.isFinite(r.min) && Number.isFinite(r.discount) && r.discount >= 0).sort((a,b) => a.min-b.min);
+  return parsed.length ? parsed : [
+    {min:500, discount:50},
+    {min:1000, discount:100},
+    {min:1500, discount:150},
+    {min:2000, discount:200}
+  ];
 }
 
 function automaticPromoQuote(){
-  const subtotal = cart.reduce((sum,i)=>sum+i.priceNum*i.qty,0);
+  const subtotal = cart.reduce((s,i) => s + i.priceNum * i.qty, 0);
   const method = document.querySelector('input[name="method"]:checked')?.value || "Доставка";
-  const baseDelivery = deliveryBaseFee(subtotal,method);
-  let bestSaving=0, discount=0, deliveryFee=baseDelivery, promo=null;
-  if(method !== "Доставка" || baseDelivery<=0) return {subtotal,discount,deliveryFee,promo,deliveryFree:false,deliverySaving:0,baseDelivery};
+  const baseDelivery = deliveryBaseFee(subtotal, method);
+  let bestSaving = 0;
+  let discount = 0;
+  let deliveryFee = baseDelivery;
+  let promo = null;
   for(const p of activePromotions){
-    if(p.promotion_type !== "delivery_bundle") continue;
-    if(p.starts_at && new Date(p.starts_at)>new Date()) continue;
-    if(p.expires_at && new Date(p.expires_at)<=new Date()) continue;
-    if(subtotal < Number(p.min_order_amount||0)) continue;
-    const rules=Array.isArray(p.delivery_rules)?p.delivery_rules:[];
-    const rule=rules.filter(r=>subtotal>=Number(r.min_order_amount||0)).sort((a,b)=>Number(b.min_order_amount||0)-Number(a.min_order_amount||0))[0];
-    if(!rule) continue;
-    let saving=Number(rule.discount_value||0);
-    if(rule.discount_type==="percent") saving=baseDelivery*saving/100;
-    saving=Math.min(baseDelivery,Math.max(0,saving));
-    if(saving>bestSaving){bestSaving=saving;deliveryFee=Math.max(0,baseDelivery-saving);discount=0;promo=p;}
+    if(subtotal < Number(p.min_order_amount || 0)) continue;
+    let saving = 0, productDiscount = 0, candidateDelivery = baseDelivery;
+    if(p.promotion_type === "delivery_bundle" && method === "Доставка") {
+      const rules = getDeliveryBundleRules();
+      let rule = null;
+      for(const r of rules){ if(subtotal >= r.min) rule = r; }
+      if(rule){
+        saving = Math.min(baseDelivery, Math.max(0, rule.discount));
+        candidateDelivery = Math.max(0, baseDelivery - saving);
+      }
+    } else if(p.promotion_type === "free_delivery" && method === "Доставка") {
+      candidateDelivery = 0; saving = baseDelivery;
+    } else if(p.promotion_type === "delivery_discount" && method === "Доставка") {
+      saving = p.discount_type === "percent" ? baseDelivery * Number(p.discount_value||0)/100 : Number(p.discount_value||0);
+      if(p.max_discount != null) saving = Math.min(saving, Number(p.max_discount));
+      saving = Math.min(baseDelivery, Math.max(0, saving));
+      candidateDelivery = baseDelivery - saving;
+    } else if(p.promotion_type === "delivery_price" && method === "Доставка") {
+      candidateDelivery = Math.min(baseDelivery, Math.max(0, Number(p.discount_value||0)));
+      saving = baseDelivery - candidateDelivery;
+    } else if(p.promotion_type === "order_discount") {
+      productDiscount = p.discount_type === "percent" ? subtotal * Number(p.discount_value||0)/100 : Number(p.discount_value||0);
+      if(p.max_discount != null) productDiscount = Math.min(productDiscount, Number(p.max_discount));
+      saving = Math.min(subtotal, Math.max(0, productDiscount));
+    } else if(p.promotion_type === "product_discount" || p.promotion_type === "category_discount") {
+      for(const item of cart){
+        const product = allProducts.find(x => x.name === item.name);
+        if(!promotionAppliesToProduct(p, product)) continue;
+        const line = item.priceNum * item.qty;
+        productDiscount += p.discount_type === "percent" ? line * Number(p.discount_value||0)/100 : Math.min(line, Number(p.discount_value||0) * item.qty);
+      }
+      if(p.max_discount != null) productDiscount = Math.min(productDiscount, Number(p.max_discount));
+      saving = Math.min(subtotal, Math.max(0, productDiscount));
+    } else if(p.promotion_type === "bogo" || p.promotion_type === "second_item_discount") {
+      for(const item of cart){
+        const product = allProducts.find(x => x.name === item.name);
+        if(p.target_product_id && String(p.target_product_id) !== String(product?.id)) continue;
+        if(!p.target_product_id && p.target_category && String(p.target_category).toLowerCase() !== String(product?.category||"").toLowerCase()) continue;
+        const buy = Math.max(1, Number(p.buy_quantity || 2));
+        const reward = Math.max(1, Number(p.reward_quantity || 1));
+        if(item.qty < buy) continue;
+        const rewardQty = p.promotion_type === "bogo" ? Math.floor(item.qty/(buy+reward))*reward : Math.floor(item.qty/buy);
+        const pct = p.promotion_type === "bogo" ? 100 : Number(p.reward_discount_percent ?? 50);
+        productDiscount = Math.max(productDiscount, item.priceNum * rewardQty * pct / 100);
+      }
+      if(p.max_discount != null) productDiscount = Math.min(productDiscount, Number(p.max_discount));
+      saving = Math.min(subtotal, Math.max(0, productDiscount));
+    } else continue;
+    if(saving > bestSaving){ bestSaving = saving; discount = saving === (baseDelivery-candidateDelivery) && (p.promotion_type.startsWith("delivery") || p.promotion_type === "free_delivery") ? 0 : saving; deliveryFee = candidateDelivery; promo = p; }
   }
-  return {subtotal,discount:Math.round(discount*100)/100,deliveryFee:Math.round(deliveryFee*100)/100,promo,deliveryFree:deliveryFee===0&&method==="Доставка",deliverySaving:Math.round((baseDelivery-deliveryFee)*100)/100,baseDelivery};
+  return {subtotal, discount:Math.round(discount*100)/100, deliveryFee, promo, deliveryFree:deliveryFee===0 && method==="Доставка", deliverySaving:Math.max(0, baseDelivery-deliveryFee), baseDelivery};
 }
 
 function renderPromotions(){
-  const section=document.getElementById("promotionsSection"),grid=document.getElementById("promotionsGrid");
-  if(!section||!grid)return;
-  const visible=activePromotions.filter(p=>["delivery_bundle","order_discount","product_discount","category_discount","bogo","second_item_discount"].includes(p.promotion_type));
-  section.classList.toggle("hidden",!visible.length);
-  grid.innerHTML=visible.slice(0,6).map(p=>{
-    let value="";
-    if(p.promotion_type==="delivery_bundle"){
-      const rules=Array.isArray(p.delivery_rules)?[...p.delivery_rules].sort((a,b)=>Number(a.min_order_amount||0)-Number(b.min_order_amount||0)):[];
-      value=rules.length?rules.map(r=>`от ${money(Number(r.min_order_amount||0))} · −${Number(r.discount_value||0)}${r.discount_type==="percent"?"%":" ₽"} доставки`).join(" · "):"Условия доставки";
-    } else if(p.promotion_type==="bogo") value="2+1";
-    else if(p.promotion_type==="second_item_discount") value=`−${Number(p.reward_discount_percent||50)}% на второй`;
-    else value=p.discount_type==="percent"?`−${Number(p.discount_value||0)}%`:`−${money(Number(p.discount_value||0))}`;
-    return `<div class="feature-card"><div class="feature-icon">${escapeHtml(p.badge||"%")}</div><h3>${escapeHtml(p.name)}</h3><p>${escapeHtml(p.description||value)}</p><strong style="color:var(--accent);font-size:16px;">${escapeHtml(value)}</strong></div>`;
+  const section = document.getElementById("promotionsSection");
+  const grid = document.getElementById("promotionsGrid");
+  if(!section || !grid) return;
+  const visible = activePromotions.filter(p => ["delivery_bundle","free_delivery","delivery_discount","delivery_price","order_discount","product_discount","category_discount","bogo","second_item_discount"].includes(p.promotion_type));
+  section.classList.toggle("hidden", !visible.length);
+  grid.innerHTML = visible.slice(0,6).map(p => {
+    let value = "";
+    if(p.promotion_type === "delivery_bundle") value = t("deliveryPromoTitle");
+    else if(p.promotion_type === "free_delivery") value = t("freeDeliveryPromo");
+    else if(p.promotion_type === "delivery_discount") value = p.discount_type === "percent" ? `Скидка ${Number(p.discount_value||0)}% на доставку` : `Скидка ${money(Number(p.discount_value||0))} на доставку`;
+    else if(p.promotion_type === "delivery_price") value = `Доставка ${money(Number(p.discount_value||0))}`;
+    else if(p.promotion_type === "bogo") value = "2+1";
+    else if(p.promotion_type === "second_item_discount") value = `−${Number(p.reward_discount_percent || 50)}%`;
+    else value = p.discount_type === "percent" ? `−${Number(p.discount_value||0)}%` : `−${money(Number(p.discount_value||0))}`;
+    return `<div class="feature-card"><div class="feature-icon">${escapeHtml(p.badge || "%")}</div><h3>${escapeHtml(p.name)}</h3><p>${escapeHtml(p.description || value)}</p><strong style="color:var(--accent);font-size:16px;">${escapeHtml(value)}</strong></div>`;
   }).join("");
 }
 
@@ -2322,12 +2449,13 @@ function showToast(message, isUndo = false, undoCallback = null) {
   clearTimeout(toastTimer);
 
   let html = `<div class="toast-content" style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;width:100%;text-align:left;">
-                <span>${message}</span>`;
+                 <span style="width:8px;height:8px;min-width:8px;border-radius:50%;background:var(--toast-accent);box-shadow:0 0 0 4px color-mix(in srgb, var(--toast-accent) 12%, transparent);"></span>
+                <span style="flex:1;line-height:1.35;">${message}</span>`;
   if (isUndo) {
     let secs = Math.ceil(toastDuration / 1000);
-    html += `<button id="undoBtn" style="background:transparent;color:inherit;border:1px solid rgba(255,255,255,0.4);padding:6px 12px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer;white-space:nowrap;transition:0.15s;">Отменить (${secs})</button>`;
+    html += `<button id="undoBtn" style="background:transparent;color:var(--toast-text);border:1px solid color-mix(in srgb, var(--toast-text) 20%, var(--tg-line));padding:6px 12px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer;white-space:nowrap;transition:0.15s;">Отменить (${secs})</button>`;
   }
-  html += `</div><div class="toast-timer-bar" id="toastBar" style="height:3px;background:rgba(255,255,255,0.4);width:100%;transform-origin:left;"></div>`;
+  html += `</div><div class="toast-timer-bar" id="toastBar" style="height:3px;background:var(--toast-accent);width:100%;transform-origin:left;"></div>`;
 
   toast.innerHTML = html;
   toast.classList.add("show");
@@ -2450,10 +2578,85 @@ function clearAll(){
   updateModalControls(); 
 }
 
-function showDeliveryRules() {
-    const msg = `${t("deliveryTiersTitle")}:\n${t("deliveryTiersInfo").replace(/ \| /g, "\n")}`;
-    if (TG && TG.showAlert) TG.showAlert(msg);
-    else alert(msg);
+function showDeliveryRules(){
+  const backdrop = document.getElementById("deliveryModalBackdrop");
+  const rulesEl = document.getElementById("deliveryRules");
+  const noteEl = document.getElementById("deliveryModalNote");
+  if(!backdrop || !rulesEl) return;
+  const rules = getDeliveryBundleRules();
+  const base = 200;
+  rulesEl.innerHTML = rules.map(r => {
+    const fee = Math.max(0, base - r.discount);
+    const fromText = r.min === 0
+      ? (currentLanguage === "en" ? "Any order" : "Любая сумма")
+      : (currentLanguage === "en" ? `From ${money(r.min)}` : `От ${money(r.min)}`);
+    return `<div class="delivery-rule"><strong>${fromText}</strong><span class="delivery-rule-save">${fee === 0 ? t("deliveryFree") : money(fee)}</span></div>`;
+  }).join("");
+  if(noteEl) noteEl.textContent = t("deliveryPromoNote");
+  backdrop.classList.add("open");
+  backdrop.setAttribute("aria-hidden","false");
+}
+function closeDeliveryRules(){
+  const backdrop = document.getElementById("deliveryModalBackdrop");
+  backdrop?.classList.remove("open");
+  backdrop?.setAttribute("aria-hidden","true");
+}
+
+function getCartItemPricing(item){
+  const product = allProducts.find(x => x.name === item.name);
+  const originalUnit = Number(item.priceNum || 0);
+  const lineOriginal = originalUnit * Math.max(1, Number(item.qty || 1));
+  let discountedUnit = originalUnit;
+  let discountTotal = 0;
+  let promo = null;
+
+  if(product){
+    // Product/category discounts: apply the real discounted unit price.
+    const direct = productPromoPrice(product);
+    if(direct.discount > 0){
+      discountedUnit = direct.price;
+      discountTotal = direct.discount * item.qty;
+      promo = direct.promo;
+    }
+
+    // BOGO / second-item discounts: show an effective average unit price
+    // so the affected cart item visibly has the old price crossed out.
+    for(const p of activePromotions){
+      if(p.promotion_type !== "bogo" && p.promotion_type !== "second_item_discount") continue;
+      if(p.target_product_id && String(p.target_product_id) !== String(product.id)) continue;
+      if(!p.target_product_id && p.target_category && String(p.target_category).toLowerCase() !== String(product.category || "").toLowerCase()) continue;
+      const buy = Math.max(1, Number(p.buy_quantity || 2));
+      const reward = Math.max(1, Number(p.reward_quantity || 1));
+      if(item.qty < buy) continue;
+      const rewardQty = p.promotion_type === "bogo"
+        ? Math.floor(item.qty / (buy + reward)) * reward
+        : Math.floor(item.qty / buy);
+      const pct = p.promotion_type === "bogo" ? 100 : Number(p.reward_discount_percent ?? 50);
+      const candidate = Math.min(lineOriginal, originalUnit * rewardQty * pct / 100);
+      if(candidate > discountTotal){
+        discountTotal = candidate;
+        discountedUnit = Math.max(0, originalUnit - candidate / Math.max(1, item.qty));
+        promo = p;
+      }
+    }
+  }
+
+  // Order-wide automatic discount applies to the whole basket. For display,
+  // allocate it proportionally to this item's line so its price also shows
+  // as original -> discounted, while the basket total remains unchanged.
+  const method = document.querySelector('input[name="method"]:checked')?.value || "Доставка";
+  const subtotal = cart.reduce((sum, i) => sum + Number(i.priceNum || 0) * Number(i.qty || 0), 0);
+  const autoQuote = automaticPromoQuote();
+  if(!promo && autoQuote.promo?.promotion_type === "order_discount" && subtotal > 0 && autoQuote.discount > 0){
+    const allocated = Math.min(lineOriginal, autoQuote.discount * (lineOriginal / subtotal));
+    if(allocated > 0){
+      discountTotal = allocated;
+      discountedUnit = Math.max(0, originalUnit - allocated / Math.max(1, item.qty));
+      promo = autoQuote.promo;
+    }
+  }
+
+  return {originalUnit, discountedUnit, discountTotal, promo};
 }
 
 function renderCart(){
@@ -2491,14 +2694,24 @@ function renderCart(){
     cartTitle.textContent = t("cart");
     cartTotal.textContent = money(total);
 
-    let itemsHTML = cart.map((i) => `
+    let itemsHTML = cart.map((i) => {
+      const pricing = getCartItemPricing(i);
+      const hasItemDiscount = pricing.discountTotal > 0 && pricing.discountedUnit < pricing.originalUnit;
+      const discountedUnitRounded = Math.round(pricing.discountedUnit);
+      const unitHtml = hasItemDiscount
+        ? `<span style="text-decoration:line-through;opacity:.5;margin-right:6px;">${money(pricing.originalUnit)}</span><span style="color:var(--success);font-weight:800;">${money(discountedUnitRounded)}</span>`
+        : money(pricing.originalUnit);
+      const lineTotal = hasItemDiscount
+        ? Math.max(0, pricing.originalUnit*i.qty - pricing.discountTotal)
+        : pricing.originalUnit*i.qty;
+      return `
       <div class="cart-item">
         <div class="cart-thumb">
           ${i.image ? `<img src="${i.image}" alt="">` : fallbackIcon}
         </div>
         <div class="cart-info">
           <strong>${escapeHtml(i.name)}</strong>
-          <small>${money(i.priceNum)} / ${currentLanguage === "en" ? "pc." : "шт."}</small>
+          <small>${unitHtml} / ${currentLanguage === "en" ? "pc." : "шт."}${hasItemDiscount ? ` · <span style="color:var(--success);font-weight:800;">−${money(pricing.discountTotal)}</span>` : ""}</small>
           <div class="qty" style="margin-top: 8px;">
             ${getQtyControlsHtml(i.name, false)}
           </div>
@@ -2507,10 +2720,10 @@ function renderCart(){
           <button class="trash" onclick="removeCompletely('${escapeHtml(i.name)}')" aria-label="${t("remove")}">
             <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
           </button>
-          <div class="cart-line">${money(i.priceNum*i.qty)}</div>
+          <div class="cart-line">${money(lineTotal)}</div>
         </div>
-      </div>
-    `).join("");
+      </div>`;
+    }).join("");
 
     if (method === "Доставка") {
         itemsHTML += `
@@ -2610,6 +2823,18 @@ const cartPromoSection = document.getElementById("cartPromoSection");
 const applyPromoBtn = document.getElementById("applyPromoBtn");
 const ckPromo = document.getElementById("ckPromo");
 const promoMessage = document.getElementById("promoMessage");
+const promoToggle = document.getElementById("promoToggle");
+const cartPromoSectionEl = document.getElementById("cartPromoSection");
+function setPromoOpen(open, focusInput=false){
+  cartPromoSectionEl?.classList.toggle("open", open);
+  promoToggle?.setAttribute("aria-expanded", String(open));
+  if(open && focusInput) requestAnimationFrame(() => ckPromo?.focus());
+}
+promoToggle?.addEventListener("click", () => setPromoOpen(!cartPromoSectionEl.classList.contains("open"), true));
+
+document.getElementById("deliveryModalClose")?.addEventListener("click", closeDeliveryRules);
+document.getElementById("deliveryModalBackdrop")?.addEventListener("click", (e) => { if(e.target.id === "deliveryModalBackdrop") closeDeliveryRules(); });
+document.addEventListener("keydown", (e) => { if(e.key === "Escape") closeDeliveryRules(); });
 
 let promoState = {
   code: "",
@@ -2626,6 +2851,7 @@ function updatePromoVisibility(){
     if(ckPromo) ckPromo.value = "";
     promoState = { code: "", valid: false, discount: 0, message: "" };
     promoMessage?.classList.add("hidden");
+    setPromoOpen(false);
   }
 }
 
@@ -2690,6 +2916,7 @@ applyPromoBtn.onclick = async () => {
       message: result.message
     };
 
+    setPromoOpen(true);
     promoMessage.classList.remove("hidden");
     promoMessage.textContent = result.valid
       ? `${result.message}. Скидка ${money(result.discount)}`
@@ -2697,6 +2924,7 @@ applyPromoBtn.onclick = async () => {
     promoMessage.style.color = result.valid ? "var(--success)" : "var(--danger)";
   }catch(err){
     promoState = { code: promo, valid:false, discount:0, message: err?.message || "Не удалось проверить промокод" };
+    setPromoOpen(true);
     promoMessage.classList.remove("hidden");
     promoMessage.textContent = promoState.message;
     promoMessage.style.color = "var(--danger)";
