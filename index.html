@@ -11,6 +11,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="anonymous">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin="anonymous"></script>
 
 <style>
 :root{
@@ -1270,7 +1272,7 @@ body.dark-theme .topbar {
 }
 
 /* =====================================================
-   DELIVERY ADDRESS / YANDEX MAP
+   DELIVERY ADDRESS / OPENSTREETMAP GEOCODING
 ===================================================== */
 .address-map-card{
   margin-top:8px;
@@ -1289,6 +1291,11 @@ body.dark-theme .topbar {
   min-width:82px;
   padding:0 14px;
 }
+.address-required-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(110px,1fr);gap:10px;margin-top:12px;}
+.address-required-grid > div,.address-details > div > div{min-width:0;}
+.address-details label{display:block;margin-bottom:6px;font-size:12px;font-weight:700;color:var(--tg-muted);}
+.address-details input{width:100%;box-sizing:border-box;}
+@media (max-width:520px){.address-required-grid{grid-template-columns:1fr 110px;}}
 .delivery-map{
   width:100%;
   height:300px;
@@ -1593,7 +1600,7 @@ body.dark-theme .topbar {
 <div class="delivery-modal-backdrop" id="deliveryModalBackdrop" aria-hidden="true">
   <div class="delivery-modal" role="dialog" aria-modal="true" aria-labelledby="deliveryModalTitle">
     <div class="delivery-modal-head">
-      <div class="delivery-modal-title"><span class="delivery-modal-icon">📦</span><span id="deliveryModalTitle" data-i18n="deliveryPromoTitle">Акция на доставку</span></div>
+      <div class="delivery-modal-title"><span class="delivery-modal-icon">📦</span><span id="deliveryModalTitle" data-i18n="deliveryPromoTitle">Стоимость доставки</span></div>
       <button type="button" class="delivery-modal-close" id="deliveryModalClose" aria-label="Закрыть">×</button>
     </div>
     <p class="delivery-modal-subtitle" id="deliveryModalSubtitle" data-i18n="deliveryPromoSubtitle">Чем больше сумма заказа, тем дешевле доставка.</p>
@@ -1681,12 +1688,27 @@ body.dark-theme .topbar {
         <label data-i18n="addressLabel">Адрес доставки*</label>
         <div class="address-map-card">
           <div class="address-search-row">
-            <input id="ckAddress" name="address" required autocomplete="street-address" data-i18n-placeholder="addressPlaceholder" placeholder="Начните вводить адрес">
+            <input id="ckAddress" autocomplete="street-address" data-i18n-placeholder="addressPlaceholder" placeholder="Адрес для поиска (необязательно)">
             <button type="button" class="secondary address-search-btn" id="addressSearchBtn" data-i18n="addressSearch">Найти</button>
           </div>
-          <div id="deliveryMap" class="delivery-map" aria-label="Карта выбора адреса"></div>
-          <div class="address-map-status" id="addressMapStatus" data-i18n="addressMapHint">Выберите адрес через поиск или нажмите на нужное место на карте.</div>
+          <div class="address-map-status" id="addressMapStatus" data-i18n="addressMapHint">Введите адрес для поиска или поставьте метку на карте. Улица и дом обязательны.</div>
+          <div id="deliveryMap" class="delivery-map" aria-label="OpenStreetMap"></div>
+          <div style="margin-top:8px;font-size:11px;color:var(--tg-muted);">© OpenStreetMap contributors</div>
           <div class="address-details">
+            <div class="address-required-grid">
+              <div>
+                <label for="ckStreet" data-i18n="streetLabel">Улица*</label>
+                <input id="ckStreet" name="street" required autocomplete="address-line1" data-i18n-placeholder="streetPlaceholder" placeholder="Улица">
+              </div>
+              <div>
+                <label for="ckHouse" data-i18n="houseLabel">Дом*</label>
+                <input id="ckHouse" name="house" required autocomplete="address-line2" data-i18n-placeholder="housePlaceholder" placeholder="Номер дома">
+              </div>
+            </div>
+            <div style="margin-top:10px;">
+              <label for="ckDistrict" data-i18n="districtLabel">Район</label>
+              <input id="ckDistrict" name="district" autocomplete="address-level3" data-i18n-placeholder="districtPlaceholder" placeholder="Район">
+            </div>
             <label class="check-row">
               <input type="checkbox" id="privateHouse">
               <span data-i18n="privateHouse">Это частный дом</span>
@@ -1844,8 +1866,8 @@ const I18N = {
     deliveryTiersTitle: "Стоимость доставки",
     deliveryTiersInfo: "До 1 км — 200 ₽ | Более 1 км — 300 ₽ | Более 3 км — 400 ₽ | Более 5 км — 500 ₽",
     promoToggle: "Ввести промокод",
-    deliveryPromoTitle: "Акция на доставку",
-    deliveryPromoSubtitle: "Стоимость доставки автоматически рассчитывается по расстоянию от кондитерского дома.",
+    deliveryPromoTitle: "Стоимость доставки",
+    deliveryPromoSubtitle: "Стоимость доставки рассчитывается только по расстоянию от кондитерского дома.",
     deliveryPromoNote: "Цена доставки рассчитывается по расстоянию. Самовывоз — бесплатно.",
     clearCart: "Очистить корзину",
     total: "Итого",
@@ -1860,15 +1882,21 @@ const I18N = {
     addressLabel: "Адрес доставки*",
     addressPlaceholder: "Начните вводить адрес",
     addressSearch: "Найти",
-    addressMapHint: "Выберите адрес через поиск или нажмите на нужное место на карте.",
+    streetLabel: "Улица*",
+    streetPlaceholder: "Название улицы",
+    houseLabel: "Дом*",
+    housePlaceholder: "Номер дома",
+    districtLabel: "Район",
+    districtPlaceholder: "Район (если найден)",
+    addressMapHint: "Введите адрес для поиска или поставьте метку на карте. Улица и дом обязательны.",
     privateHouse: "Это частный дом",
     apartmentLabel: "Квартира*",
     apartmentPlaceholder: "№ квартиры",
     floorLabel: "Этаж*",
     floorPlaceholder: "Этаж",
     deliveryDistance: "Расстояние: {distance} км · доставка: {price}",
-    deliveryMapLoading: "Загрузка карты…",
-    deliveryMapError: "Не удалось загрузить карту. Проверьте ключ Яндекс Карт.",
+    deliveryMapLoading: "Определяем адрес…",
+    deliveryMapError: "Не удалось определить адрес. Проверьте написание адреса.",
     deliveryAddressSelected: "Адрес выбран. Стоимость доставки рассчитана автоматически.",
     addressMapRequired: "Выберите адрес на карте",
     apartmentRequired: "Укажите квартиру и этаж",
@@ -1913,14 +1941,12 @@ const I18N = {
     added: "добавлен в корзину",
     sending: "Отправляем заказ…",
     orderError: "Не удалось отправить заказ",
-    requiredFields: "Заполните имя, телефон, дату и адрес",
+    requiredFields: "Заполните имя, телефон, дату, улицу и дом",
     phoneInvalid: "Проверьте номер телефона",
     addressRequired: "Введите адрес доставки",
     timeoutError: "Сервер не отвечает. Проверьте связь и попробуйте ещё раз",
     remove: "Удалить",
     languageLabel: "Переключить язык",
-    deliveryItemName: "Доставка",
-    deliveryItemDesc: "Нажмите, чтобы узнать условия",
     deliveryFree: "Бесплатно",
     promoDiscountText: "Скидка по промокоду",
     readMore: "Развернуть",
@@ -1928,7 +1954,6 @@ const I18N = {
     promotionsTitle: "🔥 Акции",
     promotionsSubtitle: "Специальные предложения, которые действуют сейчас.",
     promotionFrom: "Акция",
-    freeDeliveryPromo: "Бесплатная доставка",
     automaticDiscountText: "Скидка по акции"
   },
   en: {
@@ -1963,8 +1988,8 @@ const I18N = {
     deliveryTiersTitle: "Delivery cost",
     deliveryTiersInfo: "Up to 1 km — 200 ₽ | Over 1 km — 300 ₽ | Over 3 km — 400 ₽ | Over 5 km — 500 ₽",
     promoToggle: "Enter promo code",
-    deliveryPromoTitle: "Delivery promotion",
-    deliveryPromoSubtitle: "Delivery price is calculated automatically based on distance from the pastry house.",
+    deliveryPromoTitle: "Delivery cost",
+    deliveryPromoSubtitle: "Delivery price is calculated only by distance from the pastry house.",
     deliveryPromoNote: "Delivery price is calculated by distance. Pickup is free.",
     clearCart: "Clear cart",
     total: "Total",
@@ -1979,15 +2004,15 @@ const I18N = {
     addressLabel: "Delivery address*",
     addressPlaceholder: "Start typing an address",
     addressSearch: "Find",
-    addressMapHint: "Choose an address using search or click the required place on the map.",
+    addressMapHint: "Enter an address and click Find. The distance will be calculated automatically.",
     privateHouse: "This is a private house",
     apartmentLabel: "Apartment*",
     apartmentPlaceholder: "Apartment number",
     floorLabel: "Floor*",
     floorPlaceholder: "Floor",
     deliveryDistance: "Distance: {distance} km · delivery: {price}",
-    deliveryMapLoading: "Loading map…",
-    deliveryMapError: "Could not load the map. Check the Yandex Maps API key.",
+    deliveryMapLoading: "Finding address…",
+    deliveryMapError: "Could not determine the address. Check the address text.",
     deliveryAddressSelected: "Address selected. Delivery price calculated automatically.",
     addressMapRequired: "Choose an address on the map",
     apartmentRequired: "Enter apartment and floor",
@@ -2032,14 +2057,12 @@ const I18N = {
     added: "added to cart",
     sending: "Sending order…",
     orderError: "Failed to send the order",
-    requiredFields: "Please fill in your name, phone, date and address",
+    requiredFields: "Please fill in your name, phone, date, street and house",
     phoneInvalid: "Please check the phone number",
     addressRequired: "Please enter delivery address",
     timeoutError: "The server isn't responding. Check your connection and try again",
     remove: "Remove",
     languageLabel: "Change language",
-    deliveryItemName: "Delivery",
-    deliveryItemDesc: "Click to see conditions",
     deliveryFree: "Free",
     promoDiscountText: "Promo discount",
     readMore: "Read more",
@@ -2047,7 +2070,6 @@ const I18N = {
     promotionsTitle: "🔥 Promotions",
     promotionsSubtitle: "Special offers that are active right now.",
     promotionFrom: "Promotion",
-    freeDeliveryPromo: "Free delivery",
     automaticDiscountText: "Promotion discount"
   }
 };
@@ -2263,13 +2285,12 @@ function productPromoPrice(product){
    DISTANCE-BASED DELIVERY
 ===================================================== */
 const DELIVERY_HOME = [56.854232, 60.555415]; // Екатеринбург, ул. Бебеля, 130
-const YANDEX_MAPS_API_KEY = "e44bc8cf-0c0a-46d7-9578-1691532a6505";
+const NOMINATIM_URL = "https://nominatim.openstreetmap.org/search";
 let deliveryDistanceKm = null;
 let deliveryCoords = null;
 let deliveryMap = null;
 let deliveryMarker = null;
-let deliveryRoute = null;
-let yandexMapsPromise = null;
+let geocodeInFlight = false;
 
 function deliveryPriceByDistance(distanceKm){
   const d = Number(distanceKm);
@@ -2280,21 +2301,7 @@ function deliveryPriceByDistance(distanceKm){
 }
 
 function loadYandexMaps(){
-  if(window.ymaps) return Promise.resolve(window.ymaps);
-  if(yandexMapsPromise) return yandexMapsPromise;
-  yandexMapsPromise = new Promise((resolve,reject)=>{
-    const script = document.createElement("script");
-    const key = YANDEX_MAPS_API_KEY ? `&apikey=${encodeURIComponent(YANDEX_MAPS_API_KEY)}` : "";
-    script.src = `https://api-maps.yandex.ru/2.1/?lang=ru_RU${key}`;
-    script.async = true;
-    script.onload = () => {
-      if(window.ymaps && typeof window.ymaps.ready === "function") window.ymaps.ready(() => resolve(window.ymaps));
-      else reject(new Error("Yandex Maps API unavailable"));
-    };
-    script.onerror = () => reject(new Error("Yandex Maps API failed to load"));
-    document.head.appendChild(script);
-  });
-  return yandexMapsPromise;
+  return Promise.reject(new Error("Yandex Maps disabled"));
 }
 
 function setAddressMapStatus(text, error=false){
@@ -2317,102 +2324,207 @@ function updateDeliveryDistanceUI(){
   el.style.display = "block";
 }
 
-async function calculateDeliveryRoute(coords, selectedAddress){
-  try{
-    if(!window.ymaps) await loadYandexMaps();
-    if(deliveryRoute && deliveryMap) deliveryMap.geoObjects.remove(deliveryRoute);
-    deliveryRoute = await window.ymaps.route([DELIVERY_HOME, coords], {
-      routingMode: "auto",
-      avoidTrafficJams: true
-    });
-    if(deliveryMap) deliveryMap.geoObjects.add(deliveryRoute);
-    const paths = deliveryRoute.getPaths();
-    const firstPath = paths && paths.getLength() ? paths.get(0) : null;
-    const distance = firstPath?.properties?.get("distance")?.value;
-    if(!Number.isFinite(distance)) throw new Error("Distance unavailable");
-    deliveryDistanceKm = distance / 1000;
-    updateDeliveryDistanceUI();
-    renderCart();
-    const status = t("deliveryAddressSelected");
-    setAddressMapStatus(status);
-    return deliveryDistanceKm;
-  }catch(error){
-    deliveryDistanceKm = null;
-    updateDeliveryDistanceUI();
-    renderCart();
-    setAddressMapStatus(t("deliveryMapError"), true);
-    return null;
-  }
+function haversineKm(a,b){
+  const toRad = x => x * Math.PI / 180;
+  const R = 6371;
+  const dLat = toRad(b[0]-a[0]);
+  const dLon = toRad(b[1]-a[1]);
+  const lat1 = toRad(a[0]);
+  const lat2 = toRad(b[0]);
+  const h = Math.sin(dLat/2)**2 + Math.cos(lat1)*Math.cos(lat2)*Math.sin(dLon/2)**2;
+  return 2 * R * Math.asin(Math.min(1, Math.sqrt(h)));
 }
 
-async function selectDeliveryCoords(coords, addressText){
+function estimateRoadDistanceKm(coords){
+  // Approximate road distance from straight-line distance.
+  // 1.2 is a practical city factor; delivery tiers are intentionally wide.
+  return haversineKm(DELIVERY_HOME, coords) * 1.2;
+}
+
+function parseAddressParts(geocoderResult, fallback){
+  const a = geocoderResult?.address || {};
+  const house = String(a.house_number || "").trim();
+  const street = String(a.road || a.street || "").trim();
+  const district = String(a.city_district || a.suburb || a.neighbourhood || a.quarter || a.district || "").trim();
+  return {house, street, district, fallback:String(fallback || "").trim()};
+}
+
+function formatGeocodedAddress(geocoderResult, fallback){
+  const {house, street, district, fallback:fb} = parseAddressParts(geocoderResult, fallback);
+  const parts = [];
+  if(house) parts.push(house);
+  if(street) parts.push(street);
+  if(district) parts.push(district);
+  return parts.length ? parts.join(", ") : fb;
+}
+
+function fillAddressFields(parts){
+  const streetEl = document.getElementById("ckStreet");
+  const houseEl = document.getElementById("ckHouse");
+  const districtEl = document.getElementById("ckDistrict");
+  if(streetEl && parts?.street) streetEl.value = parts.street;
+  if(houseEl && parts?.house) houseEl.value = parts.house;
+  if(districtEl) districtEl.value = parts?.district || districtEl.value || "";
+  [streetEl, houseEl, districtEl].forEach(el => el?.classList?.remove("invalid"));
+}
+
+
+async function selectDeliveryCoords(coords, addressText, parts=null){
   deliveryCoords = coords;
+  if(parts) fillAddressFields(parts);
   const address = document.getElementById("ckAddress");
   if(address){
-    address.dataset.baseAddress = addressText || address.value.trim();
-    address.value = address.dataset.baseAddress;
+    const formatted = String(addressText || address.value || "").trim();
+    address.dataset.baseAddress = formatted;
   }
-  if(deliveryMarker && deliveryMap) deliveryMap.geoObjects.remove(deliveryMarker);
-  deliveryMarker = new window.ymaps.Placemark(coords, {balloonContent: escapeHtml(addressText || "Адрес доставки")}, {preset:"islands#redDotIcon"});
-  deliveryMap.geoObjects.add(deliveryMarker);
-  deliveryMap.setCenter(coords, 16, {duration:250});
-  await calculateDeliveryRoute(coords, addressText);
+
+  if(window.L){
+    if(!deliveryMap){
+      const mapEl = document.getElementById("deliveryMap");
+      if(mapEl){
+        deliveryMap = L.map(mapEl, {zoomControl:true, scrollWheelZoom:true}).setView(coords, 16);
+        L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          maxZoom: 19,
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>'
+        }).addTo(deliveryMap);
+      }
+    }
+    if(deliveryMap){
+      deliveryMap.setView(coords, Math.max(deliveryMap.getZoom(), 16), {animate:true});
+      if(deliveryMarker) deliveryMarker.setLatLng(coords);
+      else {
+        deliveryMarker = L.marker(coords, {draggable:true}).addTo(deliveryMap);
+        deliveryMarker.on("dragend", async (event) => {
+          const pos = event.target.getLatLng();
+          await reverseGeocodeMapPoint([pos.lat, pos.lng]);
+        });
+      }
+    }
+  }
+
+  deliveryDistanceKm = estimateRoadDistanceKm(coords);
+  updateDeliveryDistanceUI();
+  renderCart();
+  setAddressMapStatus(t("deliveryAddressSelected"));
+  return deliveryDistanceKm;
 }
 
-async function geocodeDeliveryAddress(){
-  const input = document.getElementById("ckAddress");
-  if(!input) return;
-  const query = input.value.trim();
-  if(!query) return;
+async function reverseGeocodeMapPoint(coords){
+  if(geocodeInFlight) return;
+  geocodeInFlight = true;
   try{
     setAddressMapStatus(t("deliveryMapLoading"));
-    const ym = await loadYandexMaps();
-    const result = await ym.geocode(`Екатеринбург, ${query}`, {results: 1});
-    const first = result.geoObjects.get(0);
-    if(!first) throw new Error("Address not found");
-    const coords = first.geometry.getCoordinates();
-    const foundAddress = first.getAddressLine ? first.getAddressLine() : query;
-    await selectDeliveryCoords(coords, foundAddress);
+    const params = new URLSearchParams({
+      lat:String(coords[0]), lon:String(coords[1]), format:"jsonv2", zoom:"18", addressdetails:"1"
+    });
+    const response = await fetch(`${NOMINATIM_URL}?${params.toString()}`, {headers:{"Accept":"application/json"}});
+    if(!response.ok) throw new Error("Reverse geocoder error");
+    const result = await response.json();
+    const parts = parseAddressParts(result, "");
+    const addressText = formatGeocodedAddress(result, `${coords[0].toFixed(6)}, ${coords[1].toFixed(6)}`);
+    await selectDeliveryCoords(coords, addressText, parts);
   }catch(error){
-    setAddressMapStatus(t("addressMapRequired"), true);
+    await selectDeliveryCoords(coords, "Выбранная точка");
+    setAddressMapStatus(t("deliveryMapError"), true);
+  }finally{
+    geocodeInFlight = false;
   }
 }
 
 async function initDeliveryMap(){
+  if(!window.L) return;
   const mapEl = document.getElementById("deliveryMap");
   if(!mapEl || deliveryMap) return;
+  deliveryMap = L.map(mapEl, {zoomControl:true, scrollWheelZoom:true}).setView(DELIVERY_HOME, 12);
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>'
+  }).addTo(deliveryMap);
+  deliveryMap.on("click", async (e) => {
+    await reverseGeocodeMapPoint([e.latlng.lat, e.latlng.lng]);
+  });
+}
+
+async function geocodeDeliveryAddress(){
+  const input = document.getElementById("ckAddress");
+  if(!input || geocodeInFlight) return;
+  const query = input.value.trim();
+  if(!query) {
+    setAddressMapStatus(t("addressMapRequired"), true);
+    return;
+  }
+  geocodeInFlight = true;
   try{
     setAddressMapStatus(t("deliveryMapLoading"));
-    const ym = await loadYandexMaps();
-    deliveryMap = new ym.Map(mapEl, {center: DELIVERY_HOME, zoom: 12, controls:["zoomControl"]}, {suppressMapOpenBlock:true});
-    deliveryMap.events.add("click", async (event)=>{
-      const coords = event.get("coords");
-      try{
-        const result = await ym.geocode(coords, {results:1});
-        const first = result.geoObjects.get(0);
-        const addressText = first?.getAddressLine?.() || "Выбранная точка";
-        await selectDeliveryCoords(coords, addressText);
-      }catch(e){
-        await selectDeliveryCoords(coords, "Выбранная точка");
-      }
+    const params = new URLSearchParams({
+      q: `${query}, Екатеринбург, Свердловская область, Россия`,
+      format: "jsonv2",
+      limit: "8",
+      countrycodes: "ru",
+      addressdetails: "1",
+      'accept-language': 'ru',
+      viewbox: '60.25,57.05,60.80,56.65',
+      bounded: '0'
     });
-    if(deliveryCoords) await selectDeliveryCoords(deliveryCoords, document.getElementById("ckAddress")?.dataset.baseAddress || "");
+    const response = await fetch(`${NOMINATIM_URL}?${params.toString()}`, {
+      method: "GET",
+      headers: { "Accept": "application/json" }
+    });
+    if(!response.ok) throw new Error(`Geocoder error ${response.status}`);
+    const results = await response.json();
+    const candidates = Array.isArray(results) ? results : [];
+    if(!candidates.length) throw new Error("Address not found");
+
+    // Prefer results that are actually inside Yekaterinburg, then prefer precise house/street matches.
+    const scored = candidates.map((item, index) => {
+      const a = item.address || {};
+      const city = String(a.city || a.town || a.municipality || '').toLowerCase();
+      const state = String(a.state || '').toLowerCase();
+      const type = String(item.type || '').toLowerCase();
+      let score = 0;
+      if(city.includes('екатеринбург')) score += 1000;
+      if(state.includes('свердлов')) score += 100;
+      if(a.house_number) score += 50;
+      if(a.road || a.street) score += 30;
+      if(type === 'house') score += 20;
+      if(/екатеринбург/i.test(String(item.display_name || ''))) score += 50;
+      score -= index * 0.01;
+      return {item, score};
+    }).sort((a,b) => b.score - a.score);
+
+    const first = scored[0]?.item;
+    if(!first) throw new Error("Address not found");
+    const lat = Number(first.lat), lon = Number(first.lon);
+    if(!Number.isFinite(lat) || !Number.isFinite(lon)) throw new Error("Invalid coordinates");
+    const parts = parseAddressParts(first, query);
+    const addressText = formatGeocodedAddress(first, query);
+    fillAddressFields(parts);
+    await selectDeliveryCoords([lat, lon], addressText, parts);
   }catch(error){
-    setAddressMapStatus(t("deliveryMapError"), true);
+    deliveryDistanceKm = null;
+    deliveryCoords = null;
+    updateDeliveryDistanceUI();
+    renderCart();
+    setAddressMapStatus(t("addressMapRequired"), true);
+  }finally{
+    geocodeInFlight = false;
   }
 }
+
 
 function resetDeliveryAddressState(){
   deliveryDistanceKm = null;
   deliveryCoords = null;
-  if(deliveryMap){
-    if(deliveryMarker) deliveryMap.geoObjects.remove(deliveryMarker);
-    if(deliveryRoute) deliveryMap.geoObjects.remove(deliveryRoute);
+  const address = document.getElementById("ckAddress");
+  if(address) { delete address.dataset.baseAddress; address.value = ""; }
+  ["ckStreet","ckHouse","ckDistrict"].forEach(id => { const el=document.getElementById(id); if(el) el.value=""; });
+  if(deliveryMarker && deliveryMap){
+    deliveryMap.removeLayer(deliveryMarker);
     deliveryMarker = null;
-    deliveryRoute = null;
-    deliveryMap.setCenter(DELIVERY_HOME, 12);
   }
+  if(deliveryMap) deliveryMap.setView(DELIVERY_HOME, 12);
   updateDeliveryDistanceUI();
+  setAddressMapStatus(t("addressMapHint"));
 }
 
 function deliveryBaseFee(subtotal, method){
@@ -2424,51 +2536,16 @@ function deliveryBaseFee(subtotal, method){
   return 500;
 }
 
-function getDeliveryBundleRules(){
-  const promo = activePromotions.find(p => p.promotion_type === "delivery_bundle");
-  const raw = Array.isArray(promo?.delivery_rules) ? promo.delivery_rules : [];
-  const parsed = raw.map(r => ({
-    min: Number(r?.min_order_amount ?? r?.min ?? 0),
-    discount: Number(r?.discount ?? r?.discount_value ?? r?.value ?? 0)
-  })).filter(r => Number.isFinite(r.min) && Number.isFinite(r.discount) && r.discount >= 0).sort((a,b) => a.min-b.min);
-  return parsed.length ? parsed : [
-    {min:500, discount:50},
-    {min:1000, discount:100},
-    {min:1500, discount:150},
-    {min:2000, discount:200}
-  ];
-}
-
 function automaticPromoQuote(){
   const subtotal = cart.reduce((s,i) => s + i.priceNum * i.qty, 0);
   const method = document.querySelector('input[name="method"]:checked')?.value || "Доставка";
   const baseDelivery = deliveryBaseFee(subtotal, method);
   let bestSaving = 0;
   let discount = 0;
-  let deliveryFee = baseDelivery;
-  let promo = null;
   for(const p of activePromotions){
     if(subtotal < Number(p.min_order_amount || 0)) continue;
-    let saving = 0, productDiscount = 0, candidateDelivery = baseDelivery;
-    if(p.promotion_type === "delivery_bundle" && method === "Доставка") {
-      const rules = getDeliveryBundleRules();
-      let rule = null;
-      for(const r of rules){ if(subtotal >= r.min) rule = r; }
-      if(rule){
-        saving = Math.min(baseDelivery, Math.max(0, rule.discount));
-        candidateDelivery = Math.max(0, baseDelivery - saving);
-      }
-    } else if(p.promotion_type === "free_delivery" && method === "Доставка") {
-      candidateDelivery = 0; saving = baseDelivery;
-    } else if(p.promotion_type === "delivery_discount" && method === "Доставка") {
-      saving = p.discount_type === "percent" ? baseDelivery * Number(p.discount_value||0)/100 : Number(p.discount_value||0);
-      if(p.max_discount != null) saving = Math.min(saving, Number(p.max_discount));
-      saving = Math.min(baseDelivery, Math.max(0, saving));
-      candidateDelivery = baseDelivery - saving;
-    } else if(p.promotion_type === "delivery_price" && method === "Доставка") {
-      candidateDelivery = Math.min(baseDelivery, Math.max(0, Number(p.discount_value||0)));
-      saving = baseDelivery - candidateDelivery;
-    } else if(p.promotion_type === "order_discount") {
+    let saving = 0, productDiscount = 0;
+    if(p.promotion_type === "order_discount") {
       productDiscount = p.discount_type === "percent" ? subtotal * Number(p.discount_value||0)/100 : Number(p.discount_value||0);
       if(p.max_discount != null) productDiscount = Math.min(productDiscount, Number(p.max_discount));
       saving = Math.min(subtotal, Math.max(0, productDiscount));
@@ -2496,24 +2573,20 @@ function automaticPromoQuote(){
       if(p.max_discount != null) productDiscount = Math.min(productDiscount, Number(p.max_discount));
       saving = Math.min(subtotal, Math.max(0, productDiscount));
     } else continue;
-    if(saving > bestSaving){ bestSaving = saving; discount = saving === (baseDelivery-candidateDelivery) && (p.promotion_type.startsWith("delivery") || p.promotion_type === "free_delivery") ? 0 : saving; deliveryFee = candidateDelivery; promo = p; }
+    if(saving > bestSaving){ bestSaving = saving; discount = saving; }
   }
-  return {subtotal, discount:Math.round(discount*100)/100, deliveryFee, promo, deliveryFree:deliveryFee===0 && method==="Доставка", deliverySaving:Math.max(0, baseDelivery-deliveryFee), baseDelivery};
+  return {subtotal, discount:Math.round(discount*100)/100, deliveryFee:baseDelivery, promo:null, deliveryFree:false, deliverySaving:0, baseDelivery};
 }
 
 function renderPromotions(){
   const section = document.getElementById("promotionsSection");
   const grid = document.getElementById("promotionsGrid");
   if(!section || !grid) return;
-  const visible = activePromotions.filter(p => ["delivery_bundle","free_delivery","delivery_discount","delivery_price","order_discount","product_discount","category_discount","bogo","second_item_discount"].includes(p.promotion_type));
+  const visible = activePromotions.filter(p => ["order_discount","product_discount","category_discount","bogo","second_item_discount"].includes(p.promotion_type));
   section.classList.toggle("hidden", !visible.length);
   grid.innerHTML = visible.slice(0,6).map(p => {
     let value = "";
-    if(p.promotion_type === "delivery_bundle") value = t("deliveryPromoTitle");
-    else if(p.promotion_type === "free_delivery") value = t("freeDeliveryPromo");
-    else if(p.promotion_type === "delivery_discount") value = p.discount_type === "percent" ? `Скидка ${Number(p.discount_value||0)}% на доставку` : `Скидка ${money(Number(p.discount_value||0))} на доставку`;
-    else if(p.promotion_type === "delivery_price") value = `Доставка ${money(Number(p.discount_value||0))}`;
-    else if(p.promotion_type === "bogo") value = "2+1";
+    if(p.promotion_type === "bogo") value = "2+1";
     else if(p.promotion_type === "second_item_discount") value = `−${Number(p.reward_discount_percent || 50)}%`;
     else value = p.discount_type === "percent" ? `−${Number(p.discount_value||0)}%` : `−${money(Number(p.discount_value||0))}`;
     return `<div class="feature-card"><div class="feature-icon">${escapeHtml(p.badge || "%")}</div><h3>${escapeHtml(p.name)}</h3><p>${escapeHtml(p.description || value)}</p><strong style="color:var(--accent);font-size:16px;">${escapeHtml(value)}</strong></div>`;
@@ -2999,20 +3072,13 @@ function getCartItemPricing(item){
 }
 
 function renderCart(){
-  const n = cart.filter(i => i.name !== "Доставка").reduce((s,i) => s + i.qty, 0);
-  const subtotal = cart.reduce((s,i) => s + i.priceNum * i.qty, 0);
+  const visibleCart = cart.filter(i => i.name !== "Доставка");
+  const n = visibleCart.reduce((s,i) => s + i.qty, 0);
+  const subtotal = visibleCart.reduce((s,i) => s + i.priceNum * i.qty, 0);
   
-  const method = document.querySelector('input[name="method"]:checked')?.value || "Доставка";
-  let deliveryFee = 0;
-  if (method === "Доставка") {
-      deliveryFee = deliveryBaseFee(subtotal, method);
-  }
-
   const autoQuote = automaticPromoQuote();
-  const promoVal = IS_TELEGRAM_USER && promoState.valid ? promoState.code : "";
   const promoDiscount = IS_TELEGRAM_USER && promoState.valid ? Math.max(0, Number(promoState.discount || 0)) : autoQuote.discount;
-  if(!promoState.valid) deliveryFee = autoQuote.deliveryFee;
-  const total = Math.max(0, subtotal + deliveryFee - promoDiscount);
+  const total = Math.max(0, subtotal - promoDiscount);
 
   if (!n) {
       cartCount.hidden = true;
@@ -3033,7 +3099,7 @@ function renderCart(){
     cartTitle.textContent = t("cart");
     cartTotal.textContent = money(total);
 
-    let itemsHTML = cart.map((i) => {
+    let itemsHTML = visibleCart.map((i) => {
       const pricing = getCartItemPricing(i);
       const hasItemDiscount = pricing.discountTotal > 0 && pricing.discountedUnit < pricing.originalUnit;
       const discountedUnitRounded = Math.round(pricing.discountedUnit);
@@ -3130,7 +3196,7 @@ heroCart.onclick = openCart;
 cartClose.onclick = closeCart;
 cartOverlay.onclick = closeCart;
 clearCart.onclick = clearAll;
-checkoutBtn.onclick = () => { if(cart.length) { showView("form"); if(document.querySelector('input[name="method"]:checked')?.value === "Доставка") initDeliveryMap(); } };
+checkoutBtn.onclick = () => { if(cart.length) { showView("form"); initDeliveryMap(); } };
 ckNewOrder.onclick = () => { closeCart(); };
 
 document.querySelectorAll('input[name="method"]').forEach(r =>
@@ -3140,10 +3206,14 @@ document.querySelectorAll('input[name="method"]').forEach(r =>
     const isDelivery = r.value === "Доставка" && r.checked;
     addressWrap?.classList.toggle("hidden", !isDelivery);
     if(isDelivery){
-      ckAddress.setAttribute("required", "required");
+      ckAddress.removeAttribute("required");
+      document.getElementById("ckStreet")?.setAttribute("required","required");
+      document.getElementById("ckHouse")?.setAttribute("required","required");
       initDeliveryMap();
     } else {
       ckAddress.removeAttribute("required");
+      document.getElementById("ckStreet")?.removeAttribute("required");
+      document.getElementById("ckHouse")?.removeAttribute("required");
       resetDeliveryAddressState();
     }
     document.getElementById("pickupNotice").classList.toggle("hidden", isDelivery);
@@ -3270,17 +3340,9 @@ function updateMainButton(){
   if(!TG?.MainButton) return;
   
   const subtotal = cart.reduce((s,i) => s + i.priceNum * i.qty, 0);
-  const method = document.querySelector('input[name="method"]:checked')?.value || "Доставка";
-  let deliveryFee = 0;
-  if (method === "Доставка") {
-      deliveryFee = deliveryBaseFee(subtotal, method);
-  }
-  
   const autoQuote = automaticPromoQuote();
-  const promoVal = IS_TELEGRAM_USER && promoState.valid ? promoState.code : "";
   const promoDiscount = IS_TELEGRAM_USER && promoState.valid ? Math.max(0, Number(promoState.discount || 0)) : autoQuote.discount;
-  if(!promoState.valid) deliveryFee = autoQuote.deliveryFee;
-  const total = Math.max(0, subtotal + deliveryFee - promoDiscount);
+  const cartTotal = Math.max(0, subtotal - promoDiscount);
 
   if(!cart.length || checkoutStep === "success"){
     TG.MainButton.hide();
@@ -3292,9 +3354,9 @@ function updateMainButton(){
   } else if(isCartOpen && checkoutStep === "review"){
     TG.MainButton.setText(t("submitOrder"));
   } else if(isCartOpen && checkoutStep === "items"){
-    TG.MainButton.setText(`${t("checkout")} · ${money(total)}`);
+    TG.MainButton.setText(`${t("checkout")} · ${money(cartTotal)}`);
   } else {
-    TG.MainButton.setText(`${t("cart")} · ${money(total)}`);
+    TG.MainButton.setText(`${t("cart")} · ${money(cartTotal)}`);
   }
   
   TG.MainButton.show();
@@ -3322,7 +3384,7 @@ if(TG?.BackButton){
 
 function markInvalid(el){ el?.classList?.add("invalid"); }
 function clearInvalid(){ 
-  [ckName, ckPhone, document.getElementById("ckDate"), document.getElementById("ckAddress")].forEach(el => el?.classList?.remove("invalid")); 
+  [ckName, ckPhone, document.getElementById("ckDate"), document.getElementById("ckAddress"), document.getElementById("ckStreet"), document.getElementById("ckHouse"), document.getElementById("ckApartment"), document.getElementById("ckFloor")].forEach(el => el?.classList?.remove("invalid")); 
 }
 
 function validateOrder(){
@@ -3332,16 +3394,20 @@ function validateOrder(){
   const phone = ckPhone.value.trim();
   const dateVal = document.getElementById("ckDate").value.trim();
   const addr = document.getElementById("ckAddress").value.trim();
+  const street = document.getElementById("ckStreet")?.value.trim() || "";
+  const house = document.getElementById("ckHouse")?.value.trim() || "";
+  const district = document.getElementById("ckDistrict")?.value.trim() || "";
   const method = document.querySelector('input[name="method"]:checked')?.value;
 
   const isPrivateHouse = document.getElementById("privateHouse")?.checked || false;
   const apartment = document.getElementById("ckApartment")?.value.trim() || "";
   const floor = document.getElementById("ckFloor")?.value.trim() || "";
-  if(!name || !phone || !dateVal || (method === "Доставка" && !addr)){
+  if(!name || !phone || !dateVal || (method === "Доставка" && (!street || !house))){
     if(!name) markInvalid(ckName);
     if(!phone) markInvalid(ckPhone);
     if(!dateVal) markInvalid(document.getElementById("ckDate"));
-    if(method === "Доставка" && !addr) markInvalid(document.getElementById("ckAddress"));
+    if(method === "Доставка" && !street) markInvalid(document.getElementById("ckStreet"));
+    if(method === "Доставка" && !house) markInvalid(document.getElementById("ckHouse"));
     return t("requiredFields");
   }
   if(method === "Доставка" && !Number.isFinite(deliveryDistanceKm)){
@@ -3389,7 +3455,11 @@ function buildOrderReview(){
   const phone = ckPhone.value.trim();
   const date = document.getElementById("ckDate").value.trim();
   const comment = document.getElementById("ckComment").value.trim();
-  const baseAddress = document.getElementById("ckAddress")?.dataset.baseAddress || document.getElementById("ckAddress")?.value.trim() || "";
+  const searchAddress = document.getElementById("ckAddress")?.value.trim() || "";
+  const street = document.getElementById("ckStreet")?.value.trim() || "";
+  const house = document.getElementById("ckHouse")?.value.trim() || "";
+  const district = document.getElementById("ckDistrict")?.value.trim() || "";
+  const baseAddress = [house, street, district].filter(Boolean).join(", ") || searchAddress;
   const isPrivateHouse = document.getElementById("privateHouse")?.checked || false;
   const apartment = document.getElementById("ckApartment")?.value.trim() || "";
   const floor = document.getElementById("ckFloor")?.value.trim() || "";
@@ -3462,7 +3532,10 @@ async function performSubmit(){
   const total = Math.max(0, subtotal + deliveryFee - promoDiscount);
 
   const addressInput = document.getElementById("ckAddress");
-  const baseAddress = addressInput?.dataset.baseAddress || addressInput?.value.trim() || "";
+  const street = document.getElementById("ckStreet")?.value.trim() || "";
+  const house = document.getElementById("ckHouse")?.value.trim() || "";
+  const district = document.getElementById("ckDistrict")?.value.trim() || "";
+  const baseAddress = [house, street, district].filter(Boolean).join(", ") || addressInput?.value.trim() || "";
   const isPrivateHouse = document.getElementById("privateHouse")?.checked || false;
   const apartment = document.getElementById("ckApartment")?.value.trim() || "";
   const floor = document.getElementById("ckFloor")?.value.trim() || "";
@@ -3535,7 +3608,7 @@ async function performSubmit(){
 cartViewForm.addEventListener("submit", (e) => { e.preventDefault(); if (!validateOrder()) buildOrderReview(); });
 reviewBackBtn?.addEventListener("click", () => showView("form"));
 reviewSubmitBtn?.addEventListener("click", performSubmit);
-[ckName, ckPhone, document.getElementById("ckDate"), document.getElementById("ckAddress")].forEach(el =>
+[ckName, ckPhone, document.getElementById("ckDate"), document.getElementById("ckAddress"), document.getElementById("ckStreet"), document.getElementById("ckHouse"), document.getElementById("ckDistrict")].forEach(el =>
   el?.addEventListener("input", () => el.classList.remove("invalid"))
 );
 
@@ -3552,7 +3625,7 @@ document.getElementById("privateHouse")?.addEventListener("change", () => {
 applyLanguage();
 loadCatalog();
 renderCart();
-if(document.querySelector('input[name="method"]:checked')?.value === "Доставка") initDeliveryMap();
+
 </script>
 </body>
 </html>
