@@ -11,6 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
 <style>
 :root{
   color-scheme: light;
@@ -1195,7 +1196,7 @@ body.dark-theme .topbar {
   left:50%;
   bottom:calc(92px + env(safe-area-inset-bottom));
   transform:translate(-50%,18px);
-  z-index:40;
+  z-index:49;
   min-width:min(340px,calc(100% - 32px));
   border-radius:16px;
   background:var(--toast-bg);
@@ -1269,34 +1270,236 @@ body.dark-theme .topbar {
 }
 
 /* =====================================================
-   DELIVERY ADDRESS
+   DELIVERY ADDRESS / OPENSTREETMAP GEOCODING
 ===================================================== */
-.address-card{
-  margin-top:10px;
-  padding:18px;
-  border:1px solid var(--tg-line);
-  border-radius:22px;
-  background:var(--tg-card);
-  box-shadow:0 8px 24px rgba(15,23,42,.06);
+.delivery-address-wrap > label{
+  display:block;
+  margin-bottom:10px;
 }
-.address-card-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:16px;}
-.address-card-head strong{display:block;font-size:15px;line-height:1.3;font-weight:800;}
-.address-card-head span{display:block;margin-top:5px;color:var(--tg-muted);font-size:12px;line-height:1.5;font-weight:500;}
-.address-fields{display:grid;grid-template-columns:minmax(0,1fr) 120px;gap:12px;}
-.address-field label{display:block;margin:0 0 7px;font-size:12px;font-weight:700;color:var(--tg-muted);}
-.address-field input{width:100%;height:46px;margin:0!important;border:1px solid var(--tg-line);background:var(--tg-soft);border-radius:13px;padding:0 13px;outline:none;color:var(--tg-text);transition:border-color .2s,box-shadow .2s,background .2s;}
-.address-field input:focus{border-color:var(--accent);background:var(--tg-card);box-shadow:0 0 0 3px rgba(176,42,92,.10);}
-.delivery-calc-btn{width:100%;margin-top:14px;height:48px;padding:0 16px;border-radius:14px;}
-.delivery-calc-btn:disabled{opacity:.65;cursor:wait;transform:none!important;}
-.delivery-calc-btn:focus-visible{outline:3px solid rgba(176,42,92,.18);outline-offset:2px;}
-.address-card .address-map-status{margin-top:10px;padding:10px 12px;border-radius:12px;background:var(--tg-soft);font-size:12px;line-height:1.45;color:var(--tg-muted);}
-.address-card .delivery-distance{margin-top:10px;padding:12px 13px;border:1px solid color-mix(in srgb,var(--accent) 18%,var(--tg-line));border-radius:13px;background:color-mix(in srgb,var(--accent) 5%,var(--tg-card));color:var(--accent);font-size:13px;font-weight:800;}
-.check-row{display:flex!important;align-items:center;gap:9px;margin:14px 0 0!important;font-weight:700;cursor:pointer;}
-.check-row input{width:18px!important;height:18px;margin:0!important;accent-color:var(--accent);}
-.apartment-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;}
-.apartment-fields label{display:block;margin:0 0 7px;font-size:12px;font-weight:700;color:var(--tg-muted);}
-.apartment-fields input{width:100%;height:46px;margin:0!important;}
-@media(max-width:520px){.address-fields{grid-template-columns:1fr 100px}.apartment-fields{grid-template-columns:1fr 1fr}}
+.address-map-card{
+  margin-top:0;
+  padding:0;
+  border:1px solid var(--tg-line);
+  border-radius:20px;
+  background:var(--tg-card);
+  overflow:hidden;
+  box-shadow:0 4px 18px rgba(15,23,42,.05);
+}
+.address-card-head{
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+  padding:16px 16px 12px;
+  background:linear-gradient(180deg, color-mix(in srgb, var(--accent) 8%, var(--tg-card)), var(--tg-card));
+  border-bottom:1px solid var(--tg-line);
+}
+.address-card-icon{
+  width:42px;
+  height:42px;
+  min-width:42px;
+  border-radius:14px;
+  display:grid;
+  place-items:center;
+  background:rgba(176,42,92,.12);
+  color:var(--accent);
+  font-size:20px;
+}
+.address-card-head-text strong{
+  display:block;
+  font-size:15px;
+  font-weight:800;
+  letter-spacing:-.02em;
+  color:var(--tg-text);
+}
+.address-card-head-text span{
+  display:block;
+  margin-top:3px;
+  font-size:12px;
+  line-height:1.45;
+  color:var(--tg-muted);
+  font-weight:500;
+}
+.address-card-body{
+  padding:14px 16px 16px;
+  display:grid;
+  gap:14px;
+}
+.address-search-row{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:8px;
+  align-items:stretch;
+}
+.address-search-row input{
+  margin:0!important;
+  height:48px;
+  font-size:15px;
+  font-weight:600;
+}
+.address-search-btn{
+  min-width:96px;
+  height:48px;
+  padding:0 14px;
+  border:0;
+  border-radius:14px;
+  background:var(--tg-soft);
+  color:var(--tg-text);
+  font-size:13px;
+  font-weight:800;
+  transition:.18s;
+  cursor:pointer;
+}
+.address-search-btn:hover{
+  background:var(--tg-line);
+}
+.address-required-grid{
+  display:grid;
+  grid-template-columns:minmax(0,2fr) minmax(100px,1fr);
+  gap:10px;
+}
+.address-required-grid > div,
+.address-details > div > div{
+  min-width:0;
+}
+.address-field label,
+.address-details label{
+  display:block;
+  margin-bottom:6px;
+  font-size:12px;
+  font-weight:700;
+  color:var(--tg-muted);
+  letter-spacing:.02em;
+}
+.address-field input,
+.address-details input{
+  width:100%;
+  box-sizing:border-box;
+  height:46px;
+  font-size:15px;
+  font-weight:600;
+}
+.address-map-status{
+  display:flex;
+  align-items:flex-start;
+  gap:8px;
+  margin:0;
+  padding:10px 12px;
+  border-radius:12px;
+  background:var(--tg-soft);
+  font-size:13px;
+  line-height:1.45;
+  color:var(--tg-muted);
+  font-weight:600;
+}
+.address-map-status.error{
+  background:rgba(239,68,68,.08);
+  color:var(--danger);
+}
+.address-map-status.ok{
+  background:rgba(16,185,129,.1);
+  color:var(--success);
+}
+.address-map-status .status-icon{
+  flex-shrink:0;
+  width:18px;
+  text-align:center;
+  font-size:14px;
+  line-height:1.3;
+}
+.check-row{
+  display:flex!important;
+  align-items:center;
+  gap:10px;
+  margin:0!important;
+  padding:12px 14px;
+  border-radius:14px;
+  background:var(--tg-soft);
+  border:1px solid var(--tg-line);
+  font-weight:700;
+  font-size:14px;
+  color:var(--tg-text);
+  cursor:pointer;
+  transition:border-color .15s, background .15s;
+}
+.check-row:hover{
+  border-color:color-mix(in srgb, var(--accent) 35%, var(--tg-line));
+}
+.check-row input{
+  width:20px!important;
+  height:20px;
+  margin:0!important;
+  accent-color:var(--accent);
+  flex-shrink:0;
+}
+.apartment-fields{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.apartment-fields label{margin-top:0!important}
+.apartment-fields.hidden{display:none!important}
+.delivery-distance{
+  margin:0;
+  padding:14px;
+  border-radius:16px;
+  background:linear-gradient(135deg, rgba(176,42,92,.1), rgba(176,42,92,.04));
+  border:1px solid color-mix(in srgb, var(--accent) 28%, var(--tg-line));
+  color:var(--accent);
+  font-size:14px;
+  font-weight:800;
+  display:none;
+  line-height:1.4;
+}
+.delivery-distance.show{display:block}
+.delivery-distance .dd-label{
+  display:block;
+  font-size:11px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  color:var(--tg-muted);
+  margin-bottom:4px;
+}
+.delivery-distance .dd-value{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:baseline;
+  gap:8px 14px;
+  color:var(--tg-text);
+}
+.delivery-distance .dd-price{
+  color:var(--accent);
+  font-size:18px;
+}
+#calculateDeliveryBtn{
+  width:100%;
+  margin-top:0;
+  min-height:50px;
+  font-size:15px;
+  border-radius:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+#calculateDeliveryBtn:disabled{
+  opacity:.7;
+  cursor:wait;
+}
+.address-hint-tiny{
+  font-size:12px;
+  color:var(--tg-muted);
+  font-weight:500;
+  line-height:1.4;
+  margin:0;
+}
+@media(max-width:520px){
+  .address-search-row{grid-template-columns:1fr}
+  .address-search-btn{height:48px;width:100%}
+  .address-required-grid{grid-template-columns:1fr 100px}
+  .apartment-fields{grid-template-columns:1fr 1fr}
+}
+
 
 @media(max-width:850px){
   .hero-grid{
@@ -1376,21 +1579,6 @@ body.dark-theme .topbar {
 .review-actions{display:flex;gap:10px;flex-direction:column;}
 .review-back{width:100%;}
 
-.address-card{
-  background:var(--tg-card);border:1px solid var(--tg-line);border-radius:18px;padding:16px;box-shadow:0 6px 18px rgba(15,23,42,.05);
-}
-.address-card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
-.address-card-head strong{display:block;font-size:15px;line-height:1.3}
-.address-card-head span{display:block;margin-top:4px;color:var(--tg-muted);font-size:12px;line-height:1.45}
-.address-fields{display:grid;grid-template-columns:1fr 110px;gap:10px}
-.address-field label{display:block;font-size:11px;font-weight:700;color:var(--tg-muted);margin:0 0 6px}
-.address-field input{width:100%;height:46px;border:1px solid var(--tg-line);background:var(--tg-soft);border-radius:12px;padding:0 13px;color:var(--tg-text);outline:none}
-.address-field input:focus{border-color:var(--accent);background:var(--tg-card);box-shadow:0 0 0 3px rgba(176,42,92,.10)}
-.delivery-calc-btn{width:100%;margin-top:12px;height:46px;padding:0 16px}
-.address-card .address-map-status{margin-top:10px;padding:10px 12px;border-radius:12px;background:var(--tg-soft);font-size:12px;line-height:1.45}
-.address-card .delivery-distance{margin-top:10px}
-#toast{z-index:50.5 !important;cursor:pointer}
-@media (max-width:520px){.address-fields{grid-template-columns:1fr 96px}}
 </style>
 </head>
 
@@ -1651,42 +1839,52 @@ body.dark-theme .topbar {
 
       <div id="ckAddressWrap" class="delivery-address-wrap">
         <label data-i18n="addressLabel">Адрес доставки*</label>
-        <div class="address-card">
+        <div class="address-map-card" role="group" aria-labelledby="addressCardTitle">
           <div class="address-card-head">
-            <div>
-              <strong data-i18n="addressTitle">Укажите адрес доставки</strong>
-              <span data-i18n="addressHint">Введите улицу и номер дома — стоимость доставки рассчитается автоматически.</span>
+            <div class="address-card-icon" aria-hidden="true">📍</div>
+            <div class="address-card-head-text">
+              <strong id="addressCardTitle" data-i18n="addressCardTitle">Куда доставить?</strong>
+              <span data-i18n="addressCardSubtitle">Укажите улицу и дом в Екатеринбурге — мы рассчитаем доставку по расстоянию</span>
             </div>
           </div>
-          <div class="address-fields">
-            <div class="address-field address-field-street">
-              <label for="ckStreet" data-i18n="streetLabel">Улица*</label>
-              <input id="ckStreet" name="street" required autocomplete="street-address" data-i18n-placeholder="streetPlaceholder" placeholder="Например, Бебеля">
+          <div class="address-card-body">
+            <div class="address-search-row">
+              <input id="ckAddressQuery" type="search" enterkeyhint="search" autocomplete="street-address" data-i18n-placeholder="addressQueryPlaceholder" placeholder="Например: Бебеля 130" aria-label="Быстрый поиск адреса">
+              <button type="button" class="address-search-btn" id="addressSearchBtn" data-i18n="addressSearch">Найти</button>
             </div>
-            <div class="address-field address-field-house">
-              <label for="ckHouse" data-i18n="houseLabel">Дом*</label>
-              <input id="ckHouse" name="house" required autocomplete="address-line2" data-i18n-placeholder="housePlaceholder" placeholder="130">
+            <p class="address-hint-tiny" data-i18n="addressQueryHint">Можно ввести улицу и дом одной строкой или заполнить поля ниже.</p>
+            <div class="address-required-grid">
+              <div class="address-field">
+                <label for="ckStreet" data-i18n="streetLabel">Улица*</label>
+                <input id="ckStreet" name="street" required autocomplete="address-line1" data-i18n-placeholder="streetPlaceholder" placeholder="Улица">
+              </div>
+              <div class="address-field">
+                <label for="ckHouse" data-i18n="houseLabel">Дом*</label>
+                <input id="ckHouse" name="house" required autocomplete="address-line2" data-i18n-placeholder="housePlaceholder" placeholder="№ дома">
+              </div>
             </div>
-          </div>
-          <button type="button" class="primary delivery-calc-btn" id="calculateDeliveryBtn" data-i18n="calculateDelivery">Рассчитать стоимость доставки</button>
-          <div class="address-map-status" id="addressMapStatus" data-i18n="addressHint">Стоимость будет рассчитана после нажатия кнопки.</div>
-          <div class="delivery-distance" id="deliveryDistanceInfo"></div>
-          <label class="check-row">
-            <input type="checkbox" id="privateHouse">
-            <span data-i18n="privateHouse">Это частный дом</span>
-          </label>
-          <div id="apartmentFields" class="apartment-fields">
-            <div>
-              <label for="ckApartment" data-i18n="apartmentLabel">Квартира*</label>
-              <input id="ckApartment" name="apartment" inputmode="numeric" data-i18n-placeholder="apartmentPlaceholder" placeholder="№ квартиры">
+            <label class="check-row" for="privateHouse">
+              <input type="checkbox" id="privateHouse">
+              <span data-i18n="privateHouse">Это частный дом</span>
+            </label>
+            <div id="apartmentFields" class="apartment-fields">
+              <div class="address-field">
+                <label for="ckApartment" data-i18n="apartmentLabel">Квартира*</label>
+                <input id="ckApartment" name="apartment" inputmode="numeric" data-i18n-placeholder="apartmentPlaceholder" placeholder="№ квартиры">
+              </div>
+              <div class="address-field">
+                <label for="ckFloor" data-i18n="floorLabel">Этаж*</label>
+                <input id="ckFloor" name="floor" inputmode="numeric" data-i18n-placeholder="floorPlaceholder" placeholder="Этаж">
+              </div>
             </div>
-            <div>
-              <label for="ckFloor" data-i18n="floorLabel">Этаж*</label>
-              <input id="ckFloor" name="floor" inputmode="numeric" data-i18n-placeholder="floorPlaceholder" placeholder="Этаж">
+            <button type="button" class="primary" id="calculateDeliveryBtn" data-i18n="calculateDelivery">Рассчитать стоимость доставки</button>
+            <div class="address-map-status" id="addressMapStatus" role="status" aria-live="polite">
+              <span class="status-icon" aria-hidden="true">ℹ️</span>
+              <span class="status-text" data-i18n="addressMapHint">Введите улицу и дом, затем нажмите «Рассчитать стоимость доставки».</span>
             </div>
+            <div class="delivery-distance" id="deliveryDistanceInfo" role="status" aria-live="polite"></div>
           </div>
         </div>
-      </div>
       </div>
       
       <div id="pickupNotice" class="hint hidden" data-i18n="pickupNotice" style="color: var(--tg-blue); font-weight: 700;">
@@ -1841,30 +2039,33 @@ const I18N = {
     pickup: "Самовывоз",
     delivery: "Доставка",
     addressLabel: "Адрес доставки*",
-     addressTitle: "Укажите адрес доставки",
-     addressHint: "Введите улицу и номер дома — стоимость доставки рассчитается автоматически.",
-     calculateDelivery: "Рассчитать стоимость доставки",
-    addressPlaceholder: "Начните вводить адрес",
+    addressPlaceholder: "Адрес для поиска (необязательно)",
     addressSearch: "Найти",
     calculateDelivery: "Рассчитать стоимость доставки",
+    calculatingDelivery: "Считаем…",
     streetLabel: "Улица*",
     streetPlaceholder: "Название улицы",
     houseLabel: "Дом*",
     housePlaceholder: "Номер дома",
-    districtLabel: "Район",
-    districtPlaceholder: "Район (если найден)",
-    addressMapHint: "Нажмите на карту и поставьте метку на нужный дом. Улица и дом заполнятся автоматически.",
+    addressMapHint: "Введите улицу и дом, затем нажмите «Рассчитать стоимость доставки».",
+    addressMapRequired: "Сначала рассчитайте стоимость доставки по адресу",
+    addressCardTitle: "Куда доставить?",
+    addressCardSubtitle: "Укажите улицу и дом в Екатеринбурге — мы рассчитаем доставку по расстоянию",
+    addressQueryPlaceholder: "Например: Бебеля 130",
+    addressQueryHint: "Можно ввести улицу и дом одной строкой или заполнить поля ниже.",
     privateHouse: "Это частный дом",
     apartmentLabel: "Квартира*",
     apartmentPlaceholder: "№ квартиры",
     floorLabel: "Этаж*",
     floorPlaceholder: "Этаж",
     deliveryDistance: "Расстояние: {distance} км · доставка: {price}",
-    deliveryMapLoading: "Рассчитываем стоимость доставки…",
-    deliveryMapError: "Не удалось определить адрес или рассчитать доставку. Проверьте улицу и номер дома.",
-    deliveryAddressSelected: "Адрес найден. Стоимость доставки рассчитана.",
-    addressMapRequired: "Введите улицу и дом, затем рассчитайте стоимость доставки",
+    deliveryDistanceLabel: "Стоимость доставки",
     apartmentRequired: "Укажите квартиру и этаж",
+    addressLooking: "Ищем адрес в Екатеринбурге…",
+    addressFoundCalc: "Адрес найден. Рассчитываем расстояние…",
+    addressFoundOk: "Адрес найден, стоимость доставки рассчитана.",
+    addressNotFound: "Не удалось найти этот адрес в Екатеринбурге. Проверьте улицу и номер дома.",
+    addressNeedStreetHouse: "Укажите улицу и номер дома.",
     pickupNotice: "Адрес для получения заказа мы сообщим вам при подтверждении.",
     dateLabel: "Желаемая дата",
     dateHint: "Заказы принимаются минимум за 48 часов.",
@@ -1967,24 +2168,33 @@ const I18N = {
     pickup: "Pickup",
     delivery: "Delivery",
     addressLabel: "Delivery address*",
-     addressTitle: "Enter delivery address",
-     addressHint: "Enter the street and house number — delivery cost will be calculated automatically.",
-     calculateDelivery: "Calculate delivery cost",
     addressPlaceholder: "Start typing an address",
     addressSearch: "Find",
     calculateDelivery: "Calculate delivery cost",
-    addressMapHint: "Enter an address and click Find. The distance will be calculated automatically.",
+    calculatingDelivery: "Calculating…",
+    streetLabel: "Street*",
+    streetPlaceholder: "Street name",
+    houseLabel: "Building*",
+    housePlaceholder: "House number",
+    addressMapHint: "Enter street and building, then tap Calculate delivery cost.",
+    addressMapRequired: "Please calculate delivery cost for the address first",
+    addressCardTitle: "Where to deliver?",
+    addressCardSubtitle: "Enter street and building in Yekaterinburg — we calculate delivery by distance",
+    addressQueryPlaceholder: "E.g. Bebelya 130",
+    addressQueryHint: "Type street and house in one line, or fill the fields below.",
     privateHouse: "This is a private house",
     apartmentLabel: "Apartment*",
     apartmentPlaceholder: "Apartment number",
     floorLabel: "Floor*",
     floorPlaceholder: "Floor",
     deliveryDistance: "Distance: {distance} km · delivery: {price}",
-    deliveryMapLoading: "Finding address…",
-    deliveryMapError: "Could not determine an address for this point. Choose a building in Yekaterinburg.",
-    deliveryAddressSelected: "Address selected. Delivery price calculated automatically.",
-    addressMapRequired: "Calculate the delivery cost",
+    deliveryDistanceLabel: "Delivery cost",
     apartmentRequired: "Enter apartment and floor",
+    addressLooking: "Looking up the address in Yekaterinburg…",
+    addressFoundCalc: "Address found. Calculating distance…",
+    addressFoundOk: "Address found, delivery cost calculated.",
+    addressNotFound: "Could not find this address in Yekaterinburg. Check the street and house number.",
+    addressNeedStreetHouse: "Please enter street and house number.",
     pickupNotice: "We will inform you of the pickup address upon order confirmation.",
     dateLabel: "Preferred date",
     dateHint: "Orders are accepted at least 48 hours in advance.",
@@ -2256,276 +2466,739 @@ function productPromoPrice(product){
 const DELIVERY_HOME = [56.854232, 60.555415]; // Екатеринбург, ул. Бебеля, 130
 const PHOTON_URL = "https://photon.komoot.io/api/";
 const NOMINATIM_URL = "https://nominatim.openstreetmap.org/search";
-const OSRM_URL = "https://router.project-osrm.org/route/v1/driving";
+const OSRM_URL = "https://router.project-osrm.org/route/v1/driving/";
 let deliveryDistanceKm = null;
 let deliveryCoords = null;
 let geocodeInFlight = false;
 
 function deliveryPriceByDistance(distanceKm){
   const d = Number(distanceKm);
-  if(!Number.isFinite(d) || d <= 1) return 200;
+  if(!Number.isFinite(d)) return 0;
+  if(d <= 1) return 200;
   if(d <= 3) return 300;
   if(d <= 5) return 400;
   return 500;
 }
 
-function setAddressMapStatus(text,error=false){
-  const el=document.getElementById("addressMapStatus");
-  if(el){el.textContent=text;el.style.color=error?"var(--danger)":"var(--tg-muted)";}
+function setAddressMapStatus(text, error=false, ok=false){
+  const el = document.getElementById("addressMapStatus");
+  if(!el) return;
+  const textEl = el.querySelector(".status-text") || el;
+  const iconEl = el.querySelector(".status-icon");
+  textEl.textContent = text;
+  el.classList.toggle("error", !!error);
+  el.classList.toggle("ok", !!ok && !error);
+  if(iconEl){
+    iconEl.textContent = error ? "⚠️" : (ok ? "✅" : "ℹ️");
+  }
 }
 
 function updateDeliveryDistanceUI(){
-  const el=document.getElementById("deliveryDistanceInfo");
-  if(!el)return;
-  if(!Number.isFinite(deliveryDistanceKm)){el.style.display="none";return;}
-  el.textContent=t("deliveryDistance")
-    .replace("{distance}",deliveryDistanceKm.toFixed(1))
-    .replace("{price}",money(deliveryPriceByDistance(deliveryDistanceKm)));
-  el.style.display="block";
+  const el = document.getElementById("deliveryDistanceInfo");
+  if(!el) return;
+  if(!Number.isFinite(deliveryDistanceKm)){
+    el.classList.remove("show");
+    el.style.display = "none";
+    el.innerHTML = "";
+    return;
+  }
+  const price = deliveryPriceByDistance(deliveryDistanceKm);
+  const distStr = deliveryDistanceKm.toFixed(1);
+  el.innerHTML = `<span class="dd-label">${t("deliveryDistanceLabel")}</span><span class="dd-value"><span>${distStr} км</span><span class="dd-price">${money(price)}</span></span>`;
+  el.classList.add("show");
+  el.style.display = "block";
+}
+
+function haversineKm(a,b){
+  const toRad=x=>x*Math.PI/180, R=6371;
+  const dLat=toRad(b[0]-a[0]), dLon=toRad(b[1]-a[1]);
+  const lat1=toRad(a[0]), lat2=toRad(b[0]);
+  const h=Math.sin(dLat/2)**2+Math.cos(lat1)*Math.cos(lat2)*Math.sin(dLon/2)**2;
+  return 2*R*Math.asin(Math.min(1,Math.sqrt(h)));
+}
+
+function parseAddressParts(result, fallback){
+  const p=result?.properties || result?.address || {};
+  const street=String(p.street || p.road || "").trim();
+  const house=String(p.housenumber || p.house_number || "").trim();
+  return {street,house,fallback:String(fallback||"").trim()};
 }
 
 function fillAddressFields(parts){
-  const s=document.getElementById("ckStreet"),h=document.getElementById("ckHouse");
-  if(s&&parts.street)s.value=parts.street;
-  if(h&&parts.house)h.value=parts.house;
-  [s,h].forEach(el=>el?.classList.remove("invalid"));
+  const streetEl=document.getElementById("ckStreet"), houseEl=document.getElementById("ckHouse");
+  if(streetEl && parts?.street) streetEl.value=parts.street;
+  if(houseEl && parts?.house) houseEl.value=parts.house;
+  [streetEl,houseEl].forEach(el=>el?.classList?.remove("invalid"));
 }
 
-function normalizeStreet(value){
+function resultIsYekaterinburg(result){
+  const p=result?.properties || result?.address || {};
+  const text=JSON.stringify(p).toLowerCase();
+  return text.includes("екатеринбург") || text.includes("yekaterinburg");
+}
+
+function normalizeStreetName(value){
   return String(value||"")
-    .replace(/^\s*(ул\.?|улица|пр\.?|проспект|пер\.?|переулок|бул\.?|бульвар|ш\.?|шоссе|наб\.?|набережная)\s+/i,"")
-    .replace(/\s+/g," ")
+    .replace(/\b(ул\.?|улица|просп\.?|проспект|пер\.?|переулок|бул\.?|бульвар|ш\.?|шоссе|наб\.?|набережная|пл\.?|площадь|проезд|аллея|тупик)\b/giu, " ")
+    .replace(/[.,]/g, " ")
+    .replace(/\s+/g, " ")
     .trim();
 }
 
-function looksLikeYekaterinburg(value){
-  return /екатеринбург/i.test(String(value||""));
+function sameStreet(a,b){
+  const x=normalizeStreetName(a).toLowerCase();
+  const y=normalizeStreetName(b).toLowerCase();
+  return !!x && !!y && (x===y || x.includes(y) || y.includes(x));
 }
 
-function photonCandidateParts(feature){
-  const p=feature?.properties||{};
-  return {
-    street:String(p.street||"").trim(),
-    house:String(p.housenumber||p.house_number||"").trim(),
-    city:String(p.city||p.locality||p.district||p.county||"").trim(),
-    display:String(feature?.properties?.name||"").trim()
-  };
+function isYekaterinburgResult(result){
+  const p=result?.properties || result?.address || {};
+  const text=JSON.stringify(p).toLowerCase();
+  const display=String(result?.display_name || p?.name || "").toLowerCase();
+  return /екатеринбург|yekaterinburg/.test(text+" "+display);
 }
 
-function scorePhotonFeature(feature,index,street,house){
-  const p=photonCandidateParts(feature);
-  const hay=[p.street,p.house,p.city,feature?.properties?.state,feature?.properties?.name].join(" ").toLowerCase();
-  let score=0;
-  if(looksLikeYekaterinburg(hay)) score+=10000;
-  if(p.street) score+=1000;
-  if(p.house) score+=2000;
-  if(p.street && normalizeStreet(p.street).toLowerCase()===normalizeStreet(street).toLowerCase()) score+=3000;
-  if(String(p.house)===String(house)) score+=4000;
-  if(feature?.properties?.countrycode && String(feature.properties.countrycode).toLowerCase()==="ru") score+=100;
-  score-=index*0.01;
-  return score;
+function resultHasHouse(result,house){
+  const p=result?.properties || result?.address || {};
+  const h=String(p.housenumber || p.house_number || "").trim().toLowerCase();
+  return h===String(house).trim().toLowerCase();
 }
 
-function nominatimParts(item){
-  const a=item?.address||{};
-  return {
-    street:String(a.road||a.pedestrian||a.street||"").trim(),
-    house:String(a.house_number||"").trim(),
-    city:String(a.city||a.town||a.municipality||a.village||"").trim()
-  };
+function pickGeocodeResult(results,street,house){
+  const list=Array.isArray(results)?results:[];
+  const scored=list.map((item,index)=>{
+    const p=item?.properties || item?.address || {};
+    const resultStreet=p.street || p.road || "";
+    let score=0;
+    if(isYekaterinburgResult(item)) score+=1000;
+    if(resultHasHouse(item,house)) score+=500;
+    if(sameStreet(resultStreet,street)) score+=300;
+    if(p.city || p.town || p.municipality) score+=20;
+    if(String(item?.type||"").toLowerCase()==="house") score+=50;
+    score-=index*0.01;
+    return {item,score};
+  }).sort((a,b)=>b.score-a.score);
+  const best=scored[0]?.item;
+  if(!best || !isYekaterinburgResult(best)) return null;
+  const p=best.properties || best.address || {};
+  if(!resultHasHouse(best,house) && !sameStreet(p.street||p.road||"",street)) return null;
+  return best;
 }
 
-function scoreNominatim(item,index,street,house){
-  const p=nominatimParts(item);
-  const hay=[p.street,p.house,p.city,item?.display_name,item?.type].join(" ").toLowerCase();
-  let score=0;
-  if(looksLikeYekaterinburg(hay)) score+=10000;
-  if(p.street) score+=1000;
-  if(p.house) score+=2000;
-  if(p.street && normalizeStreet(p.street).toLowerCase()===normalizeStreet(street).toLowerCase()) score+=3000;
-  if(String(p.house)===String(house)) score+=4000;
-  if(item?.type==="house"||item?.type==="building") score+=500;
-  score-=index*0.01;
-  return score;
-}
-
-async function fetchJson(url,options={}){
-  const r=await fetch(url,{...options,headers:{Accept:"application/json",...(options.headers||{})}});
-  if(!r.ok)throw new Error(`HTTP ${r.status}`);
-  return await r.json();
-}
-
-async function fetchPhoton(street,house){
-  const streetName=normalizeStreet(street);
-  const queries=[
-    `${streetName} ${house}, Екатеринбург`,
-    `${streetName}, ${house}, Екатеринбург`,
-    `${streetName} ${house}, Yekaterinburg`
+async function photonSearch(street,house){
+  const cleanStreet=normalizeStreetName(street);
+  const attempts=[
+    {city:"Екатеринбург",street:cleanStreet,housenumber:String(house),countrycode:"RU",limit:"10",lang:"ru"},
+    {q:`${street}, ${house}, Екатеринбург, Россия`,limit:"10",lang:"ru"}
   ];
-  const all=[];
-  for(const q of queries){
-    try{
-      const params=new URLSearchParams({q,lang:"ru",limit:"10",lat:String(DELIVERY_HOME[0]),lon:String(DELIVERY_HOME[1])});
-      const data=await fetchJson(`${PHOTON_URL}?${params.toString()}`);
-      if(Array.isArray(data?.features)) all.push(...data.features);
-      if(all.length>=10) break;
-    }catch(e){}
+  for(const obj of attempts){
+    const endpoint=obj.street ? "structured" : "api";
+    const params=new URLSearchParams(obj);
+    const r=await fetch(`${PHOTON_URL}${endpoint}?${params}`,{headers:{Accept:"application/json"}});
+    if(!r.ok) continue;
+    const data=await r.json();
+    const features=Array.isArray(data?.features)?data.features:[];
+    const f=pickGeocodeResult(features,street,house);
+    if(f?.geometry?.coordinates?.length){
+      return {coords:[Number(f.geometry.coordinates[1]),Number(f.geometry.coordinates[0])],parts:parseAddressParts(f,`${street}, ${house}`)};
+    }
   }
-  return all;
+  throw new Error("Photon address not found");
 }
 
-async function fetchNominatim(street,house){
-  const streetName=normalizeStreet(street);
-  const queries=[
-    `${streetName}, ${house}, Екатеринбург, Свердловская область, Россия`,
-    `Екатеринбург, улица ${streetName}, ${house}`
+async function nominatimSearch(street,house){
+  const cleanStreet=normalizeStreetName(street);
+  const attempts=[
+    {street:`${cleanStreet} ${house}`,city:"Екатеринбург",state:"Свердловская область",country:"Россия",format:"jsonv2",limit:"10",countrycodes:"ru",addressdetails:"1",'accept-language':"ru"},
+    {q:`${street}, ${house}, Екатеринбург, Свердловская область, Россия`,format:"jsonv2",limit:"10",countrycodes:"ru",addressdetails:"1",'accept-language':"ru"}
   ];
-  const all=[];
-  for(const q of queries){
-    try{
-      const params=new URLSearchParams({
-        q,format:"jsonv2",limit:"10",countrycodes:"ru",addressdetails:"1",
-        "accept-language":"ru",viewbox:"60.25,57.05,60.80,56.65",bounded:"0"
-      });
-      const data=await fetchJson(`${NOMINATIM_URL}?${params.toString()}`);
-      if(Array.isArray(data)) all.push(...data);
-      if(all.length>=10) break;
-    }catch(e){}
+  for(const obj of attempts){
+    const params=new URLSearchParams(obj);
+    const r=await fetch(`${NOMINATIM_URL}?${params}`,{headers:{Accept:"application/json"}});
+    if(!r.ok) continue;
+    const results=await r.json();
+    const item=pickGeocodeResult(results,street,house);
+    if(item?.lat && item?.lon){
+      return {coords:[Number(item.lat),Number(item.lon)],parts:parseAddressParts(item,`${street}, ${house}`)};
+    }
   }
-  return all;
+  throw new Error("Nominatim address not found");
 }
 
-function pickPhoton(features,street,house){
-  return features
-    .map((feature,index)=>({feature,index,score:scorePhotonFeature(feature,index,street,house)}))
-    .sort((a,b)=>b.score-a.score)
-    .map(x=>x.feature)
-    .find(feature=>{
-      const p=photonCandidateParts(feature);
-      return looksLikeYekaterinburg([p.city,feature?.properties?.name,feature?.properties?.state].join(" "))
-        && p.street && p.house;
-    }) || null;
+async function calculateRoadDistanceKm(coords){
+  const url=`${OSRM_URL}${DELIVERY_HOME[1]},${DELIVERY_HOME[0]};${coords[1]},${coords[0]}?overview=false&steps=false`;
+  const r=await fetch(url,{headers:{Accept:"application/json"}});
+  if(!r.ok) throw new Error(`OSRM ${r.status}`);
+  const data=await r.json();
+  const meters=Number(data?.routes?.[0]?.distance);
+  if(!Number.isFinite(meters)) throw new Error("Route not found");
+  return meters/1000;
 }
 
-function pickNominatim(results,street,house){
-  return results
-    .map((item,index)=>({item,index,score:scoreNominatim(item,index,street,house)}))
-    .sort((a,b)=>b.score-a.score)
-    .map(x=>x.item)
-    .find(item=>{
-      const p=nominatimParts(item);
-      return looksLikeYekaterinburg([p.city,item?.display_name].join(" ")) && p.street && p.house;
-    }) || null;
+function parseAddressQuery(query){
+  const raw = String(query || "").trim();
+  if(!raw) return null;
+  // "ул. Бебеля, 130" / "Бебеля 130" / "Бебеля, д. 130"
+  const cleaned = raw
+    .replace(/\b(ул\.?|улица|просп\.?|проспект|пер\.?|переулок|бул\.?|бульвар|ш\.?|шоссе)\b/giu, " ")
+    .replace(/\b(д\.?|дом|корп\.?|корпус|стр\.?|строение)\b/giu, " ")
+    .replace(/[.,]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  const m = cleaned.match(/^(.+?)\s+(\d+[\w\/-]*)$/u);
+  if(m) return { street: m[1].trim(), house: m[2].trim() };
+  return null;
 }
 
-async function routeDistanceKm(coords){
-  const [lat,lon]=coords;
-  const url=`${OSRM_URL}/${DELIVERY_HOME[1]},${DELIVERY_HOME[0]};${lon},${lat}?overview=false&alternatives=false&steps=false`;
-  try{
-    const data=await fetchJson(url);
-    const meters=Number(data?.routes?.[0]?.distance);
-    if(data?.code==="Ok" && Number.isFinite(meters) && meters>=0) return meters/1000;
-  }catch(e){}
-  // Fallback: rough city-road estimate when the public router is temporarily unavailable.
-  const toRad=x=>x*Math.PI/180;
-  const R=6371;
-  const dLat=toRad(lat-DELIVERY_HOME[0]);
-  const dLon=toRad(lon-DELIVERY_HOME[1]);
-  const lat1=toRad(DELIVERY_HOME[0]);
-  const lat2=toRad(lat);
-  const h=Math.sin(dLat/2)**2+Math.cos(lat1)*Math.cos(lat2)*Math.sin(dLon/2)**2;
-  const straight=2*R*Math.asin(Math.min(1,Math.sqrt(h)));
-  return straight*1.2;
+function applyAddressQueryToFields(){
+  const q = document.getElementById("ckAddressQuery")?.value.trim() || "";
+  const parsed = parseAddressQuery(q);
+  if(!parsed) return false;
+  const streetEl = document.getElementById("ckStreet");
+  const houseEl = document.getElementById("ckHouse");
+  if(streetEl) streetEl.value = parsed.street;
+  if(houseEl) houseEl.value = parsed.house;
+  [streetEl, houseEl].forEach(el => el?.classList?.remove("invalid"));
+  return true;
 }
 
-async function calculateDeliveryFromAddress(){
-  if(geocodeInFlight)return;
-  const streetEl=document.getElementById("ckStreet"),houseEl=document.getElementById("ckHouse");
-  const street=streetEl?.value.trim()||"",house=houseEl?.value.trim()||"";
-  [streetEl,houseEl].forEach(el=>el?.classList.remove("invalid"));
+async function geocodeDeliveryAddress(){
+  // If quick search filled but fields empty — parse first
+  const streetEl = document.getElementById("ckStreet");
+  const houseEl = document.getElementById("ckHouse");
+  let street = streetEl?.value.trim() || "";
+  let house = houseEl?.value.trim() || "";
+  if((!street || !house) && document.getElementById("ckAddressQuery")?.value.trim()){
+    applyAddressQueryToFields();
+    street = streetEl?.value.trim() || "";
+    house = houseEl?.value.trim() || "";
+  }
   if(!street||!house){
-    if(!street)streetEl?.classList.add("invalid");
-    if(!house)houseEl?.classList.add("invalid");
-    setAddressMapStatus(t("addressRequired"),true);
+    if(!street) markInvalid(streetEl);
+    if(!house) markInvalid(houseEl);
+    setAddressMapStatus(t("addressNeedStreetHouse"), true);
     return;
   }
-
-  geocodeInFlight=true;
-  const btn=document.getElementById("calculateDeliveryBtn");
-  if(btn){btn.disabled=true;btn.textContent=t("deliveryMapLoading");}
-  deliveryDistanceKm=null;
-  deliveryCoords=null;
-  updateDeliveryDistanceUI();
-
+  if(geocodeInFlight) return;
+  geocodeInFlight = true;
+  const btn = document.getElementById("calculateDeliveryBtn");
+  const searchBtn = document.getElementById("addressSearchBtn");
+  const prevBtnText = btn?.textContent;
+  if(btn){ btn.disabled = true; btn.textContent = t("calculatingDelivery"); }
+  if(searchBtn) searchBtn.disabled = true;
   try{
-    setAddressMapStatus(t("deliveryMapLoading"));
-    let coords=null,parts=null;
-
-    // 1) Photon — OpenStreetMap-based geocoder, with Yekaterinburg bias.
+    setAddressMapStatus(t("addressLooking"));
+    let found;
     try{
-      const features=await fetchPhoton(street,house);
-      const chosen=pickPhoton(features,street,house);
-      if(chosen){
-        const p=photonCandidateParts(chosen), c=chosen.geometry?.coordinates;
-        const lat=Number(c?.[1]),lon=Number(c?.[0]);
-        if(Number.isFinite(lat)&&Number.isFinite(lon)&&p.street&&p.house&&looksLikeYekaterinburg([p.city,chosen?.properties?.name,chosen?.properties?.state].join(" "))){
-          coords=[lat,lon];parts=p;
-        }
-      }
-    }catch(e){}
-
-    // 2) Nominatim fallback.
-    if(!coords){
-      const results=await fetchNominatim(street,house);
-      const chosen=pickNominatim(results,street,house);
-      if(chosen){
-        const p=nominatimParts(chosen),lat=Number(chosen.lat),lon=Number(chosen.lon);
-        if(Number.isFinite(lat)&&Number.isFinite(lon)&&p.street&&p.house&&looksLikeYekaterinburg([p.city,chosen?.display_name].join(" "))){
-          coords=[lat,lon];parts=p;
-        }
-      }
+      found = await photonSearch(street, house);
+    }catch(photonError){
+      found = await nominatimSearch(street, house);
     }
-
-    if(!coords||!parts)throw new Error("address_not_found");
-
-    // Keep a single clear source of truth for the selected address and delivery price.
-    const roadKm=await routeDistanceKm(coords);
-    deliveryCoords=coords;
-    deliveryDistanceKm=roadKm;
-    fillAddressFields(parts);
+    fillAddressFields(found.parts);
+    deliveryCoords = found.coords;
+    setAddressMapStatus(t("addressFoundCalc"));
+    try{
+      deliveryDistanceKm = await calculateRoadDistanceKm(found.coords);
+    }catch{
+      deliveryDistanceKm = haversineKm(DELIVERY_HOME, found.coords) * 1.2;
+    }
     updateDeliveryDistanceUI();
     renderCart();
-    setAddressMapStatus(t("deliveryAddressSelected"));
-  }catch(e){
-    deliveryDistanceKm=null;
-    deliveryCoords=null;
+    setAddressMapStatus(t("addressFoundOk"), false, true);
+  }catch(error){
+    deliveryDistanceKm = null;
+    deliveryCoords = null;
     updateDeliveryDistanceUI();
     renderCart();
-    setAddressMapStatus(t("deliveryMapError"),true);
+    setAddressMapStatus(t("addressNotFound"), true);
   }finally{
-    geocodeInFlight=false;
-    if(btn){btn.disabled=false;btn.textContent=t("calculateDelivery");}
+    geocodeInFlight = false;
+    if(btn){ btn.disabled = false; btn.textContent = prevBtnText || t("calculateDelivery"); }
+    if(searchBtn) searchBtn.disabled = false;
   }
 }
 
+
 function resetDeliveryAddressState(){
-  deliveryDistanceKm=null;
-  deliveryCoords=null;
-  ["ckStreet","ckHouse"].forEach(id=>{const el=document.getElementById(id);if(el)el.value="";});
+  deliveryDistanceKm = null;
+  deliveryCoords = null;
+  ["ckStreet","ckHouse","ckAddressQuery","ckApartment","ckFloor"].forEach(id => { const el=document.getElementById(id); if(el) el.value=""; });
+  const ph = document.getElementById("privateHouse");
+  if(ph) ph.checked = false;
+  document.getElementById("apartmentFields")?.classList.remove("hidden");
   updateDeliveryDistanceUI();
-  setAddressMapStatus(t("addressHint"));
+  setAddressMapStatus(t("addressMapHint"));
 }
 
-function deliveryBaseFee(subtotal,method){
-  if(method!=="Доставка")return 0;
-  const distance=Number(deliveryDistanceKm);
-  if(!Number.isFinite(distance))return 0;
-  if(distance<=1)return 200;
-  if(distance<=3)return 300;
-  if(distance<=5)return 400;
+function deliveryBaseFee(subtotal, method){
+  if(method !== "Доставка") return 0;
+  const distance = Number(deliveryDistanceKm);
+  if(!Number.isFinite(distance) || distance <= 1) return 200;
+  if(distance <= 3) return 300;
+  if(distance <= 5) return 400;
   return 500;
 }
 
+function automaticPromoQuote(){
+  const subtotal = cart.reduce((s,i) => s + i.priceNum * i.qty, 0);
+  const method = document.querySelector('input[name="method"]:checked')?.value || "Доставка";
+  const baseDelivery = deliveryBaseFee(subtotal, method);
+  let bestSaving = 0;
+  let discount = 0;
+  for(const p of activePromotions){
+    if(subtotal < Number(p.min_order_amount || 0)) continue;
+    let saving = 0, productDiscount = 0;
+    if(p.promotion_type === "order_discount") {
+      productDiscount = p.discount_type === "percent" ? subtotal * Number(p.discount_value||0)/100 : Number(p.discount_value||0);
+      if(p.max_discount != null) productDiscount = Math.min(productDiscount, Number(p.max_discount));
+      saving = Math.min(subtotal, Math.max(0, productDiscount));
+    } else if(p.promotion_type === "product_discount" || p.promotion_type === "category_discount") {
+      for(const item of cart){
+        const product = allProducts.find(x => x.name === item.name);
+        if(!promotionAppliesToProduct(p, product)) continue;
+        const line = item.priceNum * item.qty;
+        productDiscount += p.discount_type === "percent" ? line * Number(p.discount_value||0)/100 : Math.min(line, Number(p.discount_value||0) * item.qty);
+      }
+      if(p.max_discount != null) productDiscount = Math.min(productDiscount, Number(p.max_discount));
+      saving = Math.min(subtotal, Math.max(0, productDiscount));
+    } else if(p.promotion_type === "bogo" || p.promotion_type === "second_item_discount") {
+      for(const item of cart){
+        const product = allProducts.find(x => x.name === item.name);
+        if(p.target_product_id && String(p.target_product_id) !== String(product?.id)) continue;
+        if(!p.target_product_id && p.target_category && String(p.target_category).toLowerCase() !== String(product?.category||"").toLowerCase()) continue;
+        const buy = Math.max(1, Number(p.buy_quantity || 2));
+        const reward = Math.max(1, Number(p.reward_quantity || 1));
+        if(item.qty < buy) continue;
+        const rewardQty = p.promotion_type === "bogo" ? Math.floor(item.qty/(buy+reward))*reward : Math.floor(item.qty/buy);
+        const pct = p.promotion_type === "bogo" ? 100 : Number(p.reward_discount_percent ?? 50);
+        productDiscount = Math.max(productDiscount, item.priceNum * rewardQty * pct / 100);
+      }
+      if(p.max_discount != null) productDiscount = Math.min(productDiscount, Number(p.max_discount));
+      saving = Math.min(subtotal, Math.max(0, productDiscount));
+    } else continue;
+    if(saving > bestSaving){ bestSaving = saving; discount = saving; }
+  }
+  return {subtotal, discount:Math.round(discount*100)/100, deliveryFee:baseDelivery, promo:null, deliveryFree:false, deliverySaving:0, baseDelivery};
+}
+
+function renderPromotions(){
+  const section = document.getElementById("promotionsSection");
+  const grid = document.getElementById("promotionsGrid");
+  if(!section || !grid) return;
+  const visible = activePromotions.filter(p => ["order_discount","product_discount","category_discount","bogo","second_item_discount"].includes(p.promotion_type));
+  section.classList.toggle("hidden", !visible.length);
+  grid.innerHTML = visible.slice(0,6).map(p => {
+    let value = "";
+    if(p.promotion_type === "bogo") value = "2+1";
+    else if(p.promotion_type === "second_item_discount") value = `−${Number(p.reward_discount_percent || 50)}%`;
+    else value = p.discount_type === "percent" ? `−${Number(p.discount_value||0)}%` : `−${money(Number(p.discount_value||0))}`;
+    return `<div class="feature-card"><div class="feature-icon">${escapeHtml(p.badge || "%")}</div><h3>${escapeHtml(p.name)}</h3><p>${escapeHtml(p.description || value)}</p><strong style="color:var(--accent);font-size:16px;">${escapeHtml(value)}</strong></div>`;
+  }).join("");
+}
+
+function money(n){
+  const num = Number(n || 0);
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ") + " ₽";
+}
+
+function priceNum(s){
+  const d = (s || "").replace(/[^\d]/g,"");
+  return d ? parseInt(d,10) : 0;
+}
+
+function img(p){
+  return p.image ? `<img src="${p.image}" alt="${escapeHtml(p.name)}" loading="lazy" onerror="this.style.display='none'">` : fallbackIcon;
+}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>'"]/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[m]));
+}
+
+function translateCategory(category){
+  if(currentLanguage === "ru") return category;
+  const map = { "Все":"All", "Торты":"Cakes", "Чизкейки":"Cheesecakes", "Меренговые рулеты":"Meringue rolls", "Пирожные":"Pastries" };
+  return map[category] || category;
+}
+
+function renderFilters(){
+  const cats = ["Все", ...new Set(allProducts.map(p => p.category).filter(Boolean))];
+  filtersContainer.innerHTML = cats.map(c => `
+    <button class="filter ${c === activeFilter ? "active" : ""}" data-filter="${escapeHtml(c)}">
+      ${escapeHtml(translateCategory(c))}
+    </button>
+  `).join("");
+}
+
+function isOutOfStock(p){
+  const v = String(p?.inStock ?? "Да").trim().toLowerCase();
+  return ["нет", "no", "false", "0", "нет в наличии", "отсутствует", "out of stock", "закончился", "закончилось"].some(x => v === x) || /нет.*налич/i.test(v);
+}
+
+function translatedTag(tag){
+  if(currentLanguage === "ru") return tag;
+  const map = { "Хит":"Popular", "Новинка":"New" };
+  return map[tag] || tag;
+}
+
+window.toggleReadMore = function(btn) {
+  const meta = btn.previousElementSibling;
+  if (meta.style.webkitLineClamp === 'initial') {
+    meta.style.webkitLineClamp = '2';
+    btn.textContent = t('readMore');
+  } else {
+    meta.style.webkitLineClamp = 'initial';
+    btn.textContent = t('collapse');
+  }
+};
+
+function getQtyControlsHtml(name, out) {
+  const qty = cart.find(c => c.name === name)?.qty || 0;
+  if (qty > 0) {
+    return `
+      <div class="qty-controls">
+        <button class="qty-btn" data-qty-change="-1" data-name="${escapeHtml(name)}">−</button>
+        <span>${qty}</span>
+        <button class="qty-btn" data-qty-change="1" data-name="${escapeHtml(name)}">+</button>
+      </div>
+    `;
+  }
+  return `<button class="add" data-qty-change="1" data-name="${escapeHtml(name)}" ${out ? "disabled" : ""} aria-label="${out ? t("outOfStock") : t("addToCart")}">${out ? "×" : t("addToCart")}</button>`;
+}
+
+function getCardFootHtml(p) {
+  const out = isOutOfStock(p);
+  const qty = cart.find(c => c.name === p.name)?.qty || 0;
+  const promo = productPromoPrice(p);
+  const pr = promo.price;
+  const originalPr = promo.original;
+
+  let priceHtml = '';
+  if (qty > 0) {
+     priceHtml = `
+       <div class="price-info">
+         <div style="font-size:12px; font-weight:normal; color:var(--tg-muted); line-height:1.2; margin-bottom:2px;">
+           ${promo.discount > 0 ? `<span style="text-decoration:line-through;opacity:.55;">${money(originalPr)}</span> → ` : ""}${money(pr)} x ${qty} шт.
+         </div>
+         <div class="price">${money(pr * qty)}${promo.discount > 0 ? ` <span style="font-size:11px;color:var(--success);">−${Math.round((promo.discount/originalPr)*100)}%</span>` : ""}</div>
+       </div>`;
+  } else {
+     priceHtml = promo.discount > 0
+       ? `<span class="price"><span style="text-decoration:line-through;opacity:.5;font-size:12px;margin-right:6px;">${money(originalPr)}</span>${money(pr)} <span style="font-size:11px;color:var(--success);">−${Math.round((promo.discount/originalPr)*100)}%</span></span>`
+       : `<span class="price">${escapeHtml(p.price)}</span>`;
+  }
+
+  return `
+    ${priceHtml}
+    <div class="controls-wrap">
+      ${getQtyControlsHtml(p.name, out)}
+    </div>
+  `;
+}
+
+function card(p){
+  const out = isOutOfStock(p);
+  const fullMeta = [p.description, p.weight].filter(Boolean).join(" · ");
+  const showReadMore = p.description && p.description.length > 55;
+  return `
+    <article class="card ${out ? "unavailable" : ""}" data-product-name="${escapeHtml(p.name)}">
+      <div class="card-img">
+        ${p.tag ? `<span class="tag">${escapeHtml(translatedTag(p.tag))}</span>` : ""}
+        ${out ? `<div class="unavailable-overlay"></div><div class="unavailable-badge">${t("outOfStock")}</div>` : ""}
+        ${img(p)}
+      </div>
+      <div class="card-body">
+        <h3>${escapeHtml(p.name)}</h3>
+        <div>
+          <div class="meta" style="-webkit-line-clamp: 2;">${escapeHtml(fullMeta)}</div>
+          ${showReadMore ? `<button class="read-more-btn" onclick="toggleReadMore(this); event.stopPropagation();">${t("readMore")}</button>` : ""}
+        </div>
+        <div class="card-foot">
+          ${getCardFootHtml(p)}
+        </div>
+      </div>
+    </article>
+  `;
+}
+
+function hitCard(p) {
+  const out = isOutOfStock(p);
+  const fullMeta = [p.description, p.weight].filter(Boolean).join(" · ");
+  return `
+    <article class="hit-card ${out ? "unavailable" : ""}" data-product-name="${escapeHtml(p.name)}">
+      <div class="hit-img">
+        ${p.tag ? `<span class="hit-tag">${escapeHtml(translatedTag(p.tag))}</span>` : ""}
+        ${img(p)}
+      </div>
+      <div class="hit-body">
+        <div>
+          <h3>${escapeHtml(p.name)}</h3>
+          <div class="meta">${escapeHtml(fullMeta)}</div>
+        </div>
+        <div class="hit-foot">
+          ${getCardFootHtml(p)}
+        </div>
+      </div>
+    </article>
+  `;
+}
+
+function renderCatalog(){
+  currentFiltered = activeFilter === "Все" ? allProducts : allProducts.filter(p => p.category === activeFilter);
+  prodGrid.innerHTML = currentFiltered.map(card).join("") || `<div class="empty">${t("categoryEmpty")}</div>`;
+}
+
+function renderHits(){
+  currentHits = allProducts.filter(p => /хит/i.test(p.tag) && !isOutOfStock(p));
+  if(!currentHits.length) currentHits = allProducts.filter(p => !isOutOfStock(p)).slice(0,3);
+  currentHits = currentHits.slice(0,3);
+  hitsGrid.innerHTML = currentHits.map(hitCard).join("") || `<div class="empty">${t("hitsEmpty")}</div>`;
+}
+
+function renderAll(){
+  renderFilters();
+  renderCatalog();
+  renderHits();
+  renderPromotions();
+}
+
+function updateCardCounters() {
+  document.querySelectorAll(".card, .hit-card").forEach(el => {
+    const name = el.dataset.productName;
+    const p = allProducts.find(x => x.name === name);
+    if(p) {
+      const foot = el.querySelector(".card-foot, .hit-foot");
+      if(foot) {
+        foot.innerHTML = getCardFootHtml(p);
+      }
+    }
+  });
+}
+
+filtersContainer.addEventListener("click", e => {
+  const b = e.target.closest("[data-filter]");
+  if(!b) return;
+  activeFilter = b.dataset.filter;
+  renderFilters();
+  renderCatalog();
+});
+
+document.body.addEventListener('click', e => {
+  const qtyBtn = e.target.closest('.qty-btn, .add');
+  if (qtyBtn && !qtyBtn.disabled) {
+    e.stopPropagation(); 
+    const change = parseInt(qtyBtn.dataset.qtyChange);
+    const name = qtyBtn.dataset.name;
+    const p = allProducts.find(x => x.name === name);
+    if (p) {
+      if (change > 0) addToCartLogic(p);
+      else removeFromCartLogic(name);
+    }
+    return;
+  }
+  
+  const cardEl = e.target.closest('.card, .hit-card');
+  if (cardEl && !e.target.closest('.read-more-btn')) {
+    openProductModal(cardEl.dataset.productName);
+  }
+});
+
+/* =====================================================
+   PRODUCT MODAL
+===================================================== */
+const pmDrawer = document.getElementById("pmDrawer");
+const pmOverlay = document.getElementById("pmOverlay");
+let activeModalProduct = null;
+
+function openProductModal(name) {
+  const p = allProducts.find(x => x.name === name);
+  if (!p) return;
+  activeModalProduct = p;
+  
+  document.getElementById("pmTitle").textContent = p.name;
+  const imgEl = document.getElementById("pmImage");
+  if (p.image) {
+    imgEl.src = p.image;
+    imgEl.style.display = 'block';
+  } else {
+    imgEl.style.display = 'none';
+  }
+  
+  document.getElementById("pmDesc").textContent = p.description || "";
+  document.getElementById("pmWeight").textContent = p.weight || "";
+  
+  updateModalControls();
+  
+  pmDrawer.classList.add("open");
+  pmOverlay.classList.add("open");
+}
+
+function closeProductModal() {
+  pmDrawer.classList.remove("open");
+  pmOverlay.classList.remove("open");
+  activeModalProduct = null;
+}
+
+document.getElementById("pmClose").onclick = closeProductModal;
+pmOverlay.onclick = closeProductModal;
+
+function updateModalControls() {
+  if (!activeModalProduct) return;
+  const out = isOutOfStock(activeModalProduct);
+  const qty = cart.find(c => c.name === activeModalProduct.name)?.qty || 0;
+  const pr = priceNum(activeModalProduct.price);
+  
+  const pmPriceEl = document.getElementById("pmPrice");
+  if(qty > 0) {
+    pmPriceEl.innerHTML = `<div style="font-size:12px; font-weight:normal; color:var(--tg-muted); line-height:1; margin-bottom:4px;">${money(pr)} x ${qty} шт.</div><div>${money(pr * qty)}</div>`;
+  } else {
+    pmPriceEl.textContent = activeModalProduct.price;
+  }
+
+  document.getElementById("pmControls").innerHTML = getQtyControlsHtml(activeModalProduct.name, out);
+}
+
+/* =====================================================
+   TOAST NOTIFICATION (WITH TIMER AND UNDO)
+===================================================== */
+let toastTimer;
+let toastInterval;
+let toastDuration = 4000;
+
+function showToast(message, isUndo = false, undoCallback = null) {
+  clearInterval(toastInterval);
+  clearTimeout(toastTimer);
+
+  let html = `<div class="toast-content" style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;width:100%;text-align:left;">
+                 <span style="width:8px;height:8px;min-width:8px;border-radius:50%;background:var(--toast-accent);box-shadow:0 0 0 4px color-mix(in srgb, var(--toast-accent) 12%, transparent);"></span>
+                <span style="flex:1;line-height:1.35;">${message}</span>`;
+  if (isUndo) {
+    let secs = Math.ceil(toastDuration / 1000);
+    html += `<button id="undoBtn" style="background:transparent;color:var(--toast-text);border:1px solid color-mix(in srgb, var(--toast-text) 20%, var(--tg-line));padding:6px 12px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer;white-space:nowrap;transition:0.15s;">Отменить (${secs})</button>`;
+  }
+  html += `</div><div class="toast-timer-bar" id="toastBar" style="height:3px;background:var(--toast-accent);width:100%;transform-origin:left;"></div>`;
+
+  toast.innerHTML = html;
+  toast.classList.add("show");
+
+  const toastBar = document.getElementById("toastBar");
+  const undoBtn = document.getElementById("undoBtn");
+
+  toastBar.style.transition = `none`;
+  toastBar.style.transform = 'scaleX(1)';
+  
+  // Force reflow
+  void toastBar.offsetWidth;
+  
+  toastBar.style.transition = `transform ${toastDuration}ms linear`;
+  toastBar.style.transform = 'scaleX(0)';
+
+  let start = Date.now();
+  
+  if (isUndo && undoBtn) {
+    undoBtn.onclick = () => {
+      if (undoCallback) undoCallback();
+      hideToast();
+    };
+    toastInterval = setInterval(() => {
+      let elapsed = Date.now() - start;
+      let rem = Math.ceil((toastDuration - elapsed) / 1000);
+      if (rem > 0) {
+        undoBtn.textContent = `Отменить (${rem})`;
+      }
+    }, 100);
+  }
+
+  toastTimer = setTimeout(() => {
+    clearInterval(toastInterval);
+    hideToast();
+  }, toastDuration);
+}
+
+function hideToast() {
+  toast.classList.remove("show");
+  setTimeout(() => {
+    if(!toast.classList.contains("show")) toast.innerHTML = '';
+  }, 300);
+}
+
+/* =====================================================
+   CART LOGIC
+===================================================== */
+
+toast?.addEventListener("click", () => hideToast());
+
+function addToCartLogic(p){
+  if(!p || isOutOfStock(p)) return;
+  const x = cart.find(i => i.name === p.name);
+  if(x) x.qty++;
+  else {
+    cart.push({ name:p.name, priceNum:priceNum(p.price), image:p.image, qty:1 });
+  }
+  showToast(`«${p.name}» ${t("added")}`);
+  renderCart();
+  updateCardCounters();
+  updateModalControls();
+}
+
+function removeFromCartLogic(name){
+  const x = cart.find(i => i.name === name);
+  if(x) {
+    x.qty--;
+    let wasRemovedCompletely = x.qty <= 0;
+    
+    if (wasRemovedCompletely) {
+      cart = cart.filter(i => i.name !== name);
+    }
+
+    showToast(`Товар убран из корзины`, true, () => {
+      const existing = cart.find(i => i.name === name);
+      if (existing) {
+        existing.qty++;
+      } else {
+        const p = allProducts.find(prod => prod.name === name);
+        if (p) {
+          cart.push({ name:p.name, priceNum:priceNum(p.price), image:p.image, qty:1 });
+        }
+      }
+      renderCart();
+      updateCardCounters();
+      updateModalControls();
+    });
+
+    renderCart();
+    updateCardCounters();
+    updateModalControls();
+  }
+}
+
+function removeCompletely(name){
+  const x = cart.find(i => i.name === name);
+  if(!x) return;
+  const restoredQty = x.qty;
+  cart = cart.filter(i => i.name !== name);
+  
+  showToast(`Товар удален из корзины`, true, () => {
+     const p = allProducts.find(prod => prod.name === name);
+     if (p) {
+       cart.push({ name:p.name, priceNum:priceNum(p.price), image:p.image, qty:restoredQty });
+     }
+     renderCart();
+     updateCardCounters();
+     updateModalControls();
+  });
+
+  renderCart(); 
+  updateCardCounters();
+  updateModalControls();
+}
+
+function clearAll(){ 
+  cart = []; 
+  promoState = { code:"", valid:false, discount:0, message:"" };
+  renderCart(); 
+  updateCardCounters(); 
+  updateModalControls(); 
+}
 
 function showDeliveryRules(){
   const backdrop = document.getElementById("deliveryModalBackdrop");
@@ -2728,7 +3401,7 @@ heroCart.onclick = openCart;
 cartClose.onclick = closeCart;
 cartOverlay.onclick = closeCart;
 clearCart.onclick = clearAll;
-checkoutBtn.onclick = () => { if(cart.length) { showView("form"); } };
+checkoutBtn.onclick = () => { if(cart.length) showView("form"); };
 ckNewOrder.onclick = () => { closeCart(); };
 
 document.querySelectorAll('input[name="method"]').forEach(r =>
@@ -2923,6 +3596,7 @@ function validateOrder(){
   const dateVal = document.getElementById("ckDate").value.trim();
   const street = document.getElementById("ckStreet")?.value.trim() || "";
   const house = document.getElementById("ckHouse")?.value.trim() || "";
+  const district = null?.value.trim() || "";
   const method = document.querySelector('input[name="method"]:checked')?.value;
 
   const isPrivateHouse = document.getElementById("privateHouse")?.checked || false;
@@ -2983,6 +3657,7 @@ function buildOrderReview(){
   const comment = document.getElementById("ckComment").value.trim();
   const street = document.getElementById("ckStreet")?.value.trim() || "";
   const house = document.getElementById("ckHouse")?.value.trim() || "";
+  const district = null?.value.trim() || "";
   const baseAddress = [house, street].filter(Boolean).join(", ");
   const isPrivateHouse = document.getElementById("privateHouse")?.checked || false;
   const apartment = document.getElementById("ckApartment")?.value.trim() || "";
@@ -3057,6 +3732,7 @@ async function performSubmit(){
 
   const street = document.getElementById("ckStreet")?.value.trim() || "";
   const house = document.getElementById("ckHouse")?.value.trim() || "";
+  const district = null?.value.trim() || "";
   const baseAddress = [house, street].filter(Boolean).join(", ");
   const isPrivateHouse = document.getElementById("privateHouse")?.checked || false;
   const apartment = document.getElementById("ckApartment")?.value.trim() || "";
@@ -3127,25 +3803,60 @@ async function performSubmit(){
   }
 }
 
-cartViewForm.addEventListener("submit", (e) => { e.preventDefault(); if (!validateOrder()) buildOrderReview(); });
+cartViewForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  if(!cart.length){
+    orderStatus.className = "status error";
+    orderStatus.textContent = t("emptyCart");
+    return;
+  }
+  const validationError = validateOrder();
+  if(validationError){
+    orderStatus.className = "status error";
+    orderStatus.textContent = validationError;
+    orderStatus.scrollIntoView?.({behavior:"smooth", block:"nearest"});
+    TG?.HapticFeedback?.notificationOccurred?.("error");
+    return;
+  }
+  orderStatus.className = "status";
+  orderStatus.textContent = "";
+  buildOrderReview();
+});
 reviewBackBtn?.addEventListener("click", () => showView("form"));
 reviewSubmitBtn?.addEventListener("click", performSubmit);
-document.getElementById("calculateDeliveryBtn")?.addEventListener("click", calculateDeliveryFromAddress);
 [ckName, ckPhone, document.getElementById("ckDate"), document.getElementById("ckStreet"), document.getElementById("ckHouse")].forEach(el =>
-  el?.addEventListener("input", () => {
-    el.classList.remove("invalid");
-    if(el.id === "ckStreet" || el.id === "ckHouse") {
-      deliveryDistanceKm = null;
-      deliveryCoords = null;
-      updateDeliveryDistanceUI();
-      setAddressMapStatus(t("addressHint"));
-    }
-  })
+  el?.addEventListener("input", () => el.classList.remove("invalid"))
 );
 
+document.getElementById("calculateDeliveryBtn")?.addEventListener("click", geocodeDeliveryAddress);
+document.getElementById("addressSearchBtn")?.addEventListener("click", () => {
+  applyAddressQueryToFields();
+  geocodeDeliveryAddress();
+});
+document.getElementById("ckAddressQuery")?.addEventListener("keydown", (e) => {
+  if(e.key === "Enter"){
+    e.preventDefault();
+    applyAddressQueryToFields();
+    geocodeDeliveryAddress();
+  }
+});
+["ckStreet","ckHouse","ckAddressQuery"].forEach(id => {
+  document.getElementById(id)?.addEventListener("input", () => {
+    deliveryDistanceKm = null;
+    deliveryCoords = null;
+    updateDeliveryDistanceUI();
+    renderCart();
+    setAddressMapStatus(t("addressMapHint"));
+  });
+});
 document.getElementById("privateHouse")?.addEventListener("change", () => {
   const fields = document.getElementById("apartmentFields");
-  fields?.classList.toggle("hidden", document.getElementById("privateHouse").checked);
+  const isPrivate = document.getElementById("privateHouse").checked;
+  fields?.classList.toggle("hidden", isPrivate);
+  if(isPrivate){
+    document.getElementById("ckApartment")?.classList.remove("invalid");
+    document.getElementById("ckFloor")?.classList.remove("invalid");
+  }
 });
 
 
