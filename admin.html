@@ -1626,7 +1626,7 @@ body.denied #accessDenied{display:flex!important}
 .menu-backdrop{display:none}
 .menu-drawer{display:none}
 @media (min-width:760px){.header{padding-left:22px;padding-right:22px}.admin-nav{padding:8px 22px}.catalog-panel,.extra-panel,.admin-panel.open{padding-left:22px;padding-right:22px}.products{grid-template-columns:repeat(3,minmax(0,1fr))}}
-@media (max-width:700px){.header{top:0}.admin-nav{top:61px}.header-title h1{font-size:17px}.header-title p{font-size:10px}.user-badge{font-size:10px;padding:6px 9px}.menu-trigger{display:flex}.admin-nav{overflow:visible}.admin-nav>.nav-button{display:none}.admin-nav>.nav-button.active{display:block;flex:1;text-align:center}.menu-backdrop.open{display:block;position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.42)}.menu-drawer{position:fixed;left:10px;right:10px;top:109px;z-index:90;display:none;padding:8px;background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}.menu-drawer.open{display:block}.menu-drawer .nav-button{display:flex;width:100%;align-items:center;justify-content:flex-start;min-height:46px;text-align:left}.products{grid-template-columns:1fr}.management-page-head{align-items:flex-start;flex-direction:column}.management-page-head .panel-action{width:100%}.stats{gap:7px}.stat{padding:10px}.stat-value{font-size:18px}.catalog-panel,.extra-panel,.admin-panel.open{padding:14px 12px 28px}.toolbar{position:sticky;top:109px;z-index:20;padding:7px 0;background:var(--bg)}.search{height:44px!important}.add-button{width:44px;padding:0;font-size:0}.add-button:after{content:'+';font-size:21px}.management-dialog,.modal-sheet{max-height:90vh}}
+@media (max-width:700px){.header{top:0}.admin-nav{top:61px}.header-title h1{font-size:17px}.header-title p{font-size:10px}.user-badge{font-size:10px;padding:6px 9px}.menu-trigger{display:flex}.admin-nav{overflow:visible}.admin-nav>.nav-button{display:none}.admin-nav>.nav-button.active{display:block;flex:1;text-align:center}.menu-backdrop.open{display:block;position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.42)}.menu-drawer{position:fixed;left:10px;right:10px;top:128px;z-index:90;display:none;padding:8px;background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}.menu-drawer.open{display:block}.menu-drawer .nav-button{display:flex;width:100%;align-items:center;justify-content:flex-start;min-height:46px;text-align:left}.products{grid-template-columns:1fr}.management-page-head{align-items:flex-start;flex-direction:column}.management-page-head .panel-action{width:100%}.stats{gap:7px}.stat{padding:10px}.stat-value{font-size:18px}.catalog-panel,.extra-panel,.admin-panel.open{padding:14px 12px 28px}.toolbar{position:sticky;top:109px;z-index:20;padding:7px 0;background:var(--bg)}.search{height:44px!important}.add-button{width:44px;padding:0;font-size:0}.add-button:after{content:'+';font-size:21px}.management-dialog,.modal-sheet{max-height:90vh}}
 @media (prefers-color-scheme: dark){:root{--bg:#0f0e12;--card:#17151b;--card2:#1c1920;--text:#f5f3f6;--muted:#a69faa}}
 
 /* FINAL NAV + ACCESS FIX */
@@ -1698,7 +1698,7 @@ body:not(.pending):not(.denied) #accessLoading{display:none!important}
   .menu-backdrop.open{display:block;position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.42)}
   .menu-drawer{
     position:fixed;
-    left:10px;right:10px;top:109px;z-index:90;
+    left:10px;right:10px;top:128px;z-index:90;
     display:none;
     padding:8px;
     background:var(--card);
@@ -1876,6 +1876,100 @@ body.denied #accessLoading{display:none!important}
 body.denied #accessDenied{display:flex!important}
 body:not(.pending):not(.denied) #accessLoading{display:none!important}
 
+
+/* MENU — below section heading */
+#menuTrigger{
+  width:auto!important;
+  min-width:78px!important;
+  height:38px!important;
+  padding:0 15px!important;
+  margin:0 0 12px 16px!important;
+  border:1px solid var(--line)!important;
+  border-radius:12px!important;
+  background:var(--card)!important;
+  color:var(--text)!important;
+  font-size:12px!important;
+  font-weight:900!important;
+  box-shadow:none!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  position:relative!important;
+  z-index:25!important;
+}
+.admin-nav{
+  display:none!important;
+}
+.catalog-page-head,.management-page-head{
+  margin-bottom:10px!important;
+}
+@media(max-width:700px){
+  #menuTrigger{
+    margin-left:12px!important;
+    width:calc(100% - 24px)!important;
+    justify-content:flex-start!important;
+    padding-left:14px!important;
+  }
+}
+
+/* FINAL — MENU BELONGS TO ACTIVE SECTION */
+.admin-nav{display:none!important;}
+.menu-trigger{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:78px!important;
+  min-width:78px!important;
+  height:38px!important;
+  margin:0!important;
+  padding:0 15px!important;
+  border:1px solid var(--line)!important;
+  border-radius:12px!important;
+  background:var(--card)!important;
+  color:var(--text)!important;
+  font-size:12px!important;
+  font-weight:900!important;
+  box-shadow:none!important;
+}
+.section-menu-slot{
+  display:flex;
+  align-items:center;
+  min-height:38px;
+}
+.catalog-page-head,.management-page-head,.admin-page-head{
+  display:flex!important;
+  flex-wrap:wrap!important;
+  align-items:center!important;
+  gap:10px!important;
+  padding:4px 0 12px!important;
+  margin-bottom:12px!important;
+  border-bottom:1px solid var(--line)!important;
+}
+.catalog-page-head .panel-title,.management-page-head .panel-title,.admin-page-head .panel-title{
+  flex:0 0 auto!important;
+  margin:0!important;
+}
+.catalog-page-head .section-menu-slot,.management-page-head .section-menu-slot,.admin-page-head .section-menu-slot{
+  order:3!important;
+  flex-basis:100%!important;
+}
+.management-page-head>div:first-child{flex:1 1 auto;min-width:0}
+.management-page-head .panel-action{margin-left:auto}
+.admin-page-head{max-width:1180px;margin-left:auto;margin-right:auto}
+.menu-backdrop{z-index:9998!important}
+.menu-drawer{z-index:9999!important}
+@media(max-width:700px){
+  .catalog-page-head,.management-page-head,.admin-page-head{align-items:flex-start!important}
+  .management-page-head .panel-action{margin-left:0!important;width:auto!important}
+  .menu-trigger{width:88px!important}
+  .catalog-page-head .section-menu-slot,.management-page-head .section-menu-slot,.admin-page-head .section-menu-slot{flex-basis:auto!important;order:4!important}
+  .catalog-page-head{display:grid!important;grid-template-columns:1fr auto;align-items:center!important}
+  .catalog-page-head .panel-title{grid-column:1}
+  .catalog-page-head .section-menu-slot{grid-column:1 / -1}
+  .management-page-head{display:flex!important}
+  .admin-page-head{display:flex!important}
+  .menu-drawer{top:160px!important;left:12px!important;right:12px!important}
+}
 </style>
 </head>
 
@@ -1935,7 +2029,7 @@ body:not(.pending):not(.denied) #accessLoading{display:none!important}
      NAVIGATION
      ============================================================ -->
 
-<nav class="admin-nav"><button id="menuTrigger" class="menu-trigger" type="button" aria-label="Открыть меню" aria-expanded="false">Меню</button>
+<nav class="admin-nav">
 <div id="menuBackdrop" class="menu-backdrop"></div>
 <div id="menuDrawer" class="menu-drawer"></div>
 
@@ -1946,6 +2040,7 @@ body:not(.pending):not(.denied) #accessLoading{display:none!important}
     <button id="adminsNavButton" class="nav-button" type="button">👥 Администраторы</button>
 </nav>
 
+<button id="menuTrigger" class="menu-trigger" type="button" aria-label="Открыть меню" aria-expanded="false">Меню</button>
 
 <!-- ============================================================
      CATALOG PANEL
@@ -1957,7 +2052,9 @@ body:not(.pending):not(.denied) #accessLoading{display:none!important}
 >
 
     <div class="catalog-page-head">
-      <div class="panel-title">🍰 Каталог</div>
+      <div class="catalog-title-row">
+        <div class="panel-title">🍰 Каталог</div>
+      </div>
     </div>
 
     <!-- TOOLBAR -->
@@ -2062,7 +2159,8 @@ body:not(.pending):not(.denied) #accessLoading{display:none!important}
   <div class="management-page-head">
     <div>
       <div class="panel-title">🔥 Акции</div>
-          </div>
+    </div>
+    <div class="section-menu-slot" id="promotionsMenuSlot"></div>
     <button id="addPromotionButton" class="panel-action" type="button">＋ Новая акция</button>
   </div>
   <div id="promotionsList" class="panel-list"></div>
@@ -2072,7 +2170,8 @@ body:not(.pending):not(.denied) #accessLoading{display:none!important}
   <div class="management-page-head">
     <div>
       <div class="panel-title">🏷️ Промокоды</div>
-          </div>
+    </div>
+    <div class="section-menu-slot" id="promoCodesMenuSlot"></div>
     <button id="addPromoCodeButton" class="panel-action" type="button">＋ Новый промокод</button>
   </div>
   <div id="promoCodesList" class="panel-list"></div>
@@ -2082,7 +2181,8 @@ body:not(.pending):not(.denied) #accessLoading{display:none!important}
   <div class="management-page-head">
     <div>
       <div class="panel-title">📦 Заказы</div>
-          </div>
+    </div>
+    <div class="section-menu-slot" id="ordersMenuSlot"></div>
     <button id="refreshOrdersButton" class="panel-action" type="button">↻ Обновить</button>
   </div>
   <div id="ordersList" class="panel-list"></div>
@@ -2219,12 +2319,17 @@ body:not(.pending):not(.denied) #accessLoading{display:none!important}
     class="admin-panel"
 >
 
+    <div class="admin-page-head">
+      <div class="panel-title">👥 Администраторы</div>
+      <div class="section-menu-slot" id="adminsMenuSlot"></div>
+    </div>
+
     <div class="admin-panel-card">
 
         <div class="admin-panel-title-row">
 
             <div class="admin-panel-title">
-                👥 Администраторы
+                Управление доступом
             </div>
 
             <div class="owner-badge">
@@ -3733,11 +3838,19 @@ async function removeAdmin(
 }
 
 
+function placeMenu(slot){
+  const trigger=document.getElementById("menuTrigger");
+  if(!trigger||!slot)return;
+  slot.appendChild(trigger);
+}
+
 /* ============================================================
    SWITCH PANELS
    ============================================================ */
 
 function showCatalog() {
+
+    placeMenu(document.getElementById("catalogMenuSlot"));
 
     catalogPanel.classList.remove(
         "hidden",
@@ -3759,6 +3872,8 @@ function showCatalog() {
 
 
 function showAdmins() {
+
+    placeMenu(document.getElementById("adminsMenuSlot"));
 
     catalogPanel.classList.add(
         "hidden",
@@ -5163,7 +5278,7 @@ async function managementApi(resource, method="GET", body=null, id=null){
 }
 function setActiveNav(btn){document.querySelectorAll(".admin-nav .nav-button").forEach(x=>x.classList.remove("active")); if(btn)btn.classList.add("active");}
 function hideExtraPanels(){promotionsPanel.hidden=true;promoCodesPanel.hidden=true;ordersPanel.hidden=true;catalogPanel.classList.remove("hidden");adminPanel.classList.remove("open");}
-function showManagementPanel(panel,btn){catalogPanel.classList.add("hidden");adminPanel.classList.remove("open");promotionsPanel.hidden=true;promoCodesPanel.hidden=true;ordersPanel.hidden=true;panel.hidden=false;setActiveNav(btn);}
+function showManagementPanel(panel,btn){const slots={promotionsPanel:"promotionsMenuSlot",promoCodesPanel:"promoCodesMenuSlot",ordersPanel:"ordersMenuSlot"};placeMenu(document.getElementById(slots[panel.id]));catalogPanel.classList.add("hidden");adminPanel.classList.remove("open");promotionsPanel.hidden=true;promoCodesPanel.hidden=true;ordersPanel.hidden=true;panel.hidden=false;setActiveNav(btn);}
 function fmtDateTime(v){if(!v)return "Без ограничения";const d=new Date(v);return Number.isNaN(d.getTime())?"—":d.toLocaleString("ru-RU",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"})}
 function toLocalInput(v){if(!v)return "";const d=new Date(v);if(Number.isNaN(d.getTime()))return "";const z=n=>String(n).padStart(2,"0");return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}T${z(d.getHours())}:${z(d.getMinutes())}`}
 function localToIso(v){return v?new Date(v).toISOString():null}
@@ -5310,6 +5425,7 @@ async function authorizeAdmin(){
   document.documentElement.style.colorScheme=(TG?.colorScheme==='light'?'light':'dark');
   if(await authorizeAdmin()){
     showTelegramUser();
+    showCatalog();
     await loadProducts();
   }
 })();
