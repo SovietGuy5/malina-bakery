@@ -1868,6 +1868,28 @@ body:not(.pending):not(.denied) #accessLoading{display:none!important}
 }
 
 
+
+/* HOME */
+.home-panel{grid-column:2;grid-row:2;padding:22px 34px 34px;max-width:1320px;width:100%}
+.home-panel[hidden]{display:none!important}
+.home-hero{padding:8px 0 20px}
+.home-kicker{font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
+.home-hero h2{margin:0;font-size:34px;line-height:1.05;font-weight:950;letter-spacing:-.045em}
+.home-hero p{margin:8px 0 0;color:var(--muted);font-size:13px}
+.home-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.home-card{min-height:104px;display:flex;align-items:center;gap:14px;padding:18px;border:1px solid var(--line);border-radius:20px;background:var(--card);color:var(--text);text-align:left;cursor:pointer;transition:.18s ease}
+.home-card:hover{transform:translateY(-2px);border-color:rgba(255,59,141,.28);box-shadow:0 16px 36px rgba(0,0,0,.18)}
+.home-card-icon{width:48px;height:48px;display:grid;place-items:center;border-radius:15px;background:var(--accent-soft);font-size:24px;flex:0 0 48px}
+.home-card strong{display:block;font-size:15px;font-weight:900}
+.home-card small{display:block;margin-top:4px;color:var(--muted);font-size:11px;line-height:1.35}
+.home-trigger{width:42px;height:42px;flex:0 0 42px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--text);display:grid;place-items:center;cursor:pointer;box-shadow:none}
+.home-trigger svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linejoin:round;stroke-linecap:round}
+.home-trigger:hover{border-color:rgba(255,59,141,.35);color:var(--accent)}
+.menu-row{display:flex!important;align-items:center!important;gap:8px!important}
+#menuTrigger.menu-trigger{flex:1 1 auto!important}
+@media(max-width:900px){.home-panel{padding:16px 14px 28px}}
+@media(max-width:560px){.home-grid{grid-template-columns:1fr}.home-hero h2{font-size:28px}}
+
 /* ACCESS GATE FINAL */
 #accessLoading,#accessDenied{position:fixed!important;inset:0!important;z-index:9999!important;display:none!important;min-height:100vh!important;align-items:center!important;justify-content:center!important;padding:24px!important;background:var(--bg)!important}
 body.pending #accessLoading{display:flex!important}
@@ -2033,6 +2055,8 @@ body:not(.pending):not(.denied) #accessLoading{display:none!important}
 .menu-drawer.open{display:block}
 .menu-drawer .nav-button{display:flex!important;width:100%!important;min-height:46px;align-items:center;justify-content:flex-start;text-align:left;background:transparent;color:var(--text);border:0}
 .menu-drawer .nav-button.active{background:var(--accent-soft);color:var(--accent);border-color:transparent;box-shadow:none}
+.menu-drawer .menu-home-item{font-weight:900!important}
+
 @media(max-width:700px){.menu-row{padding:8px 12px 0}.menu-drawer{top:116px;left:12px;right:12px}}
 @media(min-width:701px){.menu-drawer{left:max(16px,calc(50% - 574px));right:auto;width:min(420px,calc(100vw - 32px));top:118px}.menu-row{padding-left:22px;padding-right:22px}}
 </style>
@@ -2058,6 +2082,20 @@ body:not(.pending):not(.denied) #accessLoading{display:none!important}
 
 <div id="appShell">
 
+<section id="homePanel" class="home-panel" hidden>
+  <div class="home-hero">
+    <div class="home-kicker">Кондитерский дом «Малина»</div>
+    <h2>Главная</h2>
+    <p>Быстрый доступ ко всем разделам управления.</p>
+  </div>
+  <div class="home-grid">
+    <button class="home-card" data-home-target="catalogNavButton"><span class="home-card-icon">🍰</span><span><strong>Каталог</strong><small>Товары, цены и наличие</small></span></button>
+    <button class="home-card" data-home-target="promotionsNavButton"><span class="home-card-icon">🔥</span><span><strong>Акции</strong><small>Автоматические предложения</small></span></button>
+    <button class="home-card" data-home-target="promoCodesNavButton"><span class="home-card-icon">🏷️</span><span><strong>Промокоды</strong><small>Скидки по коду</small></span></button>
+    <button class="home-card" data-home-target="ordersNavButton"><span class="home-card-icon">📦</span><span><strong>Заказы</strong><small>Статусы и клиенты</small></span></button>
+    <button class="home-card" data-home-target="adminsNavButton"><span class="home-card-icon">👥</span><span><strong>Администраторы</strong><small>Права доступа</small></span></button>
+  </div>
+</section>
 
 <!-- ============================================================
      HEADER
@@ -2103,6 +2141,9 @@ body:not(.pending):not(.denied) #accessLoading{display:none!important}
 </nav>
 
 <div class="menu-row">
+  <button id="homeTrigger" class="home-trigger" type="button" aria-label="Главная" title="Главная">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 10.4 12 3.7l8.5 6.7v9a1.6 1.6 0 0 1-1.6 1.6h-4.4v-6.2H9.5V21H5.1a1.6 1.6 0 0 1-1.6-1.6v-9Z"/><path d="M9 21v-6.2h6V21"/></svg>
+  </button>
   <button id="menuTrigger" class="menu-trigger" type="button" aria-label="Открыть меню" aria-expanded="false">
     <span class="menu-bars" aria-hidden="true"><i></i><i></i><i></i></span>
     <span>Меню</span>
@@ -3914,6 +3955,7 @@ function placeMenu(){ /* Меню всегда находится в общей 
    ============================================================ */
 
 function showCatalog() {
+    hideHome?.();
 
     placeMenu(document.getElementById("catalogMenuSlot"));
 
@@ -3937,6 +3979,7 @@ function showCatalog() {
 
 
 function showAdmins() {
+    hideHome?.();
 
     placeMenu(document.getElementById("adminsMenuSlot"));
 
@@ -5343,7 +5386,8 @@ async function managementApi(resource, method="GET", body=null, id=null){
 }
 function setActiveNav(btn){document.querySelectorAll(".admin-nav .nav-button").forEach(x=>x.classList.remove("active")); if(btn)btn.classList.add("active");}
 function hideExtraPanels(){promotionsPanel.hidden=true;promoCodesPanel.hidden=true;ordersPanel.hidden=true;catalogPanel.classList.remove("hidden");adminPanel.classList.remove("open");}
-function showManagementPanel(panel,btn){const slots={promotionsPanel:"promotionsMenuSlot",promoCodesPanel:"promoCodesMenuSlot",ordersPanel:"ordersMenuSlot"};placeMenu(document.getElementById(slots[panel.id]));catalogPanel.classList.add("hidden");adminPanel.classList.remove("open");promotionsPanel.hidden=true;promoCodesPanel.hidden=true;ordersPanel.hidden=true;panel.hidden=false;setActiveNav(btn);}
+function showManagementPanel(panel,btn){
+  hideHome?.();const slots={promotionsPanel:"promotionsMenuSlot",promoCodesPanel:"promoCodesMenuSlot",ordersPanel:"ordersMenuSlot"};placeMenu(document.getElementById(slots[panel.id]));catalogPanel.classList.add("hidden");adminPanel.classList.remove("open");promotionsPanel.hidden=true;promoCodesPanel.hidden=true;ordersPanel.hidden=true;panel.hidden=false;setActiveNav(btn);}
 function fmtDateTime(v){if(!v)return "Без ограничения";const d=new Date(v);return Number.isNaN(d.getTime())?"—":d.toLocaleString("ru-RU",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"})}
 function toLocalInput(v){if(!v)return "";const d=new Date(v);if(Number.isNaN(d.getTime()))return "";const z=n=>String(n).padStart(2,"0");return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}T${z(d.getHours())}:${z(d.getMinutes())}`}
 function localToIso(v){return v?new Date(v).toISOString():null}
@@ -5438,6 +5482,21 @@ function showTelegramUser() {
 
 
 
+/* HOME NAVIGATION */
+const homePanel=document.getElementById('homePanel');
+const homeTrigger=document.getElementById('homeTrigger');
+function showHome(){
+  hideExtraPanels();
+  catalogPanel.classList.add('hidden');
+  if(adminPanel) adminPanel.classList.remove('open');
+  if(homePanel) homePanel.hidden=false;
+  [catalogNavButton,promotionsNavButton,promoCodesNavButton,ordersNavButton,adminsNavButton].forEach(el=>el?.classList.remove('active'));
+  closeMenu?.();
+}
+function hideHome(){ if(homePanel) homePanel.hidden=true; }
+homeTrigger?.addEventListener('click',showHome);
+document.querySelectorAll('[data-home-target]').forEach(card=>card.addEventListener('click',()=>document.getElementById(card.dataset.homeTarget)?.click()));
+
 /* ============================================================
    COMPACT MENU
    ============================================================ */
@@ -5445,12 +5504,12 @@ const menuTrigger=document.getElementById('menuTrigger');
 const menuDrawer=document.getElementById('menuDrawer');
 const menuBackdrop=document.getElementById('menuBackdrop');
 const navButtons=[catalogNavButton,promotionsNavButton,promoCodesNavButton,ordersNavButton,adminsNavButton].filter(Boolean);
-if(menuDrawer){menuDrawer.innerHTML=navButtons.map(b=>`<button type="button" class="nav-button" data-menu-target="${b.id}">${b.textContent}</button>`).join('');}
+if(menuDrawer){menuDrawer.innerHTML=`<button type="button" class="nav-button menu-home-item" data-menu-home="1">⌂ Главная</button>`+navButtons.map(b=>`<button type="button" class="nav-button" data-menu-target="${b.id}">${b.textContent}</button>`).join('');}
 function closeMenu(){if(menuDrawer)menuDrawer.classList.remove('open');if(menuBackdrop)menuBackdrop.classList.remove('open');if(menuTrigger)menuTrigger.setAttribute('aria-expanded','false');}
 function openMenu(){if(menuDrawer)menuDrawer.classList.add('open');if(menuBackdrop)menuBackdrop.classList.add('open');if(menuTrigger)menuTrigger.setAttribute('aria-expanded','true');}
 menuTrigger?.addEventListener('click',()=>menuDrawer?.classList.contains('open')?closeMenu():openMenu());
 menuBackdrop?.addEventListener('click',closeMenu);
-menuDrawer?.addEventListener('click',e=>{const b=e.target.closest('[data-menu-target]');if(!b)return;document.getElementById(b.dataset.menuTarget)?.click();closeMenu();});
+menuDrawer?.addEventListener('click',e=>{const home=e.target.closest('[data-menu-home]');if(home){showHome();closeMenu();return;}const b=e.target.closest('[data-menu-target]');if(!b)return;document.getElementById(b.dataset.menuTarget)?.click();closeMenu();});
 
 /* ============================================================
    ACCESS GATE
@@ -5490,7 +5549,7 @@ async function authorizeAdmin(){
   document.documentElement.style.colorScheme=(TG?.colorScheme==='light'?'light':'dark');
   if(await authorizeAdmin()){
     showTelegramUser();
-    showCatalog();
+    showHome();
     await loadProducts();
   }
 })();
