@@ -1731,6 +1731,58 @@ body:not(.pending):not(.denied) #accessLoading{display:none!important}
   .add-button{width:100%;padding:0!important}
 }
 
+<style>
+/* FINAL NAV / CATALOG POLISH */
+.admin-nav{
+  display:grid!important;
+  grid-template-columns:auto minmax(0,1fr)!important;
+  align-items:center!important;
+  gap:8px!important;
+  overflow:visible!important;
+}
+.admin-nav>.nav-button{display:none!important}
+.admin-nav>.nav-button.active{
+  display:flex!important;
+  width:100%!important;
+  min-width:0!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  text-align:left!important;
+}
+.menu-trigger{
+  display:flex!important;
+  width:auto!important;
+  min-width:74px!important;
+  padding:0 15px!important;
+  font-size:12px!important;
+  font-weight:900!important;
+}
+.catalog-page-head{
+  padding:3px 0 14px;
+  margin-bottom:12px;
+  border-bottom:1px solid var(--line);
+}
+.catalog-page-head .panel-title{
+  font-size:24px;
+  line-height:1.05;
+  font-weight:950;
+  letter-spacing:-.04em;
+}
+.panel-subtitle{display:none!important}
+@media(min-width:701px){
+  .toolbar{display:grid!important;grid-template-columns:minmax(0,1fr) 96px!important;gap:8px!important}
+  .search,.add-button{width:100%!important}
+  .add-button{padding:0!important}
+}
+@media(max-width:700px){
+  .admin-nav{position:sticky;top:61px;padding:8px 12px!important}
+  .admin-nav>.nav-button.active{flex:1!important}
+  .toolbar{display:grid!important;grid-template-columns:minmax(0,1fr) 96px!important;gap:8px!important;position:sticky;top:109px;z-index:20;padding:7px 0;background:var(--bg)}
+  .search,.add-button{width:100%!important;height:44px!important}
+  .add-button{font-size:12px!important;padding:0 10px!important}
+  .add-button:after{content:none!important}
+  .catalog-page-head .panel-title{font-size:22px}
+}
 </style>
 </head>
 
@@ -1811,6 +1863,9 @@ body:not(.pending):not(.denied) #accessLoading{display:none!important}
     class="catalog-panel"
 >
 
+    <div class="catalog-page-head">
+      <div class="panel-title">🍰 Каталог</div>
+    </div>
 
     <!-- TOOLBAR -->
 
@@ -1915,8 +1970,7 @@ body:not(.pending):not(.denied) #accessLoading{display:none!important}
     <div>
       <div class="panel-kicker">Малина · автоматические предложения</div>
       <div class="panel-title">🔥 Акции</div>
-      <div class="panel-subtitle">Создайте акцию за несколько понятных шагов. Всё лишнее спрятано.</div>
-    </div>
+          </div>
     <button id="addPromotionButton" class="panel-action" type="button">＋ Новая акция</button>
   </div>
   <div id="promotionsList" class="panel-list"></div>
@@ -1927,8 +1981,7 @@ body:not(.pending):not(.denied) #accessLoading{display:none!important}
     <div>
       <div class="panel-kicker">Малина · специальные предложения</div>
       <div class="panel-title">🏷️ Промокоды</div>
-      <div class="panel-subtitle">Код, размер скидки, минимальная сумма и срок действия — больше ничего не нужно.</div>
-    </div>
+          </div>
     <button id="addPromoCodeButton" class="panel-action" type="button">＋ Новый промокод</button>
   </div>
   <div id="promoCodesList" class="panel-list"></div>
@@ -1939,8 +1992,7 @@ body:not(.pending):not(.denied) #accessLoading{display:none!important}
     <div>
       <div class="panel-kicker">Малина · контроль заказов</div>
       <div class="panel-title">📦 Заказы</div>
-      <div class="panel-subtitle">Меняйте статус заказа — клиент получит уведомление в Telegram.</div>
-    </div>
+          </div>
     <button id="refreshOrdersButton" class="panel-action" type="button">↻ Обновить</button>
   </div>
   <div id="ordersList" class="panel-list"></div>
