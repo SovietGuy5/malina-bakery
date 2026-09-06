@@ -1269,6 +1269,79 @@ body.dark-theme .topbar {
   color: var(--tg-text);
 }
 
+/* =====================================================
+   DELIVERY ADDRESS / YANDEX MAP
+===================================================== */
+.address-map-card{
+  margin-top:8px;
+  padding:12px;
+  border:1px solid var(--tg-line);
+  border-radius:18px;
+  background:var(--tg-soft);
+}
+.address-search-row{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:8px;
+}
+.address-search-row input{margin:0!important}
+.address-search-btn{
+  min-width:82px;
+  padding:0 14px;
+}
+.delivery-map{
+  width:100%;
+  height:300px;
+  margin-top:10px;
+  border-radius:14px;
+  overflow:hidden;
+  background:var(--tg-line);
+}
+.address-map-status{
+  margin-top:8px;
+  font-size:12px;
+  line-height:1.4;
+  color:var(--tg-muted);
+}
+.address-details{margin-top:12px}
+.check-row{
+  display:flex!important;
+  align-items:center;
+  gap:9px;
+  margin:0!important;
+  font-weight:700;
+  cursor:pointer;
+}
+.check-row input{
+  width:18px!important;
+  height:18px;
+  margin:0!important;
+  accent-color:var(--accent);
+}
+.apartment-fields{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:10px;
+}
+.apartment-fields label{margin-top:0!important}
+.delivery-distance{
+  margin-top:10px;
+  padding:9px 10px;
+  border-radius:12px;
+  background:var(--tg-card);
+  color:var(--accent);
+  font-size:13px;
+  font-weight:800;
+  display:none;
+}
+@media(max-width:520px){
+  .address-search-row{grid-template-columns:1fr}
+  .address-search-btn{height:44px}
+  .delivery-map{height:250px}
+  .apartment-fields{grid-template-columns:1fr 1fr}
+}
+
 @media(max-width:850px){
   .hero-grid{
     grid-template-columns:1fr;
@@ -1329,6 +1402,23 @@ body.dark-theme .topbar {
     font-size:26px
   }
 }
+
+.review-wrap{padding:4px 0 16px;}
+.review-title{font-size:24px;font-weight:800;margin:0 0 6px;}
+.review-subtitle{color:var(--tg-muted);font-size:14px;margin:0 0 18px;}
+.review-section{border:1px solid var(--tg-line);border-radius:16px;padding:14px;margin-bottom:12px;background:var(--tg-bg);}
+.review-section-title{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--tg-muted);margin-bottom:9px;}
+.review-row{display:flex;justify-content:space-between;gap:16px;padding:5px 0;font-size:14px;}
+.review-row span:last-child{text-align:right;font-weight:700;}
+.review-items{display:flex;flex-direction:column;gap:8px;}
+.review-item{display:flex;justify-content:space-between;gap:12px;font-size:14px;}
+.review-item-name{flex:1;}
+.review-item-price{font-weight:700;white-space:nowrap;}
+.review-total{display:flex;justify-content:space-between;gap:16px;align-items:center;padding-top:12px;margin-top:8px;border-top:1px solid var(--tg-line);font-size:18px;font-weight:800;}
+.review-total strong{font-size:23px;}
+.review-note{font-size:13px;color:var(--tg-muted);line-height:1.45;margin-top:10px;}
+.review-actions{display:flex;gap:10px;flex-direction:column;}
+.review-back{width:100%;}
 </style>
 </head>
 
@@ -1587,9 +1677,33 @@ body.dark-theme .topbar {
         </label>
       </div>
 
-      <div id="ckAddressWrap">
+      <div id="ckAddressWrap" class="delivery-address-wrap">
         <label data-i18n="addressLabel">Адрес доставки*</label>
-        <input id="ckAddress" name="address" required data-i18n-placeholder="addressPlaceholder" placeholder="Улица, дом, квартира">
+        <div class="address-map-card">
+          <div class="address-search-row">
+            <input id="ckAddress" name="address" required autocomplete="street-address" data-i18n-placeholder="addressPlaceholder" placeholder="Начните вводить адрес">
+            <button type="button" class="secondary address-search-btn" id="addressSearchBtn" data-i18n="addressSearch">Найти</button>
+          </div>
+          <div id="deliveryMap" class="delivery-map" aria-label="Карта выбора адреса"></div>
+          <div class="address-map-status" id="addressMapStatus" data-i18n="addressMapHint">Выберите адрес через поиск или нажмите на нужное место на карте.</div>
+          <div class="address-details">
+            <label class="check-row">
+              <input type="checkbox" id="privateHouse">
+              <span data-i18n="privateHouse">Это частный дом</span>
+            </label>
+            <div id="apartmentFields" class="apartment-fields">
+              <div>
+                <label for="ckApartment" data-i18n="apartmentLabel">Квартира*</label>
+                <input id="ckApartment" name="apartment" inputmode="numeric" data-i18n-placeholder="apartmentPlaceholder" placeholder="№ квартиры">
+              </div>
+              <div>
+                <label for="ckFloor" data-i18n="floorLabel">Этаж*</label>
+                <input id="ckFloor" name="floor" inputmode="numeric" data-i18n-placeholder="floorPlaceholder" placeholder="Этаж">
+              </div>
+            </div>
+          </div>
+          <div class="delivery-distance" id="deliveryDistanceInfo"></div>
+        </div>
       </div>
       
       <div id="pickupNotice" class="hint hidden" data-i18n="pickupNotice" style="color: var(--tg-blue); font-weight: 700;">
@@ -1602,12 +1716,24 @@ body.dark-theme .topbar {
 
       <label data-i18n="commentLabel">Комментарий</label>
       <textarea id="ckComment" name="comment" data-i18n-placeholder="commentPlaceholder" placeholder="Пожелания к заказу"></textarea>
-<button class="checkout" type="submit" id="submitOrder" data-i18n="submitOrder" style="margin-top: 10px;">Подтвердить заказ</button>
+<button class="checkout" type="submit" id="submitOrder" data-i18n="reviewOrder" style="margin-top: 10px;">Подтвердить заказ</button>
       <div class="status" id="orderStatus"></div>
       <div class="hint" data-i18n="privacy" style="text-align: center;">
         Заказ отправляется в Telegram. Данные используются только для обработки заказа.
       </div>
     </form>
+
+    <div id="cartViewReview" class="hidden">
+      <div class="review-wrap">
+        <h3 class="review-title" data-i18n="reviewTitle">Проверьте заказ</h3>
+        <p class="review-subtitle" data-i18n="reviewSubtitle">Проверьте данные и итоговую сумму перед отправкой.</p>
+        <div id="orderReviewContent"></div>
+        <div class="review-actions">
+          <button class="secondary review-back" type="button" id="reviewBackBtn" data-i18n="editOrder">Изменить данные</button>
+          <button class="checkout" type="button" id="reviewSubmitBtn" data-i18n="submitOrder">Отправить заказ</button>
+        </div>
+      </div>
+    </div>
 
     <div id="cartViewSuccess" class="success hidden">
       <div class="success-icon">✓</div>
@@ -1716,11 +1842,11 @@ const I18N = {
     telegramChannel: "Канал Telegram: @MalinaDessert",
     telegramBot: "Бот Telegram: @MalinaBakeryBot",
     deliveryTiersTitle: "Стоимость доставки",
-    deliveryTiersInfo: "До 500 ₽ — 200 ₽ | От 500 ₽ — 150 ₽ | От 1000 ₽ — 100 ₽ | От 1500 ₽ — 50 ₽ | От 2000 ₽ — бесплатно",
+    deliveryTiersInfo: "До 1 км — 200 ₽ | Более 1 км — 300 ₽ | Более 3 км — 400 ₽ | Более 5 км — 500 ₽",
     promoToggle: "Ввести промокод",
     deliveryPromoTitle: "Акция на доставку",
-    deliveryPromoSubtitle: "Стоимость доставки автоматически уменьшается в зависимости от суммы заказа.",
-    deliveryPromoNote: "Скидка применяется автоматически. Самовывоз — бесплатно.",
+    deliveryPromoSubtitle: "Стоимость доставки автоматически рассчитывается по расстоянию от кондитерского дома.",
+    deliveryPromoNote: "Цена доставки рассчитывается по расстоянию. Самовывоз — бесплатно.",
     clearCart: "Очистить корзину",
     total: "Итого",
     checkout: "Оформить заказ",
@@ -1732,7 +1858,20 @@ const I18N = {
     pickup: "Самовывоз",
     delivery: "Доставка",
     addressLabel: "Адрес доставки*",
-    addressPlaceholder: "Улица, дом, квартира",
+    addressPlaceholder: "Начните вводить адрес",
+    addressSearch: "Найти",
+    addressMapHint: "Выберите адрес через поиск или нажмите на нужное место на карте.",
+    privateHouse: "Это частный дом",
+    apartmentLabel: "Квартира*",
+    apartmentPlaceholder: "№ квартиры",
+    floorLabel: "Этаж*",
+    floorPlaceholder: "Этаж",
+    deliveryDistance: "Расстояние: {distance} км · доставка: {price}",
+    deliveryMapLoading: "Загрузка карты…",
+    deliveryMapError: "Не удалось загрузить карту. Проверьте ключ Яндекс Карт.",
+    deliveryAddressSelected: "Адрес выбран. Стоимость доставки рассчитана автоматически.",
+    addressMapRequired: "Выберите адрес на карте",
+    apartmentRequired: "Укажите квартиру и этаж",
     pickupNotice: "Адрес для получения заказа мы сообщим вам при подтверждении.",
     dateLabel: "Желаемая дата",
     dateHint: "Заказы принимаются минимум за 48 часов.",
@@ -1745,7 +1884,21 @@ const I18N = {
     promoApplied: "Промокод успешно применен! Скидка 200 ₽.",
     promoInvalid: "Неверный промокод",
     promoUsed: "Промокод уже использован на этом аккаунте",
-    submitOrder: "Подтвердить заказ",
+    submitOrder: "Отправить заказ",
+    reviewOrder: "Проверить заказ",
+    reviewTitle: "Проверьте заказ",
+    reviewSubtitle: "Проверьте данные и итоговую сумму перед отправкой.",
+    reviewItems: "Заказ",
+    reviewCustomer: "Получатель",
+    reviewMethod: "Способ получения",
+    reviewAddress: "Адрес",
+    reviewDate: "Дата",
+    reviewComment: "Комментарий",
+    reviewSubtotal: "Товары",
+    reviewDelivery: "Доставка",
+    reviewDiscount: "Скидка",
+    reviewTotal: "Итого",
+    editOrder: "Изменить данные",
     privacy: "Заказ отправляется в Telegram. Данные используются только для обработки заказа.",
     orderSent: "Ваш заказ оформлен!",
     orderSentText: "Мы успешно получили вашу заявку. В ближайшее время мы свяжемся с вами в Telegram для подтверждения.",
@@ -1808,11 +1961,11 @@ const I18N = {
     telegramChannel: "Telegram channel: @MalinaDessert",
     telegramBot: "Telegram bot: @MalinaBakeryBot",
     deliveryTiersTitle: "Delivery cost",
-    deliveryTiersInfo: "Under 500 ₽ — 200 ₽ | From 500 ₽ — 150 ₽ | From 1000 ₽ — 100 ₽ | From 1500 ₽ — 50 ₽ | From 2000 ₽ — free",
+    deliveryTiersInfo: "Up to 1 km — 200 ₽ | Over 1 km — 300 ₽ | Over 3 km — 400 ₽ | Over 5 km — 500 ₽",
     promoToggle: "Enter promo code",
     deliveryPromoTitle: "Delivery promotion",
-    deliveryPromoSubtitle: "Delivery gets cheaper automatically as your order total increases.",
-    deliveryPromoNote: "The discount is applied automatically. Pickup is free.",
+    deliveryPromoSubtitle: "Delivery price is calculated automatically based on distance from the pastry house.",
+    deliveryPromoNote: "Delivery price is calculated by distance. Pickup is free.",
     clearCart: "Clear cart",
     total: "Total",
     checkout: "Checkout",
@@ -1824,7 +1977,20 @@ const I18N = {
     pickup: "Pickup",
     delivery: "Delivery",
     addressLabel: "Delivery address*",
-    addressPlaceholder: "Street, building, apartment",
+    addressPlaceholder: "Start typing an address",
+    addressSearch: "Find",
+    addressMapHint: "Choose an address using search or click the required place on the map.",
+    privateHouse: "This is a private house",
+    apartmentLabel: "Apartment*",
+    apartmentPlaceholder: "Apartment number",
+    floorLabel: "Floor*",
+    floorPlaceholder: "Floor",
+    deliveryDistance: "Distance: {distance} km · delivery: {price}",
+    deliveryMapLoading: "Loading map…",
+    deliveryMapError: "Could not load the map. Check the Yandex Maps API key.",
+    deliveryAddressSelected: "Address selected. Delivery price calculated automatically.",
+    addressMapRequired: "Choose an address on the map",
+    apartmentRequired: "Enter apartment and floor",
     pickupNotice: "We will inform you of the pickup address upon order confirmation.",
     dateLabel: "Preferred date",
     dateHint: "Orders are accepted at least 48 hours in advance.",
@@ -1837,7 +2003,21 @@ const I18N = {
     promoApplied: "Promo code successfully applied! 200 ₽ discount.",
     promoInvalid: "Invalid promo code",
     promoUsed: "Promo code already used on this account",
-    submitOrder: "Confirm order",
+    submitOrder: "Send order",
+    reviewOrder: "Review order",
+    reviewTitle: "Check your order",
+    reviewSubtitle: "Please check your details and final total before sending.",
+    reviewItems: "Order",
+    reviewCustomer: "Customer",
+    reviewMethod: "Delivery method",
+    reviewAddress: "Address",
+    reviewDate: "Date",
+    reviewComment: "Comment",
+    reviewSubtotal: "Items",
+    reviewDelivery: "Delivery",
+    reviewDiscount: "Discount",
+    reviewTotal: "Total",
+    editOrder: "Edit details",
     privacy: "The order is sent to Telegram. Your data is used only to process the order.",
     orderSent: "Your order is placed!",
     orderSentText: "We have successfully received your request. We will contact you shortly in Telegram to confirm.",
@@ -1991,6 +2171,10 @@ let cart = [];
 let activePromotions = [];
 let isCartOpen = false;
 let checkoutStep = "items";
+const cartViewReview = document.getElementById("cartViewReview");
+const orderReviewContent = document.getElementById("orderReviewContent");
+const reviewBackBtn = document.getElementById("reviewBackBtn");
+const reviewSubmitBtn = document.getElementById("reviewSubmitBtn");
 
 const fallbackIcon = '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="35" fill="#f1f5f9"/><path d="M28 62c9-16 22-24 42-14 4 2 7 7 9 14H28z" fill="#b02a5c"/></svg>';
 
@@ -2075,9 +2259,169 @@ function productPromoPrice(product){
   return best;
 }
 
+/* =====================================================
+   DISTANCE-BASED DELIVERY
+===================================================== */
+const DELIVERY_HOME = [56.854232, 60.555415]; // Екатеринбург, ул. Бебеля, 130
+const YANDEX_MAPS_API_KEY = ""; // при необходимости вставьте ключ JS API Яндекс Карт
+let deliveryDistanceKm = null;
+let deliveryCoords = null;
+let deliveryMap = null;
+let deliveryMarker = null;
+let deliveryRoute = null;
+let yandexMapsPromise = null;
+
+function deliveryPriceByDistance(distanceKm){
+  const d = Number(distanceKm);
+  if(!Number.isFinite(d) || d <= 1) return 200;
+  if(d <= 3) return 300;
+  if(d <= 5) return 400;
+  return 500;
+}
+
+function loadYandexMaps(){
+  if(window.ymaps) return Promise.resolve(window.ymaps);
+  if(yandexMapsPromise) return yandexMapsPromise;
+  yandexMapsPromise = new Promise((resolve,reject)=>{
+    const script = document.createElement("script");
+    const key = YANDEX_MAPS_API_KEY ? `&apikey=${encodeURIComponent(YANDEX_MAPS_API_KEY)}` : "";
+    script.src = `https://api-maps.yandex.ru/2.1/?lang=ru_RU${key}`;
+    script.async = true;
+    script.onload = () => {
+      if(window.ymaps && typeof window.ymaps.ready === "function") window.ymaps.ready(() => resolve(window.ymaps));
+      else reject(new Error("Yandex Maps API unavailable"));
+    };
+    script.onerror = () => reject(new Error("Yandex Maps API failed to load"));
+    document.head.appendChild(script);
+  });
+  return yandexMapsPromise;
+}
+
+function setAddressMapStatus(text, error=false){
+  const el = document.getElementById("addressMapStatus");
+  if(!el) return;
+  el.textContent = text;
+  el.style.color = error ? "var(--danger)" : "var(--tg-muted)";
+}
+
+function updateDeliveryDistanceUI(){
+  const el = document.getElementById("deliveryDistanceInfo");
+  if(!el) return;
+  if(!Number.isFinite(deliveryDistanceKm)){
+    el.style.display = "none";
+    return;
+  }
+  const price = deliveryPriceByDistance(deliveryDistanceKm);
+  const template = t("deliveryDistance");
+  el.textContent = template.replace("{distance}", deliveryDistanceKm.toFixed(1)).replace("{price}", money(price));
+  el.style.display = "block";
+}
+
+async function calculateDeliveryRoute(coords, selectedAddress){
+  try{
+    if(!window.ymaps) await loadYandexMaps();
+    if(deliveryRoute && deliveryMap) deliveryMap.geoObjects.remove(deliveryRoute);
+    deliveryRoute = await window.ymaps.route([DELIVERY_HOME, coords], {
+      routingMode: "auto",
+      avoidTrafficJams: true
+    });
+    if(deliveryMap) deliveryMap.geoObjects.add(deliveryRoute);
+    const paths = deliveryRoute.getPaths();
+    const firstPath = paths && paths.getLength() ? paths.get(0) : null;
+    const distance = firstPath?.properties?.get("distance")?.value;
+    if(!Number.isFinite(distance)) throw new Error("Distance unavailable");
+    deliveryDistanceKm = distance / 1000;
+    updateDeliveryDistanceUI();
+    renderCart();
+    const status = t("deliveryAddressSelected");
+    setAddressMapStatus(status);
+    return deliveryDistanceKm;
+  }catch(error){
+    deliveryDistanceKm = null;
+    updateDeliveryDistanceUI();
+    renderCart();
+    setAddressMapStatus(t("deliveryMapError"), true);
+    return null;
+  }
+}
+
+async function selectDeliveryCoords(coords, addressText){
+  deliveryCoords = coords;
+  const address = document.getElementById("ckAddress");
+  if(address){
+    address.dataset.baseAddress = addressText || address.value.trim();
+    address.value = address.dataset.baseAddress;
+  }
+  if(deliveryMarker && deliveryMap) deliveryMap.geoObjects.remove(deliveryMarker);
+  deliveryMarker = new window.ymaps.Placemark(coords, {balloonContent: escapeHtml(addressText || "Адрес доставки")}, {preset:"islands#redDotIcon"});
+  deliveryMap.geoObjects.add(deliveryMarker);
+  deliveryMap.setCenter(coords, 16, {duration:250});
+  await calculateDeliveryRoute(coords, addressText);
+}
+
+async function geocodeDeliveryAddress(){
+  const input = document.getElementById("ckAddress");
+  if(!input) return;
+  const query = input.value.trim();
+  if(!query) return;
+  try{
+    setAddressMapStatus(t("deliveryMapLoading"));
+    const ym = await loadYandexMaps();
+    const result = await ym.geocode(`Екатеринбург, ${query}`, {results: 1});
+    const first = result.geoObjects.get(0);
+    if(!first) throw new Error("Address not found");
+    const coords = first.geometry.getCoordinates();
+    const foundAddress = first.getAddressLine ? first.getAddressLine() : query;
+    await selectDeliveryCoords(coords, foundAddress);
+  }catch(error){
+    setAddressMapStatus(t("addressMapRequired"), true);
+  }
+}
+
+async function initDeliveryMap(){
+  const mapEl = document.getElementById("deliveryMap");
+  if(!mapEl || deliveryMap) return;
+  try{
+    setAddressMapStatus(t("deliveryMapLoading"));
+    const ym = await loadYandexMaps();
+    deliveryMap = new ym.Map(mapEl, {center: DELIVERY_HOME, zoom: 12, controls:["zoomControl"]}, {suppressMapOpenBlock:true});
+    deliveryMap.events.add("click", async (event)=>{
+      const coords = event.get("coords");
+      try{
+        const result = await ym.geocode(coords, {results:1});
+        const first = result.geoObjects.get(0);
+        const addressText = first?.getAddressLine?.() || "Выбранная точка";
+        await selectDeliveryCoords(coords, addressText);
+      }catch(e){
+        await selectDeliveryCoords(coords, "Выбранная точка");
+      }
+    });
+    if(deliveryCoords) await selectDeliveryCoords(deliveryCoords, document.getElementById("ckAddress")?.dataset.baseAddress || "");
+  }catch(error){
+    setAddressMapStatus(t("deliveryMapError"), true);
+  }
+}
+
+function resetDeliveryAddressState(){
+  deliveryDistanceKm = null;
+  deliveryCoords = null;
+  if(deliveryMap){
+    if(deliveryMarker) deliveryMap.geoObjects.remove(deliveryMarker);
+    if(deliveryRoute) deliveryMap.geoObjects.remove(deliveryRoute);
+    deliveryMarker = null;
+    deliveryRoute = null;
+    deliveryMap.setCenter(DELIVERY_HOME, 12);
+  }
+  updateDeliveryDistanceUI();
+}
+
 function deliveryBaseFee(subtotal, method){
   if(method !== "Доставка") return 0;
-  return 200;
+  const distance = Number(deliveryDistanceKm);
+  if(!Number.isFinite(distance) || distance <= 1) return 200;
+  if(distance <= 3) return 300;
+  if(distance <= 5) return 400;
+  return 500;
 }
 
 function getDeliveryBundleRules(){
@@ -2583,15 +2927,10 @@ function showDeliveryRules(){
   const rulesEl = document.getElementById("deliveryRules");
   const noteEl = document.getElementById("deliveryModalNote");
   if(!backdrop || !rulesEl) return;
-  const rules = getDeliveryBundleRules();
-  const base = 200;
-  rulesEl.innerHTML = rules.map(r => {
-    const fee = Math.max(0, base - r.discount);
-    const fromText = r.min === 0
-      ? (currentLanguage === "en" ? "Any order" : "Любая сумма")
-      : (currentLanguage === "en" ? `From ${money(r.min)}` : `От ${money(r.min)}`);
-    return `<div class="delivery-rule"><strong>${fromText}</strong><span class="delivery-rule-save">${fee === 0 ? t("deliveryFree") : money(fee)}</span></div>`;
-  }).join("");
+  const rules = currentLanguage === "en"
+    ? [["Up to 1 km", "200 ₽"], ["Over 1 km", "300 ₽"], ["Over 3 km", "400 ₽"], ["Over 5 km", "500 ₽"]]
+    : [["До 1 км", "200 ₽"], ["Более 1 км", "300 ₽"], ["Более 3 км", "400 ₽"], ["Более 5 км", "500 ₽"]];
+  rulesEl.innerHTML = rules.map(r => `<div class="delivery-rule"><strong>${r[0]}</strong><span class="delivery-rule-save">${r[1]}</span></div>`).join("");
   if(noteEl) noteEl.textContent = t("deliveryPromoNote");
   backdrop.classList.add("open");
   backdrop.setAttribute("aria-hidden","false");
@@ -2725,20 +3064,7 @@ function renderCart(){
       </div>`;
     }).join("");
 
-    if (method === "Доставка") {
-        itemsHTML += `
-        <div class="cart-item delivery-item" onclick="showDeliveryRules()">
-          <div class="cart-thumb" style="background: rgba(176, 42, 92, 0.1); color: var(--accent); font-size: 24px; display: grid; place-items: center;">📦</div>
-          <div class="cart-info">
-            <strong style="color: var(--accent)">${t("deliveryItemName")}</strong>
-            <small>${t("deliveryItemDesc")}</small>
-          </div>
-          <div class="cart-actions" style="justify-content: flex-end;">
-            <div class="cart-line" style="color: var(--accent)">${deliveryFee === 0 ? t("deliveryFree") : money(deliveryFee)}</div>
-          </div>
-        </div>
-        `;
-    }
+
 
     if (promoDiscount > 0) {
         itemsHTML += `
@@ -2789,11 +3115,12 @@ function showView(v){
   checkoutStep = v;
   cartViewItems.classList.toggle("hidden", v !== "items");
   cartViewForm.classList.toggle("hidden", v !== "form");
+  cartViewReview.classList.toggle("hidden", v !== "review");
   cartViewSuccess.classList.toggle("hidden", v !== "success");
 
   if(v === "form"){
     orderStatus.textContent = "";
-    cartOrderRecap.textContent = ""; 
+    cartOrderRecap.textContent = "";
   }
   updateMainButton();
 }
@@ -2803,18 +3130,23 @@ heroCart.onclick = openCart;
 cartClose.onclick = closeCart;
 cartOverlay.onclick = closeCart;
 clearCart.onclick = clearAll;
-checkoutBtn.onclick = () => { if(cart.length) showView("form"); };
+checkoutBtn.onclick = () => { if(cart.length) { showView("form"); if(document.querySelector('input[name="method"]:checked')?.value === "Доставка") initDeliveryMap(); } };
 ckNewOrder.onclick = () => { closeCart(); };
 
 document.querySelectorAll('input[name="method"]').forEach(r =>
   r.addEventListener("change", () => {
     const ckAddress = document.getElementById("ckAddress");
+    const addressWrap = document.getElementById("ckAddressWrap");
     const isDelivery = r.value === "Доставка" && r.checked;
-    ckAddressWrap.classList.toggle("hidden", !isDelivery);
-    if(isDelivery) ckAddress.setAttribute("required", "required");
-    else ckAddress.removeAttribute("required");
-    
-    document.getElementById("pickupNotice").classList.toggle("hidden", r.value !== "Самовывоз" || !r.checked);
+    addressWrap?.classList.toggle("hidden", !isDelivery);
+    if(isDelivery){
+      ckAddress.setAttribute("required", "required");
+      initDeliveryMap();
+    } else {
+      ckAddress.removeAttribute("required");
+      resetDeliveryAddressState();
+    }
+    document.getElementById("pickupNotice").classList.toggle("hidden", isDelivery);
     renderCart();
   })
 );
@@ -2956,6 +3288,8 @@ function updateMainButton(){
   }
 
   if(isCartOpen && checkoutStep === "form"){
+    TG.MainButton.setText(t("reviewOrder"));
+  } else if(isCartOpen && checkoutStep === "review"){
     TG.MainButton.setText(t("submitOrder"));
   } else if(isCartOpen && checkoutStep === "items"){
     TG.MainButton.setText(`${t("checkout")} · ${money(total)}`);
@@ -2972,14 +3306,16 @@ if(TG?.MainButton){
     if(!cart.length) return;
     if(!isCartOpen) openCart();
     else if(checkoutStep === "items") showView("form");
-    else if(checkoutStep === "form") performSubmit();
+    else if(checkoutStep === "form") { if(!validateOrder()) buildOrderReview(); }
+    else if(checkoutStep === "review") performSubmit();
   });
 }
 
 if(TG?.BackButton){
   TG.BackButton.onClick(() => {
     if(!isCartOpen) { window.history.back(); return; }
-    if(checkoutStep === "form") showView("items");
+    if(checkoutStep === "review") showView("form");
+    else if(checkoutStep === "form") showView("items");
     else closeCart();
   });
 }
@@ -2998,12 +3334,23 @@ function validateOrder(){
   const addr = document.getElementById("ckAddress").value.trim();
   const method = document.querySelector('input[name="method"]:checked')?.value;
 
+  const isPrivateHouse = document.getElementById("privateHouse")?.checked || false;
+  const apartment = document.getElementById("ckApartment")?.value.trim() || "";
+  const floor = document.getElementById("ckFloor")?.value.trim() || "";
   if(!name || !phone || !dateVal || (method === "Доставка" && !addr)){
     if(!name) markInvalid(ckName);
     if(!phone) markInvalid(ckPhone);
     if(!dateVal) markInvalid(document.getElementById("ckDate"));
     if(method === "Доставка" && !addr) markInvalid(document.getElementById("ckAddress"));
     return t("requiredFields");
+  }
+  if(method === "Доставка" && !Number.isFinite(deliveryDistanceKm)){
+    return t("addressMapRequired");
+  }
+  if(method === "Доставка" && !isPrivateHouse && (!apartment || !floor)){
+    if(!apartment) markInvalid(document.getElementById("ckApartment"));
+    if(!floor) markInvalid(document.getElementById("ckFloor"));
+    return t("apartmentRequired");
   }
 
   const selectedDate = new Date(dateVal);
@@ -3022,6 +3369,64 @@ function validateOrder(){
     return t("phoneInvalid");
   }
   return null;
+}
+
+function getOrderTotals(){
+  const method = document.querySelector('input[name="method"]:checked')?.value || "Доставка";
+  const subtotal = cart.reduce((s,i) => s + i.priceNum * i.qty, 0);
+  let deliveryFee = 0;
+  if(method === "Доставка") deliveryFee = deliveryBaseFee(subtotal, method);
+  const autoQuote = automaticPromoQuote();
+  const promoDiscount = IS_TELEGRAM_USER && promoState.valid ? Math.max(0, Number(promoState.discount || 0)) : autoQuote.discount;
+  if(!promoState.valid) deliveryFee = autoQuote.deliveryFee;
+  const total = Math.max(0, subtotal + deliveryFee - promoDiscount);
+  return {method, subtotal, deliveryFee, promoDiscount, total};
+}
+
+function buildOrderReview(){
+  const totals = getOrderTotals();
+  const name = ckName.value.trim();
+  const phone = ckPhone.value.trim();
+  const date = document.getElementById("ckDate").value.trim();
+  const comment = document.getElementById("ckComment").value.trim();
+  const baseAddress = document.getElementById("ckAddress")?.dataset.baseAddress || document.getElementById("ckAddress")?.value.trim() || "";
+  const isPrivateHouse = document.getElementById("privateHouse")?.checked || false;
+  const apartment = document.getElementById("ckApartment")?.value.trim() || "";
+  const floor = document.getElementById("ckFloor")?.value.trim() || "";
+  const address = totals.method === "Доставка"
+    ? (isPrivateHouse ? `${baseAddress}, частный дом` : `${baseAddress}, кв. ${apartment}, этаж ${floor}`)
+    : "";
+
+  const itemsHtml = cart.map(i => {
+    const pricing = getCartItemPricing(i);
+    const lineTotal = pricing.discountTotal > 0 && pricing.discountedUnit < pricing.originalUnit
+      ? Math.max(0, pricing.originalUnit*i.qty - pricing.discountTotal)
+      : pricing.originalUnit*i.qty;
+    return `<div class="review-item"><span class="review-item-name">${escapeHtml(i.name)} × ${i.qty}</span><span class="review-item-price">${money(lineTotal)}</span></div>`;
+  }).join("");
+
+  orderReviewContent.innerHTML = `
+    <div class="review-section">
+      <div class="review-section-title">${t("reviewItems")}</div>
+      <div class="review-items">${itemsHtml}</div>
+    </div>
+    <div class="review-section">
+      <div class="review-section-title">${t("reviewCustomer")}</div>
+      <div class="review-row"><span>${t("nameLabel").replace('*','')}</span><span>${escapeHtml(name)}</span></div>
+      <div class="review-row"><span>${t("phoneLabel").replace('*','')}</span><span>${escapeHtml(phone)}</span></div>
+      <div class="review-row"><span>${t("reviewMethod")}</span><span>${escapeHtml(totals.method === "Доставка" ? t("delivery") : t("pickup"))}</span></div>
+      ${totals.method === "Доставка" ? `<div class="review-row"><span>${t("reviewAddress")}</span><span>${escapeHtml(address)}</span></div>` : ""}
+      <div class="review-row"><span>${t("reviewDate")}</span><span>${escapeHtml(date)}</span></div>
+      ${comment ? `<div class="review-row"><span>${t("reviewComment")}</span><span>${escapeHtml(comment)}</span></div>` : ""}
+    </div>
+    <div class="review-section">
+      <div class="review-row"><span>${t("reviewSubtotal")}</span><span>${money(totals.subtotal)}</span></div>
+      <div class="review-row"><span>${t("reviewDelivery")}</span><span>${totals.deliveryFee === 0 ? t("deliveryFree") : money(totals.deliveryFee)}</span></div>
+      ${totals.promoDiscount > 0 ? `<div class="review-row" style="color:var(--success)"><span>${t("reviewDiscount")}</span><span>− ${money(totals.promoDiscount)}</span></div>` : ""}
+      <div class="review-total"><span>${t("reviewTotal")}</span><strong>${money(totals.total)}</strong></div>
+      <div class="review-note">${t("privacy")}</div>
+    </div>`;
+  showView("review");
 }
 
 let isSubmitting = false;
@@ -3056,17 +3461,30 @@ async function performSubmit(){
   if(!promoState.valid) deliveryFee = autoQuote.deliveryFee;
   const total = Math.max(0, subtotal + deliveryFee - promoDiscount);
 
+  const addressInput = document.getElementById("ckAddress");
+  const baseAddress = addressInput?.dataset.baseAddress || addressInput?.value.trim() || "";
+  const isPrivateHouse = document.getElementById("privateHouse")?.checked || false;
+  const apartment = document.getElementById("ckApartment")?.value.trim() || "";
+  const floor = document.getElementById("ckFloor")?.value.trim() || "";
+  const fullAddress = method === "Доставка"
+    ? (isPrivateHouse ? `${baseAddress}, частный дом` : `${baseAddress}, кв. ${apartment}, этаж ${floor}`)
+    : "";
   const data = {
     name: ckName.value.trim(),
     phone: ckPhone.value.trim(),
     method: method,
-    address: document.getElementById("ckAddress").value.trim(),
+    address: fullAddress,
     date: document.getElementById("ckDate").value.trim(),
     comment: document.getElementById("ckComment").value.trim(),
     promo: promoVal,
     items: cart.map(i => ({ name:i.name, qty:i.qty, price:i.priceNum })),
     subtotal: subtotal,
     deliveryFee: deliveryFee,
+    deliveryDistanceKm: method === "Доставка" ? Number(deliveryDistanceKm.toFixed(2)) : 0,
+    deliveryCoordinates: method === "Доставка" ? deliveryCoords : null,
+    privateHouse: method === "Доставка" ? isPrivateHouse : false,
+    apartment: method === "Доставка" && !isPrivateHouse ? apartment : "",
+    floor: method === "Доставка" && !isPrivateHouse ? floor : "",
     discount: promoDiscount,
     total: total,
     telegram: TG?.initDataUnsafe?.user || null,
@@ -3114,14 +3532,27 @@ async function performSubmit(){
   }
 }
 
-cartViewForm.addEventListener("submit", (e) => { e.preventDefault(); performSubmit(); });
+cartViewForm.addEventListener("submit", (e) => { e.preventDefault(); if (!validateOrder()) buildOrderReview(); });
+reviewBackBtn?.addEventListener("click", () => showView("form"));
+reviewSubmitBtn?.addEventListener("click", performSubmit);
 [ckName, ckPhone, document.getElementById("ckDate"), document.getElementById("ckAddress")].forEach(el =>
   el?.addEventListener("input", () => el.classList.remove("invalid"))
 );
 
+document.getElementById("addressSearchBtn")?.addEventListener("click", geocodeDeliveryAddress);
+document.getElementById("ckAddress")?.addEventListener("keydown", (e) => {
+  if(e.key === "Enter"){ e.preventDefault(); geocodeDeliveryAddress(); }
+});
+document.getElementById("privateHouse")?.addEventListener("change", () => {
+  const fields = document.getElementById("apartmentFields");
+  fields?.classList.toggle("hidden", document.getElementById("privateHouse").checked);
+});
+
+
 applyLanguage();
 loadCatalog();
 renderCart();
+if(document.querySelector('input[name="method"]:checked')?.value === "Доставка") initDeliveryMap();
 </script>
 </body>
 </html>
