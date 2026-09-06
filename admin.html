@@ -3043,9 +3043,6 @@ const ADMIN_UPLOAD_URL =
 const ADMINS_API_URL =
     "https://xheusnpmmmhbwwfcozbr.supabase.co/functions/v1/admin-admins";
 
-const MANAGEMENT_AUTH_URL =
-    "https://xheusnpmmmhbwwfcozbr.supabase.co/functions/v1/admin-auth";
-
 
 /* ============================================================
    TELEGRAM
@@ -5794,51 +5791,25 @@ async function authorizeAdmin(){
   document.body.classList.remove("denied");
   document.body.classList.add("pending");
   if(accessError)accessError.textContent="";
-
   if(!TG?.initData){
     if(accessError)accessError.textContent="Админка должна быть открыта внутри Telegram WebApp.";
     document.body.classList.remove("pending");
     document.body.classList.add("denied");
     return false;
   }
-
-  const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
-  const timeoutId = controller ? setTimeout(() => controller.abort(), 12000) : null;
-
   try{
-    const response = await fetch(MANAGEMENT_AUTH_URL, {
-      method: "GET",
-      headers: {
-        "X-Telegram-Init-Data": TG.initData
-      },
-      cache: "no-store",
-      signal: controller?.signal
-    });
-
-    const text = await response.text();
-    let data = {};
-    try { data = text ? JSON.parse(text) : {}; }
-    catch { throw new Error("Сервер проверки вернул некорректный ответ."); }
-
-    if(!response.ok || data.ok === false){
-      throw new Error(data.error || "Недостаточно прав администратора.");
-    }
-
+    await api("GET");
     document.body.classList.remove("pending","denied");
     return true;
   }catch(error){
-    console.error("ADMIN ACCESS CHECK FAILED", error);
-    const message = error?.name === "AbortError"
-      ? "Сервер проверки прав не отвечает. Попробуйте открыть админку заново."
-      : (error?.message || "Не удалось проверить права администратора.");
-    if(accessError) accessError.textContent = message;
+    console.error("ADMIN ACCESS DENIED",error);
+    if(accessError)accessError.textContent=error?.message||"Недостаточно прав.";
     document.body.classList.remove("pending");
     document.body.classList.add("denied");
     return false;
-  }finally{
-    if(timeoutId) clearTimeout(timeoutId);
   }
 }
+
 /* ============================================================
    START
    ============================================================ */
