@@ -1970,6 +1970,35 @@ body:not(.pending):not(.denied) #accessLoading{display:none!important}
   .admin-page-head{display:flex!important}
   .menu-drawer{top:160px!important;left:12px!important;right:12px!important}
 }
+
+/* FINAL MENU LAYOUT */
+#menuTrigger.menu-trigger{
+  width:100%!important;
+  min-width:0!important;
+  height:48px!important;
+  margin:0 0 12px 0!important;
+  padding:0 16px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:10px!important;
+  border:1px solid var(--line)!important;
+  border-radius:14px!important;
+  background:var(--card)!important;
+  color:var(--text)!important;
+  box-shadow:none!important;
+  font-size:13px!important;
+  font-weight:900!important;
+}
+#menuTrigger .menu-bars{
+  width:20px!important; height:16px!important; display:flex!important;
+  flex-direction:column!important; justify-content:space-between!important; flex:0 0 20px!important;
+}
+#menuTrigger .menu-bars i{
+  display:block!important; width:20px!important; height:2px!important;
+  border-radius:4px!important; background:currentColor!important; opacity:.95!important;
+}
+.section-menu-slot{display:none!important}
 </style>
 </head>
 
@@ -2040,7 +2069,7 @@ body:not(.pending):not(.denied) #accessLoading{display:none!important}
     <button id="adminsNavButton" class="nav-button" type="button">👥 Администраторы</button>
 </nav>
 
-<button id="menuTrigger" class="menu-trigger" type="button" aria-label="Открыть меню" aria-expanded="false">Меню</button>
+<button id="menuTrigger" class="menu-trigger" type="button" aria-label="Открыть меню" aria-expanded="false"><span class="menu-bars" aria-hidden="true"><i></i><i></i><i></i></span><span>Меню</span></button>
 
 <!-- ============================================================
      CATALOG PANEL
@@ -3838,11 +3867,7 @@ async function removeAdmin(
 }
 
 
-function placeMenu(slot){
-  const trigger=document.getElementById("menuTrigger");
-  if(!trigger||!slot)return;
-  slot.appendChild(trigger);
-}
+function placeMenu(){ /* Меню всегда находится в общей верхней строке */ }
 
 /* ============================================================
    SWITCH PANELS
