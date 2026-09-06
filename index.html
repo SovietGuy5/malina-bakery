@@ -1493,6 +1493,81 @@ body.dark-theme .topbar {
   line-height:1.4;
   margin:0;
 }
+
+.address-map-canvas-wrap{
+  position:relative;
+  border-radius:16px;
+  overflow:hidden;
+  border:1px solid var(--tg-line);
+  background:var(--tg-soft);
+}
+#deliveryMap{
+  width:100%;
+  height:240px;
+  z-index:1;
+  background:var(--tg-soft);
+}
+.address-map-canvas-wrap .leaflet-control-attribution{
+  font-size:10px;
+  background:rgba(255,255,255,.85);
+}
+body.dark-theme .address-map-canvas-wrap .leaflet-control-attribution{
+  background:rgba(33,45,59,.9);
+  color:#cbd5e1;
+}
+body.dark-theme .address-map-canvas-wrap .leaflet-control-attribution a{
+  color:#93c5fd;
+}
+.address-map-tip{
+  position:absolute;
+  left:10px;
+  right:10px;
+  bottom:10px;
+  z-index:500;
+  pointer-events:none;
+  padding:8px 10px;
+  border-radius:10px;
+  background:rgba(15,23,42,.78);
+  color:#fff;
+  font-size:11px;
+  font-weight:600;
+  line-height:1.35;
+  text-align:center;
+  backdrop-filter:blur(6px);
+}
+.leaflet-marker-home{
+  background:var(--accent);
+  color:#fff;
+  border:2px solid #fff;
+  border-radius:50%;
+  width:28px!important;
+  height:28px!important;
+  display:flex!important;
+  align-items:center;
+  justify-content:center;
+  font-size:14px;
+  box-shadow:0 4px 12px rgba(176,42,92,.45);
+}
+.leaflet-marker-delivery{
+  background:#2563eb;
+  color:#fff;
+  border:2px solid #fff;
+  border-radius:50% 50% 50% 0;
+  transform:rotate(-45deg);
+  width:28px!important;
+  height:28px!important;
+  display:flex!important;
+  align-items:center;
+  justify-content:center;
+  font-size:13px;
+  box-shadow:0 4px 12px rgba(37,99,235,.4);
+}
+.leaflet-marker-delivery span{
+  transform:rotate(45deg);
+  display:block;
+  line-height:1;
+}
+
 @media(max-width:520px){
   .address-search-row{grid-template-columns:1fr}
   .address-search-btn{height:48px;width:100%}
@@ -1580,6 +1655,10 @@ body.dark-theme .topbar {
 .review-back{width:100%;}
 
 </style>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
 </head>
 
 <body>
@@ -1852,7 +1931,11 @@ body.dark-theme .topbar {
               <input id="ckAddressQuery" type="search" enterkeyhint="search" autocomplete="street-address" data-i18n-placeholder="addressQueryPlaceholder" placeholder="Например: Бебеля 130" aria-label="Быстрый поиск адреса">
               <button type="button" class="address-search-btn" id="addressSearchBtn" data-i18n="addressSearch">Найти</button>
             </div>
-            <p class="address-hint-tiny" data-i18n="addressQueryHint">Можно ввести улицу и дом одной строкой или заполнить поля ниже.</p>
+            <p class="address-hint-tiny" data-i18n="addressQueryHint">Можно ввести улицу и дом одной строкой, кликнуть по карте или перетащить метку.</p>
+            <div class="address-map-canvas-wrap">
+              <div id="deliveryMap" role="application" aria-label="Карта выбора адреса доставки"></div>
+              <div class="address-map-tip" data-i18n="mapTip">Нажмите на карту или перетащите синюю метку</div>
+            </div>
             <div class="address-required-grid">
               <div class="address-field">
                 <label for="ckStreet" data-i18n="streetLabel">Улица*</label>
@@ -2052,7 +2135,8 @@ const I18N = {
     addressCardTitle: "Куда доставить?",
     addressCardSubtitle: "Укажите улицу и дом в Екатеринбурге — мы рассчитаем доставку по расстоянию",
     addressQueryPlaceholder: "Например: Бебеля 130",
-    addressQueryHint: "Можно ввести улицу и дом одной строкой или заполнить поля ниже.",
+    addressQueryHint: "Можно ввести улицу и дом одной строкой, кликнуть по карте или перетащить метку.",
+    mapTip: "Нажмите на карту или перетащите синюю метку",
     privateHouse: "Это частный дом",
     apartmentLabel: "Квартира*",
     apartmentPlaceholder: "№ квартиры",
@@ -2181,7 +2265,8 @@ const I18N = {
     addressCardTitle: "Where to deliver?",
     addressCardSubtitle: "Enter street and building in Yekaterinburg — we calculate delivery by distance",
     addressQueryPlaceholder: "E.g. Bebelya 130",
-    addressQueryHint: "Type street and house in one line, or fill the fields below.",
+    addressQueryHint: "Type street and house in one line, click the map, or drag the pin.",
+    mapTip: "Tap the map or drag the blue pin",
     privateHouse: "This is a private house",
     apartmentLabel: "Apartment*",
     apartmentPlaceholder: "Apartment number",
@@ -2466,10 +2551,17 @@ function productPromoPrice(product){
 const DELIVERY_HOME = [56.854232, 60.555415]; // Екатеринбург, ул. Бебеля, 130
 const PHOTON_URL = "https://photon.komoot.io/api/";
 const NOMINATIM_URL = "https://nominatim.openstreetmap.org/search";
-const OSRM_URL = "https://router.project-osrm.org/route/v1/driving/";
+const NOMINATIM_REVERSE_URL = "https://nominatim.openstreetmap.org/reverse";
+// Distance via Valhalla (OpenStreetMap public instance) — instead of OSRM
+const VALHALLA_URL = "https://valhalla1.openstreetmap.de/route";
 let deliveryDistanceKm = null;
 let deliveryCoords = null;
 let geocodeInFlight = false;
+let deliveryMap = null;
+let homeMarker = null;
+let deliveryMarker = null;
+let routeLayer = null;
+let mapInitialized = false;
 
 function deliveryPriceByDistance(distanceKm){
   const d = Number(distanceKm);
@@ -2625,14 +2717,223 @@ async function nominatimSearch(street,house){
   throw new Error("Nominatim address not found");
 }
 
+function decodeValhallaPolyline(str, precision=6){
+  // Valhalla uses 6-precision polyline6 encoding
+  let index = 0, lat = 0, lng = 0;
+  const coordinates = [];
+  const factor = Math.pow(10, precision);
+  while (index < str.length) {
+    let result = 0, shift = 0, b;
+    do {
+      b = str.charCodeAt(index++) - 63;
+      result |= (b & 0x1f) << shift;
+      shift += 5;
+    } while (b >= 0x20);
+    const dlat = (result & 1) ? ~(result >> 1) : (result >> 1);
+    lat += dlat;
+    result = 0; shift = 0;
+    do {
+      b = str.charCodeAt(index++) - 63;
+      result |= (b & 0x1f) << shift;
+      shift += 5;
+    } while (b >= 0x20);
+    const dlng = (result & 1) ? ~(result >> 1) : (result >> 1);
+    lng += dlng;
+    coordinates.push([lat / factor, lng / factor]);
+  }
+  return coordinates;
+}
+
 async function calculateRoadDistanceKm(coords){
-  const url=`${OSRM_URL}${DELIVERY_HOME[1]},${DELIVERY_HOME[0]};${coords[1]},${coords[0]}?overview=false&steps=false`;
-  const r=await fetch(url,{headers:{Accept:"application/json"}});
-  if(!r.ok) throw new Error(`OSRM ${r.status}`);
-  const data=await r.json();
-  const meters=Number(data?.routes?.[0]?.distance);
-  if(!Number.isFinite(meters)) throw new Error("Route not found");
-  return meters/1000;
+  // Valhalla public OSM instance — road distance (km)
+  const body = {
+    locations: [
+      { lat: DELIVERY_HOME[0], lon: DELIVERY_HOME[1] },
+      { lat: coords[0], lon: coords[1] }
+    ],
+    costing: "auto",
+    directions_options: { units: "kilometers" }
+  };
+  const r = await fetch(VALHALLA_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify(body)
+  });
+  if (!r.ok) throw new Error(`Valhalla ${r.status}`);
+  const data = await r.json();
+  const km = Number(data?.trip?.summary?.length);
+  if (!Number.isFinite(km)) throw new Error("Route not found");
+  // optional geometry for map
+  try {
+    const shape = data?.trip?.legs?.[0]?.shape;
+    if (shape && deliveryMap) {
+      const latlngs = decodeValhallaPolyline(shape, 6);
+      if (routeLayer) {
+        deliveryMap.removeLayer(routeLayer);
+        routeLayer = null;
+      }
+      if (latlngs.length > 1) {
+        routeLayer = L.polyline(latlngs, {
+          color: "#b02a5c",
+          weight: 4,
+          opacity: 0.75,
+          lineJoin: "round"
+        }).addTo(deliveryMap);
+        deliveryMap.fitBounds(routeLayer.getBounds().pad(0.15));
+      }
+    }
+  } catch (_) {}
+  return km;
+}
+
+async function reverseGeocode(lat, lon){
+  const params = new URLSearchParams({
+    lat: String(lat),
+    lon: String(lon),
+    format: "jsonv2",
+    addressdetails: "1",
+    "accept-language": currentLanguage === "en" ? "en" : "ru"
+  });
+  const r = await fetch(`${NOMINATIM_REVERSE_URL}?${params}`, {
+    headers: { Accept: "application/json" }
+  });
+  if (!r.ok) throw new Error("reverse failed");
+  const data = await r.json();
+  const addr = data?.address || {};
+  const street = String(addr.road || addr.pedestrian || addr.residential || addr.street || "").trim();
+  const house = String(addr.house_number || "").trim();
+  const display = String(data?.display_name || "").trim();
+  return { street, house, display, raw: data };
+}
+
+function ensureDeliveryMap(){
+  if (mapInitialized || typeof L === "undefined") return;
+  const el = document.getElementById("deliveryMap");
+  if (!el) return;
+  deliveryMap = L.map(el, {
+    zoomControl: true,
+    attributionControl: true,
+    scrollWheelZoom: false
+  }).setView(DELIVERY_HOME, 13);
+
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+  }).addTo(deliveryMap);
+
+  const homeIcon = L.divIcon({
+    className: "",
+    html: '<div class="leaflet-marker-home" title="Малина">🍰</div>',
+    iconSize: [28, 28],
+    iconAnchor: [14, 14]
+  });
+  homeMarker = L.marker(DELIVERY_HOME, { icon: homeIcon, interactive: false }).addTo(deliveryMap);
+  homeMarker.bindTooltip(currentLanguage === "en" ? "Pastry house" : "Кондитерский дом", { permanent: false });
+
+  const deliveryIcon = L.divIcon({
+    className: "",
+    html: '<div class="leaflet-marker-delivery"><span>📍</span></div>',
+    iconSize: [28, 28],
+    iconAnchor: [14, 28]
+  });
+
+  deliveryMap.on("click", async (e) => {
+    await setDeliveryPointFromMap(e.latlng.lat, e.latlng.lng, true);
+  });
+
+  // enable scroll zoom only when map focused
+  deliveryMap.on("focus", () => deliveryMap.scrollWheelZoom.enable());
+  deliveryMap.on("blur", () => deliveryMap.scrollWheelZoom.disable());
+  el.addEventListener("mouseenter", () => deliveryMap.scrollWheelZoom.enable());
+  el.addEventListener("mouseleave", () => deliveryMap.scrollWheelZoom.disable());
+
+  mapInitialized = true;
+  setTimeout(() => deliveryMap.invalidateSize(), 80);
+}
+
+function placeDeliveryMarker(lat, lon){
+  if (!deliveryMap || typeof L === "undefined") return;
+  const latlng = [lat, lon];
+  const deliveryIcon = L.divIcon({
+    className: "",
+    html: '<div class="leaflet-marker-delivery"><span>📍</span></div>',
+    iconSize: [28, 28],
+    iconAnchor: [14, 28]
+  });
+  if (deliveryMarker) {
+    deliveryMarker.setLatLng(latlng);
+  } else {
+    deliveryMarker = L.marker(latlng, { icon: deliveryIcon, draggable: true }).addTo(deliveryMap);
+    deliveryMarker.on("dragend", async () => {
+      const p = deliveryMarker.getLatLng();
+      await setDeliveryPointFromMap(p.lat, p.lng, true);
+    });
+  }
+  deliveryMap.setView(latlng, Math.max(deliveryMap.getZoom(), 15));
+}
+
+async function setDeliveryPointFromMap(lat, lon, doReverse){
+  if (geocodeInFlight) return;
+  geocodeInFlight = true;
+  const btn = document.getElementById("calculateDeliveryBtn");
+  const prev = btn?.textContent;
+  if (btn) { btn.disabled = true; btn.textContent = t("calculatingDelivery"); }
+  try {
+    placeDeliveryMarker(lat, lon);
+    deliveryCoords = [lat, lon];
+    if (doReverse) {
+      setAddressMapStatus(t("addressLooking"));
+      try {
+        const rev = await reverseGeocode(lat, lon);
+        if (rev.street) document.getElementById("ckStreet").value = rev.street;
+        if (rev.house) document.getElementById("ckHouse").value = rev.house;
+        const q = document.getElementById("ckAddressQuery");
+        if (q && (rev.street || rev.display)) {
+          q.value = rev.house ? `${rev.street} ${rev.house}` : (rev.street || rev.display.split(",")[0]);
+        }
+        ["ckStreet","ckHouse"].forEach(id => document.getElementById(id)?.classList?.remove("invalid"));
+      } catch (_) {
+        // keep coords even if reverse fails
+      }
+    }
+    setAddressMapStatus(t("addressFoundCalc"));
+    try {
+      deliveryDistanceKm = await calculateRoadDistanceKm([lat, lon]);
+    } catch {
+      deliveryDistanceKm = haversineKm(DELIVERY_HOME, [lat, lon]) * 1.25;
+      if (routeLayer && deliveryMap) {
+        deliveryMap.removeLayer(routeLayer);
+        routeLayer = null;
+      }
+    }
+    updateDeliveryDistanceUI();
+    renderCart();
+    setAddressMapStatus(t("addressFoundOk"), false, true);
+  } catch (err) {
+    setAddressMapStatus(t("addressNotFound"), true);
+  } finally {
+    geocodeInFlight = false;
+    if (btn) { btn.disabled = false; btn.textContent = prev || t("calculateDelivery"); }
+  }
+}
+
+function clearMapRouteAndMarker(){
+  if (routeLayer && deliveryMap) {
+    deliveryMap.removeLayer(routeLayer);
+    routeLayer = null;
+  }
+  if (deliveryMarker && deliveryMap) {
+    deliveryMap.removeLayer(deliveryMarker);
+    deliveryMarker = null;
+  }
+  if (deliveryMap) {
+    deliveryMap.setView(DELIVERY_HOME, 13);
+  }
+}
+
+function refreshDeliveryMapSize(){
+  if (!mapInitialized) ensureDeliveryMap();
+  if (deliveryMap) setTimeout(() => deliveryMap.invalidateSize(), 120);
 }
 
 function parseAddressQuery(query){
@@ -2696,11 +2997,17 @@ async function geocodeDeliveryAddress(){
     }
     fillAddressFields(found.parts);
     deliveryCoords = found.coords;
+    ensureDeliveryMap();
+    placeDeliveryMarker(found.coords[0], found.coords[1]);
     setAddressMapStatus(t("addressFoundCalc"));
     try{
       deliveryDistanceKm = await calculateRoadDistanceKm(found.coords);
     }catch{
-      deliveryDistanceKm = haversineKm(DELIVERY_HOME, found.coords) * 1.2;
+      deliveryDistanceKm = haversineKm(DELIVERY_HOME, found.coords) * 1.25;
+      if (routeLayer && deliveryMap) {
+        deliveryMap.removeLayer(routeLayer);
+        routeLayer = null;
+      }
     }
     updateDeliveryDistanceUI();
     renderCart();
@@ -2726,6 +3033,7 @@ function resetDeliveryAddressState(){
   const ph = document.getElementById("privateHouse");
   if(ph) ph.checked = false;
   document.getElementById("apartmentFields")?.classList.remove("hidden");
+  clearMapRouteAndMarker();
   updateDeliveryDistanceUI();
   setAddressMapStatus(t("addressMapHint"));
 }
@@ -3392,6 +3700,8 @@ function showView(v){
   if(v === "form"){
     orderStatus.textContent = "";
     cartOrderRecap.textContent = "";
+    const isDelivery = document.querySelector('input[name="method"]:checked')?.value === "Доставка";
+    if (isDelivery) refreshDeliveryMapSize();
   }
   updateMainButton();
 }
@@ -3412,6 +3722,7 @@ document.querySelectorAll('input[name="method"]').forEach(r =>
     if(isDelivery){
       document.getElementById("ckStreet")?.setAttribute("required","required");
       document.getElementById("ckHouse")?.setAttribute("required","required");
+      refreshDeliveryMapSize();
     } else {
       document.getElementById("ckStreet")?.removeAttribute("required");
       document.getElementById("ckHouse")?.removeAttribute("required");
