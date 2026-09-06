@@ -2132,6 +2132,13 @@ body:not(.pending):not(.denied) #accessLoading{display:none!important}
   .home-trigger{width:44px!important;height:44px!important}
 }
 
+
+.order-created{margin-top:4px;font-size:10px;color:var(--muted)}
+.order-card-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.order-section{margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.order-section-title{font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:9px}
+.order-lines{display:grid;gap:7px}.order-lines>div,.order-totals>div{display:flex;justify-content:space-between;gap:12px;line-height:1.35}.order-lines span,.order-totals span{color:var(--muted);font-size:11px}.order-lines strong,.order-totals strong{font-size:12px;text-align:right;word-break:break-word}.order-items{display:grid;gap:7px}.order-item-row{display:flex;justify-content:space-between;gap:12px;padding:9px 10px;border-radius:12px;background:var(--bg)}.order-item-main{min-width:0;display:grid;gap:2px}.order-item-name{font-size:12px;font-weight:800;overflow-wrap:anywhere}.order-item-qty{font-size:10px;color:var(--muted)}.order-item-sum{font-size:12px;font-weight:900;white-space:nowrap}.order-empty-inline{font-size:11px;color:var(--muted)}.order-discounts{display:grid;gap:7px}.order-discount-row{display:flex;justify-content:space-between;gap:12px;align-items:center;font-size:11px}.order-discount-row strong{color:var(--accent)}.order-discount-row b{color:var(--text)}.order-totals{display:grid;gap:7px}.order-totals .total-discount span,.order-totals .total-discount strong{color:var(--accent)}.order-grand-total{margin-top:5px;padding-top:10px;border-top:1px solid var(--line)}.order-grand-total span{font-size:12px!important;color:var(--text)!important;font-weight:900}.order-grand-total strong{font-size:17px!important}
+@media(max-width:699px){.order-card-top{align-items:flex-start}.order-total{font-size:16px}.order-item-row{padding:8px 9px}}
 </style>
 </head>
 
@@ -5500,7 +5507,54 @@ async function savePromoCodeForm(e){e.preventDefault();const code=document.getEl
 async function deletePromoCodeById(id){if(!confirm("Удалить этот промокод?"))return;try{await managementApi("promo_codes","DELETE",null,id);toast("Промокод удалён");await loadPromoCodes()}catch(e){toast(e.message,true)}}
 async function loadOrders(){ordersList.innerHTML='<div class="state"><div class="state-icon">⏳</div><div class="state-title">Загружаем заказы…</div></div>';try{const r=await managementApi("orders");managementOrders=r.orders||[];renderOrders()}catch(e){ordersList.innerHTML=`<div class="state"><div class="state-icon">⚠️</div><div class="state-title">Не удалось загрузить заказы</div><div class="state-text">${escapeHtml(e.message)}</div></div>`;toast(e.message,true)}}
 const ORDER_STATUS_LABELS={new:"Новый",confirmed:"Подтверждён",completed:"Выполнен",cancelled:"Отменён"};
-function renderOrders(){if(!managementOrders.length){ordersList.innerHTML='<div class="state"><div class="state-icon">📦</div><div class="state-title">Заказов пока нет</div></div>';return}ordersList.innerHTML=managementOrders.map(o=>`<div class="order-card"><div class="order-head"><div><div class="order-number">Заказ #${escapeHtml(o.order_number)} <span class="status-pill ${o.status==='cancelled'?'off':''}">${escapeHtml(ORDER_STATUS_LABELS[o.status]||o.status)}</span></div><div class="order-meta">${fmtDateTime(o.created_at)} · ${escapeHtml(o.customer_name||'Без имени')} · ${escapeHtml(o.method||'')}${o.address?`<br>${escapeHtml(o.address)}`:''}<br>${o.phone?escapeHtml(o.phone):''}${o.promo_code?` · 🏷️ ${escapeHtml(o.promo_code)}`:''}</div></div><div class="order-total">${formatPrice(o.total)}</div></div>${Number(o.discount||0)>0?`<div class="order-meta"><span class="order-discount">Скидка −${formatPrice(o.discount)}</span> · Товары ${formatPrice(o.subtotal)} · Доставка ${formatPrice(o.delivery_fee)}</div>`:''}<div style="margin-top:12px"><select class="order-select" data-order-status="${o.id}"><option value="new" ${o.status==='new'?'selected':''}>Новый</option><option value="confirmed" ${o.status==='confirmed'?'selected':''}>Подтверждён</option><option value="completed" ${o.status==='completed'?'selected':''}>Выполнен</option><option value="cancelled" ${o.status==='cancelled'?'selected':''}>Отменён</option></select></div></div>`).join("")}
+function renderOrders(){
+  if(!managementOrders.length){
+    ordersList.innerHTML='<div class="state"><div class="state-icon">📦</div><div class="state-title">Заказов пока нет</div></div>';
+    return;
+  }
+  ordersList.innerHTML=managementOrders.map(o=>{
+    const items=Array.isArray(o.items)?o.items:[];
+    const promos=Array.isArray(o.promotions)?o.promotions:[];
+    const tg=o.telegram_username?`@${escapeHtml(String(o.telegram_username).replace(/^@/,''))}`:'Не указан';
+    const itemRows=items.length?items.map(i=>`<div class="order-item-row"><div class="order-item-main"><span class="order-item-name">${escapeHtml(i.product_name||'Товар')}</span><span class="order-item-qty">${Number(i.quantity)||0} × ${formatPrice(i.price)}</span></div><span class="order-item-sum">${formatPrice(i.subtotal)}</span></div>`).join(''):'<div class="order-empty-inline">Состав заказа не найден</div>';
+    const promoRows=promos.map(p=>`<div class="order-discount-row"><span>🔥 ${escapeHtml(p.promotion_name||'Акция')}</span><strong>${Number(p.discount||0)>0?`−${formatPrice(p.discount)}`:'Применена'}</strong></div>`).join('');
+    const promoCode=o.promo_code?`<div class="order-discount-row"><span>🏷️ Промокод <b>${escapeHtml(o.promo_code)}</b></span><strong>−${formatPrice(o.discount||0)}</strong></div>`:'';
+    const totalDiscount=Number(o.discount||0);
+    return `<article class="order-card">
+      <div class="order-card-top">
+        <div>
+          <div class="order-number">Заказ №${escapeHtml(o.order_number||'—')} <span class="status-pill ${o.status==='cancelled'?'off':''}">${escapeHtml(ORDER_STATUS_LABELS[o.status]||o.status)}</span></div>
+          <div class="order-created">${fmtDateTime(o.created_at)}</div>
+        </div>
+        <div class="order-total">${formatPrice(o.total)}</div>
+      </div>
+      <div class="order-section">
+        <div class="order-section-title">Клиент</div>
+        <div class="order-lines">
+          <div><span>Имя</span><strong>${escapeHtml(o.customer_name||'Не указано')}</strong></div>
+          <div><span>Телефон</span><strong>${escapeHtml(o.phone||'Не указан')}</strong></div>
+          <div><span>Telegram</span><strong>${tg}</strong></div>
+          <div><span>Получение</span><strong>${escapeHtml(o.method||'—')}</strong></div>
+          ${o.address?`<div><span>Адрес</span><strong>${escapeHtml(o.address)}</strong></div>`:''}
+          ${o.pickup_date?`<div><span>Дата</span><strong>${escapeHtml(o.pickup_date)}</strong></div>`:''}
+          ${o.comment?`<div><span>Комментарий</span><strong>${escapeHtml(o.comment)}</strong></div>`:''}
+        </div>
+      </div>
+      <div class="order-section">
+        <div class="order-section-title">Состав заказа</div>
+        <div class="order-items">${itemRows}</div>
+      </div>
+      ${(promoRows||promoCode)||totalDiscount>0?`<div class="order-section"><div class="order-section-title">Скидки</div><div class="order-discounts">${promoRows}${promoCode}${!promoRows&&!promoCode&&totalDiscount>0?`<div class="order-discount-row"><span>Скидка</span><strong>−${formatPrice(totalDiscount)}</strong></div>`:''}</div></div>`:''}
+      <div class="order-section order-totals">
+        <div><span>Товары</span><strong>${formatPrice(o.subtotal||0)}</strong></div>
+        <div><span>Доставка</span><strong>${Number(o.delivery_fee||0)>0?formatPrice(o.delivery_fee):'Бесплатно'}</strong></div>
+        ${totalDiscount>0?`<div class="total-discount"><span>Скидка</span><strong>−${formatPrice(totalDiscount)}</strong></div>`:''}
+        <div class="order-grand-total"><span>Итого</span><strong>${formatPrice(o.total||0)}</strong></div>
+      </div>
+      <select class="order-select" data-order-status="${o.id}"><option value="new" ${o.status==='new'?'selected':''}>Новый</option><option value="confirmed" ${o.status==='confirmed'?'selected':''}>Подтверждён</option><option value="completed" ${o.status==='completed'?'selected':''}>Выполнен</option><option value="cancelled" ${o.status==='cancelled'?'selected':''}>Отменён</option></select>
+    </article>`;
+  }).join('');
+}
 
 const promotionsNavButton=document.getElementById("promotionsNavButton"),promoCodesNavButton=document.getElementById("promoCodesNavButton"),ordersNavButton=document.getElementById("ordersNavButton");
 catalogNavButton.addEventListener("click",()=>{hideExtraPanels();catalogPanel.classList.remove("hidden");setActiveNav(catalogNavButton)});
