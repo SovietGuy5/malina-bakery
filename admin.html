@@ -2059,6 +2059,79 @@ body:not(.pending):not(.denied) #accessLoading{display:none!important}
 
 @media(max-width:700px){.menu-row{padding:8px 12px 0}.menu-drawer{top:116px;left:12px;right:12px}}
 @media(min-width:701px){.menu-drawer{left:max(16px,calc(50% - 574px));right:auto;width:min(420px,calc(100vw - 32px));top:118px}.menu-row{padding-left:22px;padding-right:22px}}
+
+/* FINAL MENU / HOME FIXES */
+.menu-row{
+  display:flex!important;
+  align-items:center!important;
+  gap:10px!important;
+  width:100%!important;
+  padding:8px 14px!important;
+  margin:0 0 8px!important;
+}
+.home-trigger{
+  width:44px!important;
+  height:44px!important;
+  min-width:44px!important;
+  flex:0 0 44px!important;
+  border-radius:14px!important;
+  background:var(--card)!important;
+  border:1px solid var(--line)!important;
+  color:var(--text)!important;
+  box-shadow:0 8px 24px rgba(0,0,0,.10)!important;
+}
+.home-trigger:hover{
+  color:var(--accent)!important;
+  border-color:color-mix(in srgb,var(--accent) 35%,var(--line))!important;
+}
+#menuTrigger.menu-trigger{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  width:auto!important;
+  height:44px!important;
+  flex:1 1 auto!important;
+  padding:0 15px!important;
+  border-radius:14px!important;
+  background:var(--card)!important;
+  border:1px solid var(--line)!important;
+  color:var(--text)!important;
+  box-shadow:0 8px 24px rgba(0,0,0,.10)!important;
+}
+#menuTrigger.menu-trigger:hover{
+  border-color:color-mix(in srgb,var(--accent) 35%,var(--line))!important;
+}
+#menuTrigger .menu-bars{display:none!important}
+#menuTrigger .menu-label{
+  font-size:14px!important;
+  font-weight:850!important;
+  letter-spacing:-.01em;
+}
+#menuTrigger .menu-chevron{
+  display:inline-grid!important;
+  place-items:center!important;
+  width:24px!important;
+  height:24px!important;
+  border-radius:8px!important;
+  background:var(--bg)!important;
+  color:var(--muted)!important;
+  font-size:17px!important;
+  line-height:1!important;
+  transition:transform .18s ease,background .18s ease,color .18s ease;
+}
+#menuTrigger[aria-expanded="true"] .menu-chevron{
+  transform:rotate(180deg);
+  color:var(--accent)!important;
+  background:var(--accent-soft)!important;
+}
+@media(min-width:701px){
+  .menu-row{max-width:1320px;margin:0 auto 8px!important;padding-left:22px!important;padding-right:22px!important}
+}
+@media(max-width:700px){
+  .menu-row{padding:8px 12px!important}
+  .home-trigger{width:44px!important;height:44px!important}
+}
+
 </style>
 </head>
 
@@ -2145,8 +2218,8 @@ body:not(.pending):not(.denied) #accessLoading{display:none!important}
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 10.4 12 3.7l8.5 6.7v9a1.6 1.6 0 0 1-1.6 1.6h-4.4v-6.2H9.5V21H5.1a1.6 1.6 0 0 1-1.6-1.6v-9Z"/><path d="M9 21v-6.2h6V21"/></svg>
   </button>
   <button id="menuTrigger" class="menu-trigger" type="button" aria-label="Открыть меню" aria-expanded="false">
-    <span class="menu-bars" aria-hidden="true"><i></i><i></i><i></i></span>
-    <span>Меню</span>
+    <span class="menu-label">Меню</span>
+    <span class="menu-chevron" aria-hidden="true">⌄</span>
   </button>
 </div>
 <div id="menuBackdrop" class="menu-backdrop"></div>
@@ -5495,7 +5568,17 @@ function showHome(){
 }
 function hideHome(){ if(homePanel) homePanel.hidden=true; }
 homeTrigger?.addEventListener('click',showHome);
-document.querySelectorAll('[data-home-target]').forEach(card=>card.addEventListener('click',()=>document.getElementById(card.dataset.homeTarget)?.click()));
+document.querySelectorAll('[data-home-target]').forEach(card=>card.addEventListener('click',()=>{
+  const target=card.dataset.homeTarget;
+  const actions={
+    catalogNavButton:()=>showCatalog(),
+    promotionsNavButton:()=>{showManagementPanel(promotionsPanel,promotionsNavButton);loadManagementProducts().then(loadPromotions)},
+    promoCodesNavButton:()=>{showManagementPanel(promoCodesPanel,promoCodesNavButton);loadPromoCodes()},
+    ordersNavButton:()=>{showManagementPanel(ordersPanel,ordersNavButton);loadOrders()},
+    adminsNavButton:()=>showAdmins()
+  };
+  actions[target]?.();
+}));
 
 /* ============================================================
    COMPACT MENU
