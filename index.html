@@ -1347,17 +1347,7 @@ body.dark-theme .topbar {
   </div>
 </section>
 
-<section class="section hidden" id="promotionsSection">
-  <div class="wrap">
-    <div class="section-head">
-      <div>
-        <h2 data-i18n="promotionsTitle">🔥 Акции</h2>
-        <p data-i18n="promotionsSubtitle">Специальные предложения, которые действуют сейчас.</p>
-      </div>
-    </div>
-    <div class="feature" id="promotionsGrid"></div>
-  </div>
-</section>
+
 
 <section class="section">
   <div class="wrap">
@@ -1381,6 +1371,18 @@ body.dark-theme .topbar {
     </div>
     <div class="filters" id="filtersContainer"></div>
     <div class="products" id="prodGrid"></div>
+  </div>
+</section>
+
+<section class="section hidden" id="promotionsSection">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <h2 data-i18n="promotionsTitle">🔥 Акции</h2>
+        <p data-i18n="promotionsSubtitle">Все действующие предложения в одном разделе.</p>
+      </div>
+    </div>
+    <div class="feature" id="promotionsGrid"></div>
   </div>
 </section>
 
@@ -1411,7 +1413,7 @@ body.dark-theme .topbar {
       <div class="feature-card">
         <div class="feature-icon">📦</div>
         <h3 data-i18n="step4Title">Условия доставки</h3>
-        <p data-i18n="deliveryTiersInfo">До 500 ₽ — 200 ₽ | До 1000 ₽ — 150 ₽ | До 2000 ₽ — 100 ₽ | От 2000 ₽ — бесплатно</p>
+        <p data-i18n="deliveryTiersInfo">Базовая доставка — 200 ₽. Скидка на доставку применяется по условиям акции.</p>
       </div>
     </div>
   </div>
@@ -1653,7 +1655,7 @@ const I18N = {
     telegramChannel: "Канал Telegram: @MalinaDessert",
     telegramBot: "Бот Telegram: @MalinaBakeryBot",
     deliveryTiersTitle: "Стоимость доставки",
-    deliveryTiersInfo: "До 500 ₽ — 200 ₽ | До 1000 ₽ — 150 ₽ | До 2000 ₽ — 100 ₽ | От 2000 ₽ — бесплатно",
+    deliveryTiersInfo: "Базовая доставка — 200 ₽. Скидка на доставку применяется по условиям акции.",
     clearCart: "Очистить корзину",
     total: "Итого",
     checkout: "Оформить заказ",
@@ -1706,7 +1708,7 @@ const I18N = {
     readMore: "Развернуть",
     collapse: "Свернуть",
     promotionsTitle: "🔥 Акции",
-    promotionsSubtitle: "Специальные предложения, которые действуют сейчас.",
+    promotionsSubtitle: "Все действующие предложения в одном разделе.",
     promotionFrom: "Акция",
     freeDeliveryPromo: "Бесплатная доставка",
     automaticDiscountText: "Скидка по акции"
@@ -1741,7 +1743,7 @@ const I18N = {
     telegramChannel: "Telegram channel: @MalinaDessert",
     telegramBot: "Telegram bot: @MalinaBakeryBot",
     deliveryTiersTitle: "Delivery cost",
-    deliveryTiersInfo: "Under 500 ₽ — 200 ₽ | Under 1000 ₽ — 150 ₽ | Under 2000 ₽ — 100 ₽ | From 2000 ₽ — free",
+    deliveryTiersInfo: "Base delivery — 200 ₽. Delivery discounts are applied according to active promotions.",
     clearCart: "Clear cart",
     total: "Total",
     checkout: "Checkout",
@@ -2005,82 +2007,45 @@ function productPromoPrice(product){
 }
 
 function deliveryBaseFee(subtotal, method){
-  if(method !== "Доставка") return 0;
-  if(subtotal < 500) return 200;
-  if(subtotal < 1000) return 150;
-  if(subtotal < 2000) return 100;
-  return 0;
+  return method === "Доставка" ? 200 : 0;
 }
 
 function automaticPromoQuote(){
-  const subtotal = cart.reduce((s,i) => s + i.priceNum * i.qty, 0);
+  const subtotal = cart.reduce((sum,i)=>sum+i.priceNum*i.qty,0);
   const method = document.querySelector('input[name="method"]:checked')?.value || "Доставка";
-  const baseDelivery = deliveryBaseFee(subtotal, method);
-  let bestSaving = 0;
-  let discount = 0;
-  let deliveryFee = baseDelivery;
-  let promo = null;
+  const baseDelivery = deliveryBaseFee(subtotal,method);
+  let bestSaving=0, discount=0, deliveryFee=baseDelivery, promo=null;
+  if(method !== "Доставка" || baseDelivery<=0) return {subtotal,discount,deliveryFee,promo,deliveryFree:false,deliverySaving:0,baseDelivery};
   for(const p of activePromotions){
-    if(subtotal < Number(p.min_order_amount || 0)) continue;
-    let saving = 0, productDiscount = 0, candidateDelivery = baseDelivery;
-    if(p.promotion_type === "free_delivery" && method === "Доставка") {
-      candidateDelivery = 0; saving = baseDelivery;
-    } else if(p.promotion_type === "delivery_discount" && method === "Доставка") {
-      saving = p.discount_type === "percent" ? baseDelivery * Number(p.discount_value||0)/100 : Number(p.discount_value||0);
-      if(p.max_discount != null) saving = Math.min(saving, Number(p.max_discount));
-      saving = Math.min(baseDelivery, Math.max(0, saving));
-      candidateDelivery = baseDelivery - saving;
-    } else if(p.promotion_type === "delivery_price" && method === "Доставка") {
-      candidateDelivery = Math.min(baseDelivery, Math.max(0, Number(p.discount_value||0)));
-      saving = baseDelivery - candidateDelivery;
-    } else if(p.promotion_type === "order_discount") {
-      productDiscount = p.discount_type === "percent" ? subtotal * Number(p.discount_value||0)/100 : Number(p.discount_value||0);
-      if(p.max_discount != null) productDiscount = Math.min(productDiscount, Number(p.max_discount));
-      saving = Math.min(subtotal, Math.max(0, productDiscount));
-    } else if(p.promotion_type === "product_discount" || p.promotion_type === "category_discount") {
-      for(const item of cart){
-        const product = allProducts.find(x => x.name === item.name);
-        if(!promotionAppliesToProduct(p, product)) continue;
-        const line = item.priceNum * item.qty;
-        productDiscount += p.discount_type === "percent" ? line * Number(p.discount_value||0)/100 : Math.min(line, Number(p.discount_value||0) * item.qty);
-      }
-      if(p.max_discount != null) productDiscount = Math.min(productDiscount, Number(p.max_discount));
-      saving = Math.min(subtotal, Math.max(0, productDiscount));
-    } else if(p.promotion_type === "bogo" || p.promotion_type === "second_item_discount") {
-      for(const item of cart){
-        const product = allProducts.find(x => x.name === item.name);
-        if(p.target_product_id && String(p.target_product_id) !== String(product?.id)) continue;
-        if(!p.target_product_id && p.target_category && String(p.target_category).toLowerCase() !== String(product?.category||"").toLowerCase()) continue;
-        const buy = Math.max(1, Number(p.buy_quantity || 2));
-        const reward = Math.max(1, Number(p.reward_quantity || 1));
-        if(item.qty < buy) continue;
-        const rewardQty = p.promotion_type === "bogo" ? Math.floor(item.qty/(buy+reward))*reward : Math.floor(item.qty/buy);
-        const pct = p.promotion_type === "bogo" ? 100 : Number(p.reward_discount_percent ?? 50);
-        productDiscount = Math.max(productDiscount, item.priceNum * rewardQty * pct / 100);
-      }
-      if(p.max_discount != null) productDiscount = Math.min(productDiscount, Number(p.max_discount));
-      saving = Math.min(subtotal, Math.max(0, productDiscount));
-    } else continue;
-    if(saving > bestSaving){ bestSaving = saving; discount = saving === (baseDelivery-candidateDelivery) && (p.promotion_type.startsWith("delivery") || p.promotion_type === "free_delivery") ? 0 : saving; deliveryFee = candidateDelivery; promo = p; }
+    if(p.promotion_type !== "delivery_bundle") continue;
+    if(p.starts_at && new Date(p.starts_at)>new Date()) continue;
+    if(p.expires_at && new Date(p.expires_at)<=new Date()) continue;
+    if(subtotal < Number(p.min_order_amount||0)) continue;
+    const rules=Array.isArray(p.delivery_rules)?p.delivery_rules:[];
+    const rule=rules.filter(r=>subtotal>=Number(r.min_order_amount||0)).sort((a,b)=>Number(b.min_order_amount||0)-Number(a.min_order_amount||0))[0];
+    if(!rule) continue;
+    let saving=Number(rule.discount_value||0);
+    if(rule.discount_type==="percent") saving=baseDelivery*saving/100;
+    saving=Math.min(baseDelivery,Math.max(0,saving));
+    if(saving>bestSaving){bestSaving=saving;deliveryFee=Math.max(0,baseDelivery-saving);discount=0;promo=p;}
   }
-  return {subtotal, discount:Math.round(discount*100)/100, deliveryFee, promo, deliveryFree:deliveryFee===0 && method==="Доставка", deliverySaving:Math.max(0, baseDelivery-deliveryFee), baseDelivery};
+  return {subtotal,discount:Math.round(discount*100)/100,deliveryFee:Math.round(deliveryFee*100)/100,promo,deliveryFree:deliveryFee===0&&method==="Доставка",deliverySaving:Math.round((baseDelivery-deliveryFee)*100)/100,baseDelivery};
 }
 
 function renderPromotions(){
-  const section = document.getElementById("promotionsSection");
-  const grid = document.getElementById("promotionsGrid");
-  if(!section || !grid) return;
-  const visible = activePromotions.filter(p => ["free_delivery","delivery_discount","delivery_price","order_discount","product_discount","category_discount","bogo","second_item_discount"].includes(p.promotion_type));
-  section.classList.toggle("hidden", !visible.length);
-  grid.innerHTML = visible.slice(0,6).map(p => {
-    let value = "";
-    if(p.promotion_type === "free_delivery") value = t("freeDeliveryPromo");
-    else if(p.promotion_type === "delivery_discount") value = p.discount_type === "percent" ? `Скидка ${Number(p.discount_value||0)}% на доставку` : `Скидка ${money(Number(p.discount_value||0))} на доставку`;
-    else if(p.promotion_type === "delivery_price") value = `Доставка ${money(Number(p.discount_value||0))}`;
-    else if(p.promotion_type === "bogo") value = "2+1";
-    else if(p.promotion_type === "second_item_discount") value = `−${Number(p.reward_discount_percent || 50)}%`;
-    else value = p.discount_type === "percent" ? `−${Number(p.discount_value||0)}%` : `−${money(Number(p.discount_value||0))}`;
-    return `<div class="feature-card"><div class="feature-icon">${escapeHtml(p.badge || "%")}</div><h3>${escapeHtml(p.name)}</h3><p>${escapeHtml(p.description || value)}</p><strong style="color:var(--accent);font-size:16px;">${escapeHtml(value)}</strong></div>`;
+  const section=document.getElementById("promotionsSection"),grid=document.getElementById("promotionsGrid");
+  if(!section||!grid)return;
+  const visible=activePromotions.filter(p=>["delivery_bundle","order_discount","product_discount","category_discount","bogo","second_item_discount"].includes(p.promotion_type));
+  section.classList.toggle("hidden",!visible.length);
+  grid.innerHTML=visible.slice(0,6).map(p=>{
+    let value="";
+    if(p.promotion_type==="delivery_bundle"){
+      const rules=Array.isArray(p.delivery_rules)?[...p.delivery_rules].sort((a,b)=>Number(a.min_order_amount||0)-Number(b.min_order_amount||0)):[];
+      value=rules.length?rules.map(r=>`от ${money(Number(r.min_order_amount||0))} · −${Number(r.discount_value||0)}${r.discount_type==="percent"?"%":" ₽"} доставки`).join(" · "):"Условия доставки";
+    } else if(p.promotion_type==="bogo") value="2+1";
+    else if(p.promotion_type==="second_item_discount") value=`−${Number(p.reward_discount_percent||50)}% на второй`;
+    else value=p.discount_type==="percent"?`−${Number(p.discount_value||0)}%`:`−${money(Number(p.discount_value||0))}`;
+    return `<div class="feature-card"><div class="feature-icon">${escapeHtml(p.badge||"%")}</div><h3>${escapeHtml(p.name)}</h3><p>${escapeHtml(p.description||value)}</p><strong style="color:var(--accent);font-size:16px;">${escapeHtml(value)}</strong></div>`;
   }).join("");
 }
 

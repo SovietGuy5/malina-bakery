@@ -2146,7 +2146,9 @@ body:not(.pending):not(.denied) #accessLoading{display:none!important}
 .order-delete-btn{height:40px;padding:0 13px;border-radius:12px;border:1px solid rgba(220,92,105,.28);background:rgba(220,92,105,.08);color:#e07883;font-weight:800;cursor:pointer;white-space:nowrap}
 .order-delete-btn:active{transform:scale(.98)}
 @media(max-width:520px){.order-actions{grid-template-columns:1fr}.order-delete-btn{width:100%}}
-</style>
+<style id="deliveryBundleStyles">
+.delivery-rules-editor{display:grid;gap:8px}.delivery-rule{display:grid;grid-template-columns:1fr 120px 36px;gap:8px;align-items:end;padding:10px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}.delivery-rule .field{margin:0}.delivery-rule .remove-rule{width:36px;height:40px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--danger);font-size:18px}.delivery-rules-add{width:100%;height:40px;border:1px dashed var(--accent);border-radius:11px;background:transparent;color:var(--accent);font-weight:800}.delivery-rules-note{margin-top:7px;color:var(--muted);font-size:11px;line-height:1.4}@media(max-width:699px){.delivery-rule{grid-template-columns:1fr 1fr 36px}}
+</style></style>
 
 <style id="final-menu-fix">
 /* FINAL MENU FIX — neutralize legacy burger pseudo-elements */
@@ -2494,16 +2496,14 @@ body:not(.pending):not(.denied) #accessLoading{display:none!important}
       <input id="promotionId" type="hidden">
 
       <div class="simple-section">
-        <div class="simple-label">Что даём клиенту?</div>
+        <div class="simple-label">Тип акции</div>
         <div class="quick-choice-row">
           <button type="button" class="quick-choice active" data-promo-type="product_discount"><span>🍰</span><strong>Скидка на товар</strong></button>
           <button type="button" class="quick-choice" data-promo-type="category_discount"><span>🧁</span><strong>Скидка на категорию</strong></button>
           <button type="button" class="quick-choice" data-promo-type="order_discount"><span>🛍️</span><strong>Скидка на заказ</strong></button>
           <button type="button" class="quick-choice" data-promo-type="second_item_discount"><span>🍰🍰</span><strong>Скидка на второй</strong></button>
           <button type="button" class="quick-choice" data-promo-type="bogo"><span>2+1</span><strong>Третий бесплатно</strong></button>
-          <button type="button" class="quick-choice" data-promo-type="free_delivery"><span>🚚</span><strong>Доставка бесплатно</strong></button>
-          <button type="button" class="quick-choice" data-promo-type="delivery_discount"><span>−🚚</span><strong>Скидка на доставку</strong></button>
-          <button type="button" class="quick-choice" data-promo-type="delivery_price"><span>💳</span><strong>Доставка за X ₽</strong></button>
+          <button type="button" class="quick-choice" data-promo-type="delivery_bundle"><span>🚚</span><strong>Доставка</strong></button>
         </div>
         <select id="promotionType" class="visually-hidden" aria-hidden="true" tabindex="-1">
           <option value="product_discount">product_discount</option>
@@ -2511,23 +2511,25 @@ body:not(.pending):not(.denied) #accessLoading{display:none!important}
           <option value="order_discount">order_discount</option>
           <option value="second_item_discount">second_item_discount</option>
           <option value="bogo">bogo</option>
-          <option value="free_delivery">free_delivery</option>
-          <option value="delivery_discount">delivery_discount</option>
-          <option value="delivery_price">delivery_price</option>
+          <option value="delivery_bundle">delivery_bundle</option>
         </select>
       </div>
 
       <div class="simple-section">
         <div class="simple-label">Настройка</div>
         <div class="management-grid">
-          <div class="field full"><label for="promotionName">Название</label><input id="promotionName" required placeholder="Например: 20% на чизкейки"></div>
+          <div class="field full"><label for="promotionName">Название</label><input id="promotionName" required placeholder="Например: −50% на доставку"></div>
           <div class="field hidden-field" id="promotionProductField"><label for="promotionProduct">Товар</label><select id="promotionProduct"><option value="">Выберите товар</option></select></div>
           <div class="field hidden-field" id="promotionCategoryField"><label for="promotionCategory">Категория</label><select id="promotionCategory"><option value="">Выберите категорию</option></select></div>
           <div class="field" id="promotionDiscountTypeField"><label for="promotionDiscountType">Размер скидки</label><div class="inline-control compact"><select id="promotionDiscountType"><option value="percent">%</option><option value="fixed">₽</option></select><input id="promotionValue" type="number" min="0" step="0.01" value="20" placeholder="20"></div></div>
           <div class="field hidden-field" id="promotionBuyField"><label for="promotionBuyQty">Количество для покупки</label><input id="promotionBuyQty" type="number" min="1" step="1" value="2"></div>
           <div class="field hidden-field" id="promotionRewardField"><label for="promotionRewardQty">Количество в подарок</label><input id="promotionRewardQty" type="number" min="1" step="1" value="1"></div>
           <div class="field hidden-field" id="promotionRewardDiscountField"><label for="promotionRewardDiscount">Скидка на второй</label><div class="suffix-control"><input id="promotionRewardDiscount" type="number" min="0" max="100" step="1" value="50"><span>%</span></div></div>
-          <div class="field hidden-field" id="promotionDeliveryPriceField"><label for="promotionDeliveryPrice">Цена доставки</label><div class="suffix-control"><input id="promotionDeliveryPrice" type="number" min="0" step="1" value="100"><span>₽</span></div></div>
+          <div class="field full hidden-field" id="promotionDeliveryRulesField">
+            <label>Уровни скидки на доставку</label>
+            <div id="deliveryRulesEditor" class="delivery-rules-editor"></div>
+            <div class="delivery-rules-note">Базовая доставка — 200 ₽. Уровень с большей суммой заказа применяется автоматически.</div>
+          </div>
         </div>
 
         <div class="optional-actions" id="promotionOptionalActions">
@@ -5584,53 +5586,11 @@ function showManagementPanel(panel,btn){
 function fmtDateTime(v){if(!v)return "Без ограничения";const d=new Date(v);return Number.isNaN(d.getTime())?"—":d.toLocaleString("ru-RU",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"})}
 function toLocalInput(v){if(!v)return "";const d=new Date(v);if(Number.isNaN(d.getTime()))return "";const z=n=>String(n).padStart(2,"0");return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}`}
 function localToIso(v,endOfDay=false){if(!v)return null;const d=new Date(`${v}T${endOfDay?"23:59:59":"00:00:00"}`);return Number.isNaN(d.getTime())?null:d.toISOString()}
-function promotionTypeLabel(t){return ({product_discount:"На товар",category_discount:"На категорию",order_discount:"На весь заказ",bogo:"2 + 1",second_item_discount:"На второй товар",free_delivery:"Бесплатная доставка",delivery_discount:"Скидка на доставку",delivery_price:"Доставка за фиксированную цену"})[t]||t}
-function promotionDiscountLabel(p){if(p.promotion_type==="free_delivery")return "Доставка бесплатно";if(p.promotion_type==="delivery_discount")return p.discount_type==="fixed"?`−${formatPrice(p.discount_value)} доставки`:`−${p.discount_value}% доставки`;if(p.promotion_type==="delivery_price")return `Доставка ${formatPrice(p.discount_value)}`;if(p.promotion_type==="bogo")return `${p.buy_quantity||2}+${p.reward_quantity||1}`;if(p.promotion_type==="second_item_discount")return `Второй −${p.reward_discount_percent??50}%`;return p.discount_type==="fixed"?`−${formatPrice(p.discount_value)}`:`−${p.discount_value}%`}
+function promotionTypeLabel(t){return ({product_discount:"На товар",category_discount:"На категорию",order_discount:"На весь заказ",bogo:"2 + 1",second_item_discount:"На второй товар",delivery_bundle:"Доставка"})[t]||t}
+function promotionDiscountLabel(p){if(p.promotion_type==="delivery_bundle"){const r=Array.isArray(p.delivery_rules)?p.delivery_rules:[];return r.length?`${r.length} уровня доставки`:"Настройка доставки";}if(p.promotion_type==="bogo")return `${p.buy_quantity||2}+${p.reward_quantity||1}`;if(p.promotion_type==="second_item_discount")return `Второй −${p.reward_discount_percent??50}%`;return p.discount_type==="fixed"?`−${formatPrice(p.discount_value)}`:`−${p.discount_value}%`}
 async function loadManagementProducts(){try{const r=await managementApi("products");managementProducts=r.products||[];refreshPromotionCategories();const s=document.getElementById("promotionProduct");s.innerHTML='<option value="">Выберите товар</option>'+managementProducts.map(p=>`<option value="${escapeAttr(p.id)}">${escapeHtml(p.name)} · ${formatPrice(p.price)}</option>`).join("")}catch(e){console.warn(e)}}
 async function loadPromotions(){promotionsList.innerHTML='<div class="state"><div class="state-icon">⏳</div><div class="state-title">Загружаем акции…</div></div>';try{const r=await managementApi("promotions");managementPromotions=r.promotions||[];renderPromotions()}catch(e){promotionsList.innerHTML=`<div class="state"><div class="state-icon">⚠️</div><div class="state-title">Не удалось загрузить акции</div><div class="state-text">${escapeHtml(e.message)}</div></div>`;toast(e.message,true)}}
-function renderPromotions(){if(!managementPromotions.length){promotionsList.innerHTML='<div class="state"><div class="state-icon">🔥</div><div class="state-title">Акций пока нет</div><div class="state-text">Создайте первую акцию — она начнёт применяться автоматически после сохранения.</div></div>';return}promotionsList.innerHTML=managementPromotions.map(p=>{const target=p.target_product_id?` · ${escapeHtml(managementProducts.find(x=>String(x.id)===String(p.target_product_id))?.name||"Товар")}`:(p.target_category?` · ${escapeHtml(p.target_category)}`:"");const dates=(p.starts_at||p.expires_at)?`${fmtDateTime(p.starts_at)} → ${fmtDateTime(p.expires_at)}`:"Без ограничения по датам";return `<div class="promo-card"><div class="promo-card-head"><div><div class="promo-card-title">${escapeHtml(p.name)} ${p.badge?`<span class="discount-pill">${escapeHtml(p.badge)}</span>`:""}</div><div class="promo-meta"><strong>${escapeHtml(promotionTypeLabel(p.promotion_type))}</strong> · ${escapeHtml(promotionDiscountLabel(p))}${target}<br>${p.min_order_amount>0?`От ${formatPrice(p.min_order_amount)} · `:""}${dates}</div></div><div class="promo-actions"><button class="mini-button" title="Изменить" data-edit-promo="${p.id}">✏️</button><button class="mini-button danger" title="Удалить" data-delete-promo="${p.id}">🗑</button></div></div><div style="margin-top:10px"><span class="status-pill ${p.is_active?'':'off'}">${p.is_active?'ВКЛЮЧЕНА':'ВЫКЛЮЧЕНА'}</span></div></div>`}).join("")}
-function refreshPromotionCategories(selected=""){
-  const s=document.getElementById("promotionCategory");
-  if(!s) return;
-  const categories=[...new Set((managementProducts||[]).map(p=>String(p.category||"").trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"ru"));
-  s.innerHTML='<option value="">Выберите категорию</option>'+categories.map(c=>`<option value="${escapeAttr(c)}">${escapeHtml(c)}</option>`).join("");
-  if(selected) s.value=selected;
-  syncPromotionCategoryVisual();
-}
-function syncPromotionCategoryVisual(){
-  const select=document.getElementById("promotionCategory");
-  const field=document.getElementById("promotionCategoryField");
-  if(!select||!field)return;
-  field.classList.toggle("has-selection",!!select.value);
-}
-function setOptionalField(key,on=true){
-  const map={min:"promotionMinOrderField",max:"promotionMaxDiscountField",badge:"promotionBadgeField",stack:"promotionStackField"};
-  const el=document.getElementById(map[key]); const btn=document.querySelector(`[data-optional="${key}"]`);
-  if(!el) return; el.classList.toggle("hidden-field",!on); if(btn) btn.classList.toggle("active",on);
-}
-function syncPromotionOptionalButtons(p=null){
-  const hasMin=p ? Number(p.min_order_amount||0)>0 : false;
-  const hasMax=p ? p.max_discount!==null && p.max_discount!==undefined && p.max_discount!=="" : false;
-  const hasBadge=p ? !!p.badge : false;
-  const hasStack=p ? p.stackable_with_promo_code===true : false;
-  setOptionalField("min",hasMin); setOptionalField("max",hasMax); setOptionalField("badge",hasBadge); setOptionalField("stack",hasStack);
-  const stack=document.getElementById("promotionStack"); if(stack) stack.checked=hasStack;
-}
-function syncPromotionUI(){
-  const type=document.getElementById("promotionType").value;
-  const show=(id,on)=>document.getElementById(id).classList.toggle("hidden-field",!on);
-  show("promotionProductField",["product_discount","second_item_discount","bogo"].includes(type));
-  show("promotionCategoryField",["category_discount","second_item_discount","bogo"].includes(type));
-  show("promotionDiscountTypeField",["product_discount","category_discount","order_discount","delivery_discount"].includes(type));
-  show("promotionBuyField",["bogo","second_item_discount"].includes(type));
-  show("promotionRewardField",type==="bogo");
-  show("promotionRewardDiscountField",type==="second_item_discount");
-  show("promotionDeliveryPriceField",type==="delivery_price");
-  if(type==="free_delivery" || type==="delivery_price") document.getElementById("promotionValue").value=0;
-  if(type==="delivery_price") document.getElementById("promotionDiscountType").value="fixed";
-  refreshPromotionCategories(document.getElementById("promotionCategory").value);
-  if(["delivery_discount","free_delivery","delivery_price"].includes(type)) document.getElementById("promotionProduct").value="";
-}
+function renderPromotions(){if(!managementPromotions.length){promotionsList.innerHTML='<div class="state"><div class="state-icon">🔥</div><div class="state-title">Акций пока нет</div></div>';return}promotionsList.innerHTML=managementPromotions.map(p=>{const dates=(p.starts_at||p.expires_at)?`${fmtDateTime(p.starts_at)} → ${fmtDateTime(p.expires_at)}`:"Без ограничения по датам";let detail=promotionDiscountLabel(p);if(p.promotion_type==="delivery_bundle"){const rules=Array.isArray(p.delivery_rules)?[...p.delivery_rules].sort((a,b)=>Number(a.min_order_amount||0)-Number(b.min_order_amount||0)):[];detail=rules.map(r=>`от ${formatPrice(r.min_order_amount||0)} → ${Number(r.discount_value||0)>=200?'Бесплатно':`−${formatPrice(r.discount_value||0)}`}`).join(' · ')}else{const target=p.target_product_id?` · ${escapeHtml(managementProducts.find(x=>String(x.id)===String(p.target_product_id))?.name||"Товар")}`:(p.target_category?` · ${escapeHtml(p.target_category)}`:"");detail+=target}return `<div class="promo-card"><div class="promo-card-head"><div><div class="promo-card-title">${escapeHtml(p.name)} ${p.badge?`<span class="discount-pill">${escapeHtml(p.badge)}</span>`:""}</div><div class="promo-meta"><strong>${escapeHtml(promotionTypeLabel(p.promotion_type))}</strong> · ${escapeHtml(detail)}<br>${p.min_order_amount>0?`От ${formatPrice(p.min_order_amount)} · `:""}${dates}</div></div><div class="promo-actions"><button class="mini-button" title="Изменить" data-edit-promo="${p.id}">✏️</button><button class="mini-button danger" title="Удалить" data-delete-promo="${p.id}">🗑</button></div></div><div style="margin-top:10px"><span class="status-pill ${p.is_active?'':'off'}">${p.is_active?'ВКЛЮЧЕНА':'ВЫКЛЮЧЕНА'}</span></div></div>`}).join("")}
 function openPromotion(p=null){
   document.getElementById("promotionModalTitle").textContent=p?"Изменить акцию":"Новая акция";
   document.getElementById("promotionId").value=p?.id||"";
@@ -5645,7 +5605,7 @@ function openPromotion(p=null){
   document.getElementById("promotionBuyQty").value=p?.buy_quantity??2;
   document.getElementById("promotionRewardQty").value=p?.reward_quantity??1;
   document.getElementById("promotionRewardDiscount").value=p?.reward_discount_percent??100;
-  document.getElementById("promotionDeliveryPrice").value=(p?.promotion_type==="delivery_price"?p?.discount_value:100)??100;
+  renderDeliveryRules(p?.delivery_rules);
   document.getElementById("promotionStartsAt").value=toLocalInput(p?.starts_at);
   document.getElementById("promotionExpiresAt").value=toLocalInput(p?.expires_at);
   document.getElementById("promotionBadge").value=p?.badge||"";
@@ -5661,9 +5621,9 @@ async function savePromotionForm(e){
   const maxOn=!document.getElementById("promotionMaxDiscountField").classList.contains("hidden-field");
   const badgeOn=!document.getElementById("promotionBadgeField").classList.contains("hidden-field");
   const stackOn=!document.getElementById("promotionStackField").classList.contains("hidden-field");
-  const body={name:document.getElementById("promotionName").value.trim(),promotion_type:type,discount_type:document.getElementById("promotionDiscountType").value,discount_value:Number(document.getElementById("promotionValue").value||0),target_product_id:document.getElementById("promotionProduct").value||null,target_category:document.getElementById("promotionCategory").value||null,min_order_amount:minOn?Number(document.getElementById("promotionMinOrder").value||0):0,max_discount:maxOn&&document.getElementById("promotionMaxDiscount").value!==""?Number(document.getElementById("promotionMaxDiscount").value):null,buy_quantity:["bogo","second_item_discount"].includes(type)?Number(document.getElementById("promotionBuyQty").value||2):null,reward_quantity:type==="bogo"?Number(document.getElementById("promotionRewardQty").value||1):null,reward_discount_percent:type==="second_item_discount"?Number(document.getElementById("promotionRewardDiscount").value||50):null,starts_at:localToIso(document.getElementById("promotionStartsAt").value),expires_at:localToIso(document.getElementById("promotionExpiresAt").value,true),badge:badgeOn?document.getElementById("promotionBadge").value.trim()||null:null,stackable_with_promo_code:stackOn && document.getElementById("promotionStack")?.checked===true,is_active:document.getElementById("promotionActive").checked};
-  if(type==="delivery_price"){body.discount_type="fixed";body.discount_value=Number(document.getElementById("promotionDeliveryPrice").value||0);}
+  const body={name:document.getElementById("promotionName").value.trim(),description:type==="delivery_bundle"?`[[DELIVERY_RULES]]${JSON.stringify(collectDeliveryRules())}`:"",promotion_type:type==="delivery_bundle"?"delivery_discount":type,discount_type:type==="delivery_bundle"?"fixed":document.getElementById("promotionDiscountType").value,discount_value:type==="delivery_bundle"?0:Number(document.getElementById("promotionValue").value||0),target_product_id:document.getElementById("promotionProduct").value||null,target_category:document.getElementById("promotionCategory").value||null,min_order_amount:minOn?Number(document.getElementById("promotionMinOrder").value||0):0,max_discount:maxOn&&document.getElementById("promotionMaxDiscount").value!==""?Number(document.getElementById("promotionMaxDiscount").value):null,buy_quantity:["bogo","second_item_discount"].includes(type)?Number(document.getElementById("promotionBuyQty").value||2):null,reward_quantity:type==="bogo"?Number(document.getElementById("promotionRewardQty").value||1):null,reward_discount_percent:type==="second_item_discount"?Number(document.getElementById("promotionRewardDiscount").value||50):null,delivery_rules:type==="delivery_bundle"?collectDeliveryRules():[],starts_at:localToIso(document.getElementById("promotionStartsAt").value),expires_at:localToIso(document.getElementById("promotionExpiresAt").value,true),badge:badgeOn?document.getElementById("promotionBadge").value.trim()||null:null,stackable_with_promo_code:stackOn&&document.getElementById("promotionStack")?.checked===true,is_active:document.getElementById("promotionActive").checked};
   if(!body.name){toast("Введите название акции",true);return}
+  if(type==="delivery_bundle" && (!Array.isArray(body.delivery_rules)||!body.delivery_rules.length)){toast("Добавьте хотя бы один уровень доставки",true);return} if(type==="delivery_bundle" && body.delivery_rules.some((r,i)=>i&&r.min_order_amount===body.delivery_rules[i-1].min_order_amount)){toast("Порог суммы заказа должен быть уникальным",true);return}
   if(type==="category_discount"&&!body.target_category){toast("Выберите категорию",true);return}
   if(["product_discount","second_item_discount","bogo"].includes(type)&&!body.target_product_id&&!body.target_category){toast("Выберите товар или категорию",true);return}
   try{const id=document.getElementById("promotionId").value;await managementApi("promotions",id?"PATCH":"POST",body,id||null);closePromotion();toast(id?"Акция изменена":"Акция создана");await loadPromotions()}catch(err){toast(err.message,true)}
