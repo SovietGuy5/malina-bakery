@@ -2146,6 +2146,90 @@ body:not(.pending):not(.denied) #accessLoading{display:none!important}
 .order-delete-btn:active{transform:scale(.98)}
 @media(max-width:520px){.order-actions{grid-template-columns:1fr}.order-delete-btn{width:100%}}
 </style>
+
+<style id="final-menu-fix">
+/* FINAL MENU FIX — neutralize legacy burger pseudo-elements */
+.menu-row{
+  display:flex!important;
+  align-items:center!important;
+  gap:10px!important;
+  width:100%!important;
+  max-width:1180px!important;
+  margin:0 auto 14px!important;
+  padding:0 16px!important;
+}
+.home-trigger{
+  flex:0 0 48px!important;
+  width:48px!important;
+  height:48px!important;
+  margin:0!important;
+  border-radius:16px!important;
+}
+.menu-trigger{
+  flex:1 1 auto!important;
+  width:auto!important;
+  min-width:0!important;
+  height:48px!important;
+  margin:0!important;
+  padding:0 16px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:10px!important;
+  position:relative!important;
+  border:1px solid var(--line)!important;
+  border-radius:16px!important;
+  background:var(--card)!important;
+  color:var(--text)!important;
+  box-shadow:none!important;
+}
+/* The old stylesheet treated every span as a burger bar. */
+.menu-trigger span,
+.menu-trigger span:before,
+.menu-trigger span:after{
+  width:auto!important;
+  height:auto!important;
+  position:static!important;
+  display:inline-flex!important;
+  background:none!important;
+  content:none!important;
+  border-radius:0!important;
+}
+.menu-trigger .menu-label{
+  flex:1 1 auto!important;
+  font-size:14px!important;
+  line-height:1!important;
+  font-weight:850!important;
+  letter-spacing:-.01em!important;
+  color:var(--text)!important;
+}
+.menu-trigger .menu-chevron{
+  flex:0 0 28px!important;
+  width:28px!important;
+  height:28px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  background:var(--bg)!important;
+  color:var(--muted)!important;
+  border:1px solid var(--line)!important;
+  border-radius:9px!important;
+  font-size:17px!important;
+  line-height:1!important;
+  transition:transform .18s ease,color .18s ease,background .18s ease!important;
+}
+.menu-trigger[aria-expanded="true"] .menu-chevron{
+  transform:rotate(180deg)!important;
+  color:var(--accent)!important;
+  background:var(--accent-soft)!important;
+}
+@media(max-width:700px){
+  .menu-row{padding:0 12px!important;margin-bottom:12px!important}
+  .home-trigger{flex-basis:46px!important;width:46px!important;height:46px!important;border-radius:15px!important}
+  .menu-trigger{height:46px!important;border-radius:15px!important}
+}
+</style>
+
 </head>
 
 <body class="pending">
