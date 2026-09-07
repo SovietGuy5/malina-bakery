@@ -1450,7 +1450,7 @@ body.dark-theme .topbar {
 }
 .apartment-fields label{margin-top:0!important}
 .apartment-fields.hidden{display:none!important}
-.delivery-distance{
+ .delivery-info-help{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;margin-left:6px;border:1px solid currentColor;border-radius:50%;background:transparent;color:inherit;font-size:11px;font-weight:900;cursor:pointer;vertical-align:middle;padding:0;line-height:1}.delivery-info-help:active{transform:scale(.94)}.delivery-help-popup{position:fixed;inset:0;z-index:1200;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(0,0,0,.42);backdrop-filter:blur(5px)}.delivery-help-popup.open{display:flex}.delivery-help-card{width:min(430px,100%);max-height:80vh;overflow:auto;background:var(--tg-theme-bg-color,#fff);color:var(--tg-theme-text-color,#222);border:1px solid rgba(0,0,0,.08);border-radius:20px;padding:18px;box-shadow:0 22px 70px rgba(0,0,0,.24)}.delivery-help-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}.delivery-help-title{font-size:17px;font-weight:900}.delivery-help-close{width:34px;height:34px;border:0;border-radius:50%;background:rgba(127,127,127,.12);color:inherit;font-size:20px;cursor:pointer}.delivery-help-section{padding:11px 0;border-top:1px solid rgba(127,127,127,.16)}.delivery-help-section:first-of-type{border-top:0}.delivery-help-rule{display:flex;justify-content:space-between;gap:12px;padding:5px 0;font-size:13px}.delivery-help-muted{font-size:12px;line-height:1.45;opacity:.68;margin-top:6px}.delivery-distance{
   margin:0;
   padding:14px;
   border-radius:16px;
@@ -1952,7 +1952,7 @@ body.dark-theme .address-map-canvas-wrap .leaflet-control-attribution a{
               </div>
               <div class="address-field">
                 <label for="ckHouse" data-i18n="houseLabel">Дом*</label>
-                <input id="ckHouse" name="house" required autocomplete="address-line2" data-i18n-placeholder="housePlaceholder" placeholder="№ дома">
+                <input id="ckHouse" name="house" required autocomplete="address-line2" data-i18n-placeholder="housePlaceholder" placeholder="№">
               </div>
             </div>
             <label class="check-row" for="privateHouse">
@@ -2142,7 +2142,7 @@ const I18N = {
     streetLabel: "Улица*",
     streetPlaceholder: "Название улицы",
     houseLabel: "Дом*",
-    housePlaceholder: "Номер дома",
+    housePlaceholder: "№",
     addressMapHint: "Введите улицу и дом, затем нажмите «Рассчитать стоимость доставки».",
     addressMapRequired: "Сначала рассчитайте стоимость доставки по адресу",
     addressCardTitle: "Куда доставить?",
@@ -2272,7 +2272,7 @@ const I18N = {
     streetLabel: "Street*",
     streetPlaceholder: "Street name",
     houseLabel: "Building*",
-    housePlaceholder: "House number",
+    housePlaceholder: "No.",
     addressMapHint: "Enter street and building, then tap Calculate delivery cost.",
     addressMapRequired: "Please calculate delivery cost for the address first",
     addressCardTitle: "Where to deliver?",
@@ -2618,10 +2618,35 @@ function updateDeliveryDistanceUI(){
   const price = deliveryPriceByDistance(deliveryDistanceKm);
   const distStr = deliveryDistanceKm.toFixed(1);
   const priceLabel = price === 0 ? t("deliveryFree") : money(price);
-  el.innerHTML = `<span class="dd-label">${t("deliveryDistanceLabel")}</span><span class="dd-value"><span>${distStr} км</span><span class="dd-price">${priceLabel}</span></span>`;
+  el.innerHTML = `<span class="dd-label">${t("deliveryDistanceLabel")}</span><span class="dd-value"><span>${distStr} км</span><span class="dd-price">${priceLabel}<button type="button" class="delivery-info-help" id="deliveryHelpButton" aria-label="${currentLanguage === "en" ? "Delivery terms" : "Условия доставки"}">?</button></span></span>`;
   el.classList.add("show");
   el.style.display = "block";
 }
+
+function renderDeliveryHelpPopup(){
+  let popup=document.getElementById("deliveryHelpPopup");
+  if(!popup){
+    popup=document.createElement("div");
+    popup.id="deliveryHelpPopup";
+    popup.className="delivery-help-popup";
+    document.body.appendChild(popup);
+  }
+  const rulesPromo=activePromotions.find(p=>p?.promotion_type==="delivery_price" && Array.isArray(p.delivery_rules) && p.delivery_rules.length);
+  const rules=(rulesPromo?.delivery_rules||[]).slice().sort((a,b)=>{if(a?.max_distance_km==null)return 1;if(b?.max_distance_km==null)return -1;return Number(a.max_distance_km)-Number(b.max_distance_km)});
+  const freePromos=activePromotions.filter(p=>p?.promotion_type==="free_delivery" && Number(p.min_order_amount||0)>=0);
+  const discountPromos=activePromotions.filter(p=>p?.promotion_type==="delivery_discount" && Number(p.min_order_amount||0)>=0);
+  const isEn=currentLanguage==="en";
+  const rulesHtml=rules.length?rules.map((r,i)=>{const max=r?.max_distance_km==null?null:Number(r.max_distance_km);const prev=i?Number(rules[i-1]?.max_distance_km||0):0;const range=max==null?`> ${prev} km`:`≤ ${max} km`;return `<div class="delivery-help-rule"><span>${range}</span><strong>${Number(r.price||0)===0?(isEn?"Free":"Бесплатно"):money(Number(r.price||0))}</strong></div>`}).join(""):(`<div class="delivery-help-muted">${isEn?"Delivery rates are not configured.":"Тарифы доставки пока не настроены."}</div>`);
+  const freeHtml=freePromos.map(p=>{const min=Number(p.min_order_amount||0);return `<div class="delivery-help-rule"><span>${escapeHtml(p.name|| (isEn?"Free delivery":"Бесплатная доставка"))}</span><strong>${min>0?(isEn?`from ${money(min)}`:`от ${money(min)}`):(isEn?"Free":"Бесплатно")}</strong></div>`}).join("");
+  const discountHtml=discountPromos.map(p=>{const min=Number(p.min_order_amount||0);const val=p.discount_type==="fixed"?`−${money(p.discount_value)}`:`−${Number(p.discount_value||0)}%`;return `<div class="delivery-help-rule"><span>${escapeHtml(p.name|| (isEn?"Delivery discount":"Скидка на доставку"))}</span><strong>${val}${min>0?(isEn?` from ${money(min)}`:` от ${money(min)}`):""}</strong></div>`}).join("");
+  popup.innerHTML=`<div class="delivery-help-card" role="dialog" aria-modal="true"><div class="delivery-help-head"><div class="delivery-help-title">${isEn?"Delivery terms":"Условия доставки"}</div><button type="button" class="delivery-help-close" id="deliveryHelpClose">×</button></div><div class="delivery-help-section"><strong>${isEn?"Delivery price by distance":"Стоимость доставки по расстоянию"}</strong>${rulesHtml}</div>${freeHtml?`<div class="delivery-help-section"><strong>${isEn?"Active free delivery promotions":"Акции на бесплатную доставку"}</strong>${freeHtml}</div>`:""}${discountHtml?`<div class="delivery-help-section"><strong>${isEn?"Active delivery discounts":"Акции на доставку"}</strong>${discountHtml}</div>`:""}<div class="delivery-help-muted">${isEn?"Distance is calculated from the bakery address to the delivery address. Promotions are applied automatically when their conditions are met.":"Расстояние рассчитывается от адреса кондитерского дома до адреса доставки. Акции применяются автоматически, если выполнены их условия."}</div></div>`;
+  popup.classList.add("open");
+  popup.querySelector("#deliveryHelpClose")?.addEventListener("click",()=>popup.classList.remove("open"),{once:true});
+  popup.addEventListener("click",e=>{if(e.target===popup)popup.classList.remove("open")},{once:true});
+}
+
+document.addEventListener("click",e=>{if(e.target.closest("#deliveryHelpButton")) renderDeliveryHelpPopup();});
+
 
 function haversineKm(a,b){
   const toRad=x=>x*Math.PI/180, R=6371;
@@ -3086,25 +3111,30 @@ function automaticPromoQuote(){
   const subtotal = cart.reduce((s,i) => s + i.priceNum * i.qty, 0);
   const method = document.querySelector('input[name="method"]:checked')?.value || "Доставка";
   const baseDelivery = deliveryBaseFee(subtotal, method);
-  let bestSaving = 0;
-  let discount = 0;
+  let bestProductSaving = 0;
+  let bestDeliverySaving = 0;
+  let deliveryFee = baseDelivery;
+
   for(const p of activePromotions){
-    if(subtotal < Number(p.min_order_amount || 0)) continue;
-    let saving = 0, productDiscount = 0;
-    if(p.promotion_type === "order_discount") {
-      productDiscount = p.discount_type === "percent" ? subtotal * Number(p.discount_value||0)/100 : Number(p.discount_value||0);
-      if(p.max_discount != null) productDiscount = Math.min(productDiscount, Number(p.max_discount));
-      saving = Math.min(subtotal, Math.max(0, productDiscount));
-    } else if(p.promotion_type === "product_discount" || p.promotion_type === "category_discount") {
+    const minOrder = Number(p.min_order_amount || 0);
+    if(subtotal < minOrder) continue;
+
+    if(p.promotion_type === "order_discount"){
+      let saving = p.discount_type === "percent" ? subtotal * Number(p.discount_value||0)/100 : Number(p.discount_value||0);
+      if(p.max_discount != null) saving = Math.min(saving, Number(p.max_discount));
+      bestProductSaving = Math.max(bestProductSaving, Math.min(subtotal, Math.max(0, saving)));
+    } else if(p.promotion_type === "product_discount" || p.promotion_type === "category_discount"){
+      let saving = 0;
       for(const item of cart){
         const product = allProducts.find(x => x.name === item.name);
         if(!promotionAppliesToProduct(p, product)) continue;
         const line = item.priceNum * item.qty;
-        productDiscount += p.discount_type === "percent" ? line * Number(p.discount_value||0)/100 : Math.min(line, Number(p.discount_value||0) * item.qty);
+        saving += p.discount_type === "percent" ? line * Number(p.discount_value||0)/100 : Math.min(line, Number(p.discount_value||0) * item.qty);
       }
-      if(p.max_discount != null) productDiscount = Math.min(productDiscount, Number(p.max_discount));
-      saving = Math.min(subtotal, Math.max(0, productDiscount));
-    } else if(p.promotion_type === "bogo" || p.promotion_type === "second_item_discount") {
+      if(p.max_discount != null) saving = Math.min(saving, Number(p.max_discount));
+      bestProductSaving = Math.max(bestProductSaving, Math.min(subtotal, Math.max(0, saving)));
+    } else if(p.promotion_type === "bogo" || p.promotion_type === "second_item_discount"){
+      let saving = 0;
       for(const item of cart){
         const product = allProducts.find(x => x.name === item.name);
         if(p.target_product_id && String(p.target_product_id) !== String(product?.id)) continue;
@@ -3114,15 +3144,24 @@ function automaticPromoQuote(){
         if(item.qty < buy) continue;
         const rewardQty = p.promotion_type === "bogo" ? Math.floor(item.qty/(buy+reward))*reward : Math.floor(item.qty/buy);
         const pct = p.promotion_type === "bogo" ? 100 : Number(p.reward_discount_percent ?? 50);
-        productDiscount = Math.max(productDiscount, item.priceNum * rewardQty * pct / 100);
+        saving = Math.max(saving, item.priceNum * rewardQty * pct / 100);
       }
-      if(p.max_discount != null) productDiscount = Math.min(productDiscount, Number(p.max_discount));
-      saving = Math.min(subtotal, Math.max(0, productDiscount));
-    } else continue;
-    if(saving > bestSaving){ bestSaving = saving; discount = saving; }
+      if(p.max_discount != null) saving = Math.min(saving, Number(p.max_discount));
+      bestProductSaving = Math.max(bestProductSaving, Math.min(subtotal, Math.max(0, saving)));
+    } else if(method === "Доставка" && p.promotion_type === "free_delivery"){
+      bestDeliverySaving = Math.max(bestDeliverySaving, baseDelivery);
+    } else if(method === "Доставка" && p.promotion_type === "delivery_discount"){
+      let saving = p.discount_type === "percent" ? baseDelivery * Number(p.discount_value||0)/100 : Number(p.discount_value||0);
+      saving = Math.min(baseDelivery, Math.max(0, saving));
+      if(p.max_discount != null) saving = Math.min(saving, Number(p.max_discount));
+      bestDeliverySaving = Math.max(bestDeliverySaving, saving);
+    }
   }
-  return {subtotal, discount:Math.round(discount*100)/100, deliveryFee:baseDelivery, promo:null, deliveryFree:false, deliverySaving:0, baseDelivery};
+
+  deliveryFee = Math.max(0, baseDelivery - bestDeliverySaving);
+  return {subtotal, discount:Math.round(bestProductSaving*100)/100, deliveryFee:Math.round(deliveryFee*100)/100, promo:null, deliveryFree:deliveryFee===0 && baseDelivery>0, deliverySaving:Math.round(bestDeliverySaving*100)/100, baseDelivery};
 }
+
 
 function renderPromotions(){
   const section = document.getElementById("promotionsSection");
@@ -3986,9 +4025,8 @@ function validateOrder(){
 function getOrderTotals(){
   const method = document.querySelector('input[name="method"]:checked')?.value || "Доставка";
   const subtotal = cart.reduce((s,i) => s + i.priceNum * i.qty, 0);
-  let deliveryFee = 0;
-  if(method === "Доставка") deliveryFee = deliveryBaseFee(subtotal, method);
   const autoQuote = automaticPromoQuote();
+  const deliveryFee = method === "Доставка" ? autoQuote.deliveryFee : 0;
   const promoDiscount = IS_TELEGRAM_USER && promoState.valid ? Math.max(0, Number(promoState.discount || 0)) : autoQuote.discount;
   // Доставка всегда рассчитывается только по расстоянию через тарифы delivery_price.
   const total = Math.max(0, subtotal + deliveryFee - promoDiscount);
@@ -4065,12 +4103,8 @@ async function performSubmit(){
 
   const method = document.querySelector('input[name="method"]:checked')?.value || "Доставка";
   const subtotal = cart.reduce((s,i) => s + i.priceNum * i.qty, 0);
-  let deliveryFee = 0;
-  if (method === "Доставка") {
-      deliveryFee = deliveryBaseFee(subtotal, method);
-  }
-  
   const autoQuote = automaticPromoQuote();
+  let deliveryFee = method === "Доставка" ? autoQuote.deliveryFee : 0;
   const promoVal = IS_TELEGRAM_USER && promoState.valid ? promoState.code : "";
   const promoDiscount = IS_TELEGRAM_USER && promoState.valid ? Math.max(0, Number(promoState.discount || 0)) : autoQuote.discount;
   // Доставка всегда рассчитывается только по расстоянию через тарифы delivery_price.

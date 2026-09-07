@@ -1420,7 +1420,7 @@ button:disabled {
 .simple-section{padding:15px 0;border-top:1px solid var(--line)}
 .simple-section:first-of-type{border-top:0}
 .simple-label{font-size:10px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:11px}
-.quick-choice-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.quick-choice{position:relative;z-index:2;pointer-events:auto!important}.quick-choice-row{position:relative;z-index:2}.management-dialog{position:relative;z-index:1}.quick-choice-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .quick-choice{min-height:72px;padding:10px 11px;text-align:left;border:1px solid var(--line);border-radius:15px;background:var(--bg);color:var(--text);cursor:pointer;transition:.16s}
 .quick-choice span{display:block;font-size:19px;margin-bottom:5px}.quick-choice strong{font-size:11px;line-height:1.25;display:block}
 .quick-choice.active{border-color:var(--accent);background:rgba(176,42,92,.055);box-shadow:0 0 0 2px rgba(176,42,92,.09)}
@@ -5585,7 +5585,7 @@ function showManagementPanel(panel,btn){
 function fmtDateTime(v){if(!v)return "Без ограничения";const d=new Date(v);return Number.isNaN(d.getTime())?"—":d.toLocaleString("ru-RU",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"})}
 function toLocalInput(v){if(!v)return "";const d=new Date(v);if(Number.isNaN(d.getTime()))return "";const z=n=>String(n).padStart(2,"0");return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}`}
 function localToIso(v,endOfDay=false){if(!v)return null;const d=new Date(`${v}T${endOfDay?"23:59:59":"00:00:00"}`);return Number.isNaN(d.getTime())?null:d.toISOString()}
-function promotionTypeLabel(t){return ({product_discount:"На товар",category_discount:"На категорию",order_discount:"На весь заказ",bogo:"2 + 1",second_item_discount:"На второй товар",free_delivery:"Бесплатная доставка",delivery_discount:"Скидка на доставку",delivery_price:"Доставка за фиксированную цену"})[t]||t}
+function promotionTypeLabel(t){return ({product_discount:"На товар",category_discount:"На категорию",order_discount:"На весь заказ",bogo:"2 + 1",second_item_discount:"На второй товар",free_delivery:"Бесплатная доставка",delivery_discount:"Скидка на доставку",delivery_price:"Тарифы доставки по расстоянию"})[t]||t}
 function promotionDiscountLabel(p){if(p.promotion_type==="free_delivery")return "Доставка бесплатно";if(p.promotion_type==="delivery_discount")return p.discount_type==="fixed"?`−${formatPrice(p.discount_value)} доставки`:`−${p.discount_value}% доставки`;if(p.promotion_type==="delivery_price"){const rules=Array.isArray(p.delivery_rules)?p.delivery_rules:[];return rules.length?rules.map(r=>r.max_distance_km==null?`>${rules.at(-2)?.max_distance_km??0} км: ${formatPrice(r.price)}`:`≤${r.max_distance_km} км: ${formatPrice(r.price)}`).join(" · "):"Тарифы не заданы";}if(p.promotion_type==="bogo")return `${p.buy_quantity||2}+${p.reward_quantity||1}`;if(p.promotion_type==="second_item_discount")return `Второй −${p.reward_discount_percent??50}%`;return p.discount_type==="fixed"?`−${formatPrice(p.discount_value)}`:`−${p.discount_value}%`}
 async function loadManagementProducts(){try{const r=await managementApi("products");managementProducts=r.products||[];refreshPromotionCategories();const s=document.getElementById("promotionProduct");s.innerHTML='<option value="">Выберите товар</option>'+managementProducts.map(p=>`<option value="${escapeAttr(p.id)}">${escapeHtml(p.name)} · ${formatPrice(p.price)}</option>`).join("")}catch(e){console.warn(e)}}
 async function loadPromotions(){promotionsList.innerHTML='<div class="state"><div class="state-icon">⏳</div><div class="state-title">Загружаем акции…</div></div>';try{const r=await managementApi("promotions");managementPromotions=r.promotions||[];renderPromotions()}catch(e){promotionsList.innerHTML=`<div class="state"><div class="state-icon">⚠️</div><div class="state-title">Не удалось загрузить акции</div><div class="state-text">${escapeHtml(e.message)}</div></div>`;toast(e.message,true)}}
@@ -5655,6 +5655,7 @@ function openPromotion(p=null){
   document.getElementById("promotionExpiresAt").value=toLocalInput(p?.expires_at);
   document.getElementById("promotionBadge").value=p?.badge||"";
   document.getElementById("promotionActive").checked=p?.is_active!==false;
+  document.querySelectorAll("[data-promo-type]").forEach(b=>b.classList.toggle("active",b.dataset.promoType===(p?.promotion_type||"product_discount")));
   syncPromotionUI(); syncPromotionOptionalButtons(p);
   promotionModal.classList.add("open");
 }
@@ -5740,7 +5741,7 @@ promotionsNavButton.addEventListener("click",()=>{showManagementPanel(promotions
 promoCodesNavButton.addEventListener("click",()=>{showManagementPanel(promoCodesPanel,promoCodesNavButton);loadPromoCodes()});
 ordersNavButton.addEventListener("click",()=>{showManagementPanel(ordersPanel,ordersNavButton);loadOrders()});
 document.getElementById("addPromotionButton").addEventListener("click",async()=>{if(!managementProducts.length)await loadManagementProducts();openPromotion()});
-document.querySelectorAll("[data-promo-type]").forEach(b=>b.addEventListener("click",()=>{document.getElementById("promotionType").value=b.dataset.promoType;syncPromotionUI()}));
+document.addEventListener("click",e=>{const b=e.target.closest("[data-promo-type]");if(!b)return;e.preventDefault();e.stopPropagation();const type=b.dataset.promoType;const select=document.getElementById("promotionType");if(!select)return;select.value=type;document.querySelectorAll("[data-promo-type]").forEach(x=>x.classList.toggle("active",x===b));syncPromotionUI();});
 document.getElementById("closePromotionButton").addEventListener("click",closePromotion);document.getElementById("cancelPromotionButton").addEventListener("click",closePromotion);document.getElementById("promotionForm").addEventListener("submit",savePromotionForm);
 promotionsList.addEventListener("click",e=>{const edit=e.target.closest("[data-edit-promo]"),del=e.target.closest("[data-delete-promo]");if(edit)openPromotion(managementPromotions.find(p=>String(p.id)===String(edit.dataset.editPromo)));if(del)deletePromotionById(del.dataset.deletePromo)});
 document.getElementById("addPromoCodeButton").addEventListener("click",()=>openPromoCode());document.getElementById("closePromoCodeButton").addEventListener("click",closePromoCode);document.getElementById("cancelPromoCodeButton").addEventListener("click",closePromoCode);document.getElementById("promoCodeForm").addEventListener("submit",savePromoCodeForm);
