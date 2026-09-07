@@ -2550,6 +2550,7 @@ function productPromoPrice(product){
 ===================================================== */
 const DELIVERY_HOME = [56.854232, 60.555415]; // Екатеринбург, ул. Бебеля, 130
 const PHOTON_URL = "https://photon.komoot.io/api/";
+const PHOTON_REVERSE_URL = "https://photon.komoot.io/reverse";
 const NOMINATIM_URL = "https://nominatim.openstreetmap.org/search";
 const NOMINATIM_REVERSE_URL = "https://nominatim.openstreetmap.org/reverse";
 // Distance via FOSSGIS OSRM (routing.openstreetmap.de) — car profile
@@ -2611,109 +2612,183 @@ function haversineKm(a,b){
 }
 
 function parseAddressParts(result, fallback){
-  const p=result?.properties || result?.address || {};
-  const street=String(p.street || p.road || "").trim();
-  const house=String(p.housenumber || p.house_number || "").trim();
-  return {street,house,fallback:String(fallback||"").trim()};
+  const p = result?.properties || result?.address || {};
+  const street = String(p.street || p.road || p.name || "").trim();
+  const house = String(p.housenumber || p.house_number || "").trim();
+  return { street, house, fallback: String(fallback || "").trim() };
 }
 
 function fillAddressFields(parts){
-  const streetEl=document.getElementById("ckStreet"), houseEl=document.getElementById("ckHouse");
-  if(streetEl && parts?.street) streetEl.value=parts.street;
-  if(houseEl && parts?.house) houseEl.value=parts.house;
-  [streetEl,houseEl].forEach(el=>el?.classList?.remove("invalid"));
+  const streetEl = document.getElementById("ckStreet");
+  const houseEl = document.getElementById("ckHouse");
+  if (streetEl && parts?.street) streetEl.value = parts.street;
+  if (houseEl && parts?.house) houseEl.value = parts.house;
+  [streetEl, houseEl].forEach(el => el?.classList?.remove("invalid"));
 }
 
-function resultIsYekaterinburg(result){
-  const p=result?.properties || result?.address || {};
-  const text=JSON.stringify(p).toLowerCase();
-  return text.includes("екатеринбург") || text.includes("yekaterinburg");
+function isYekaterinburgText(text){
+  const t = String(text || "").toLowerCase();
+  return /екатеринбург|yekaterinburg|свердловск/.test(t);
 }
 
 function normalizeStreetName(value){
-  return String(value||"")
+  return String(value || "")
     .replace(/\b(ул\.?|улица|просп\.?|проспект|пер\.?|переулок|бул\.?|бульвар|ш\.?|шоссе|наб\.?|набережная|пл\.?|площадь|проезд|аллея|тупик)\b/giu, " ")
     .replace(/[.,]/g, " ")
     .replace(/\s+/g, " ")
-    .trim();
+    .trim()
+    .toLowerCase();
 }
 
-function sameStreet(a,b){
-  const x=normalizeStreetName(a).toLowerCase();
-  const y=normalizeStreetName(b).toLowerCase();
-  return !!x && !!y && (x===y || x.includes(y) || y.includes(x));
+function sameStreet(a, b){
+  const x = normalizeStreetName(a);
+  const y = normalizeStreetName(b);
+  return !!x && !!y && (x === y || x.includes(y) || y.includes(x));
 }
 
-function isYekaterinburgResult(result){
-  const p=result?.properties || result?.address || {};
-  const text=JSON.stringify(p).toLowerCase();
-  const display=String(result?.display_name || p?.name || "").toLowerCase();
-  return /екатеринбург|yekaterinburg/.test(text+" "+display);
+function resultCityText(item){
+  const p = item?.properties || item?.address || {};
+  return [
+    p.city, p.town, p.municipality, p.county, p.state, p.country,
+    item?.display_name, p.name, JSON.stringify(p)
+  ].filter(Boolean).join(" ");
 }
 
-function resultHasHouse(result,house){
-  const p=result?.properties || result?.address || {};
-  const h=String(p.housenumber || p.house_number || "").trim().toLowerCase();
-  return h===String(house).trim().toLowerCase();
+function resultCoords(item){
+  if (item?.geometry?.coordinates?.length >= 2) {
+    return [Number(item.geometry.coordinates[1]), Number(item.geometry.coordinates[0])];
+  }
+  if (item?.lat != null && item?.lon != null) {
+    return [Number(item.lat), Number(item.lon)];
+  }
+  if (item?.lat != null && item?.lng != null) {
+    return [Number(item.lat), Number(item.lng)];
+  }
+  return null;
 }
 
-function pickGeocodeResult(results,street,house){
-  const list=Array.isArray(results)?results:[];
-  const scored=list.map((item,index)=>{
-    const p=item?.properties || item?.address || {};
-    const resultStreet=p.street || p.road || "";
-    let score=0;
-    if(isYekaterinburgResult(item)) score+=1000;
-    if(resultHasHouse(item,house)) score+=500;
-    if(sameStreet(resultStreet,street)) score+=300;
-    if(p.city || p.town || p.municipality) score+=20;
-    if(String(item?.type||"").toLowerCase()==="house") score+=50;
-    score-=index*0.01;
-    return {item,score};
-  }).sort((a,b)=>b.score-a.score);
-  const best=scored[0]?.item;
-  if(!best || !isYekaterinburgResult(best)) return null;
-  const p=best.properties || best.address || {};
-  if(!resultHasHouse(best,house) && !sameStreet(p.street||p.road||"",street)) return null;
+function pickBestGeocode(results, street, house){
+  const list = Array.isArray(results) ? results : [];
+  if (!list.length) return null;
+
+  const wantStreet = normalizeStreetName(street);
+  const wantHouse = String(house || "").trim().toLowerCase();
+
+  const scored = list.map((item, index) => {
+    const p = item?.properties || item?.address || {};
+    const coords = resultCoords(item);
+    if (!coords || !Number.isFinite(coords[0]) || !Number.isFinite(coords[1])) {
+      return { item, score: -1e9, coords: null };
+    }
+    const cityText = resultCityText(item);
+    const resultStreet = p.street || p.road || p.name || "";
+    const resultHouse = String(p.housenumber || p.house_number || "").trim().toLowerCase();
+    let score = 0;
+
+    if (isYekaterinburgText(cityText)) score += 1000;
+    // prefer points near bakery (within ~40 km)
+    const distHome = haversineKm(DELIVERY_HOME, coords);
+    if (distHome < 40) score += Math.max(0, 400 - distHome * 8);
+    else score -= 500;
+
+    if (wantHouse && resultHouse === wantHouse) score += 600;
+    else if (wantHouse && resultHouse && resultHouse.includes(wantHouse)) score += 300;
+
+    if (wantStreet && sameStreet(resultStreet, street)) score += 400;
+    if (String(item?.type || p?.type || p?.osm_value || "").toLowerCase() === "house") score += 80;
+    if (p.housenumber || p.house_number) score += 40;
+
+    score -= index * 0.01;
+    return { item, score, coords };
+  }).filter(x => x.coords).sort((a, b) => b.score - a.score);
+
+  const best = scored[0];
+  if (!best || best.score < 200) return null; // reject far/unrelated
   return best;
 }
 
-async function photonSearch(street,house){
-  const cleanStreet=normalizeStreetName(street);
-  const attempts=[
-    {city:"Екатеринбург",street:cleanStreet,housenumber:String(house),countrycode:"RU",limit:"10",lang:"ru"},
-    {q:`${street}, ${house}, Екатеринбург, Россия`,limit:"10",lang:"ru"}
+async function photonSearch(street, house){
+  const cleanStreet = normalizeStreetName(street) || street;
+  const queries = [
+    `${street} ${house}, Екатеринбург`,
+    `улица ${cleanStreet} ${house}, Екатеринбург`,
+    `${cleanStreet} ${house} Екатеринбург`,
+    `${street} ${house}`
   ];
-  for(const obj of attempts){
-    const endpoint=obj.street ? "structured" : "api";
-    const params=new URLSearchParams(obj);
-    const r=await fetch(`${PHOTON_URL}${endpoint}?${params}`,{headers:{Accept:"application/json"}});
-    if(!r.ok) continue;
-    const data=await r.json();
-    const features=Array.isArray(data?.features)?data.features:[];
-    const f=pickGeocodeResult(features,street,house);
-    if(f?.geometry?.coordinates?.length){
-      return {coords:[Number(f.geometry.coordinates[1]),Number(f.geometry.coordinates[0])],parts:parseAddressParts(f,`${street}, ${house}`)};
-    }
+  for (const q of queries) {
+    const params = new URLSearchParams({
+      q,
+      limit: "8",
+      lat: String(DELIVERY_HOME[0]),
+      lon: String(DELIVERY_HOME[1])
+    });
+    try {
+      const r = await fetch(`${PHOTON_URL}?${params}`, {
+        headers: { Accept: "application/json" }
+      });
+      if (!r.ok) continue;
+      const data = await r.json();
+      const features = Array.isArray(data?.features) ? data.features : [];
+      const best = pickBestGeocode(features, street, house);
+      if (best?.coords) {
+        return {
+          coords: best.coords,
+          parts: parseAddressParts(best.item, `${street}, ${house}`)
+        };
+      }
+    } catch (_) {}
   }
   throw new Error("Photon address not found");
 }
 
-async function nominatimSearch(street,house){
-  const cleanStreet=normalizeStreetName(street);
-  const attempts=[
-    {street:`${cleanStreet} ${house}`,city:"Екатеринбург",state:"Свердловская область",country:"Россия",format:"jsonv2",limit:"10",countrycodes:"ru",addressdetails:"1",'accept-language':"ru"},
-    {q:`${street}, ${house}, Екатеринбург, Свердловская область, Россия`,format:"jsonv2",limit:"10",countrycodes:"ru",addressdetails:"1",'accept-language':"ru"}
-  ];
-  for(const obj of attempts){
-    const params=new URLSearchParams(obj);
-    const r=await fetch(`${NOMINATIM_URL}?${params}`,{headers:{Accept:"application/json"}});
-    if(!r.ok) continue;
-    const results=await r.json();
-    const item=pickGeocodeResult(results,street,house);
-    if(item?.lat && item?.lon){
-      return {coords:[Number(item.lat),Number(item.lon)],parts:parseAddressParts(item,`${street}, ${house}`)};
+async function nominatimSearch(street, house){
+  const cleanStreet = normalizeStreetName(street) || street;
+  const attempts = [
+    {
+      q: `${street}, ${house}, Екатеринбург, Россия`,
+      format: "jsonv2",
+      limit: "8",
+      countrycodes: "ru",
+      addressdetails: "1",
+      "accept-language": "ru",
+      viewbox: "60.3,57.1,61.0,56.6",
+      bounded: "0"
+    },
+    {
+      street: `${cleanStreet} ${house}`,
+      city: "Екатеринбург",
+      country: "Россия",
+      format: "jsonv2",
+      limit: "8",
+      countrycodes: "ru",
+      addressdetails: "1",
+      "accept-language": "ru"
+    },
+    {
+      q: `улица ${cleanStreet} ${house} Екатеринбург`,
+      format: "jsonv2",
+      limit: "8",
+      countrycodes: "ru",
+      addressdetails: "1",
+      "accept-language": "ru"
     }
+  ];
+  for (const obj of attempts) {
+    try {
+      const params = new URLSearchParams(obj);
+      const r = await fetch(`${NOMINATIM_URL}?${params}`, {
+        headers: { Accept: "application/json" }
+      });
+      if (!r.ok) continue;
+      const results = await r.json();
+      const best = pickBestGeocode(Array.isArray(results) ? results : [], street, house);
+      if (best?.coords) {
+        return {
+          coords: best.coords,
+          parts: parseAddressParts(best.item, `${street}, ${house}`)
+        };
+      }
+    } catch (_) {}
   }
   throw new Error("Nominatim address not found");
 }
@@ -2754,6 +2829,28 @@ async function calculateRoadDistanceKm(coords){
 }
 
 async function reverseGeocode(lat, lon){
+  // Photon reverse first (works well from browsers), Nominatim fallback
+  try {
+    const params = new URLSearchParams({
+      lat: String(lat),
+      lon: String(lon)
+    });
+    const r = await fetch(`${PHOTON_REVERSE_URL}?${params}`, {
+      headers: { Accept: "application/json" }
+    });
+    if (r.ok) {
+      const data = await r.json();
+      const f = data?.features?.[0];
+      const p = f?.properties || {};
+      const street = String(p.street || p.name || "").trim();
+      const house = String(p.housenumber || "").trim();
+      const display = [street, house, p.city || p.town, p.state].filter(Boolean).join(", ");
+      if (street || house || display) {
+        return { street, house, display, raw: data };
+      }
+    }
+  } catch (_) {}
+
   const params = new URLSearchParams({
     lat: String(lat),
     lon: String(lon),
