@@ -1797,7 +1797,7 @@ body.dark-theme .address-map-canvas-wrap .leaflet-control-attribution a{
       <div class="feature-card">
         <div class="feature-icon">📦</div>
         <h3 data-i18n="step4Title">Условия доставки</h3>
-        <p data-i18n="deliveryTiersInfo">До 1 км — бесплатно | До 3 км — 300 ₽ | До 5 км — 400 ₽ | Более 5 км — 500 ₽</p>
+        <p data-i18n="deliveryTiersInfo">Стоимость доставки рассчитывается по расстоянию от кондитерского дома.</p>
       </div>
     </div>
   </div>
@@ -2119,7 +2119,7 @@ const I18N = {
     telegramChannel: "Канал Telegram: @MalinaDessert",
     telegramBot: "Бот Telegram: @MalinaBakeryBot",
     deliveryTiersTitle: "Стоимость доставки",
-    deliveryTiersInfo: "До 1 км — бесплатно | До 3 км — 300 ₽ | До 5 км — 400 ₽ | Более 5 км — 500 ₽",
+    deliveryTiersInfo: "Стоимость доставки рассчитывается по расстоянию от кондитерского дома.",
     promoToggle: "Ввести промокод",
     deliveryPromoTitle: "Стоимость доставки",
     deliveryPromoSubtitle: "Стоимость доставки рассчитывается только по расстоянию от кондитерского дома.",
@@ -2249,7 +2249,7 @@ const I18N = {
     telegramChannel: "Telegram channel: @MalinaDessert",
     telegramBot: "Telegram bot: @MalinaBakeryBot",
     deliveryTiersTitle: "Delivery cost",
-    deliveryTiersInfo: "Up to 1 km — free | Up to 3 km — 300 ₽ | Up to 5 km — 400 ₽ | Over 5 km — 500 ₽",
+    deliveryTiersInfo: "Delivery price is calculated by distance from the bakery.",
     promoToggle: "Enter promo code",
     deliveryPromoTitle: "Delivery cost",
     deliveryPromoSubtitle: "Delivery price is calculated only by distance from the pastry house.",
@@ -2578,11 +2578,19 @@ let mapInitialized = false;
 
 function deliveryPriceByDistance(distanceKm){
   const d = Number(distanceKm);
-  if(!Number.isFinite(d)) return 0;
-  if(d <= 1) return 0;      // до 1 км — бесплатно
-  if(d <= 3) return 300;
-  if(d <= 5) return 400;
-  return 500;
+  if(!Number.isFinite(d) || d < 0) return 0;
+  const promo = activePromotions.find(p => p?.promotion_type === "delivery_price" && Array.isArray(p.delivery_rules) && p.delivery_rules.length);
+  const rules = (promo?.delivery_rules || []).slice().sort((a,b) => {
+    if(a?.max_distance_km == null) return 1;
+    if(b?.max_distance_km == null) return -1;
+    return Number(a.max_distance_km) - Number(b.max_distance_km);
+  });
+  for(const rule of rules){
+    const max = rule?.max_distance_km == null ? null : Number(rule.max_distance_km);
+    const price = Math.max(0, Number(rule?.price || 0));
+    if(max == null || d <= max) return price;
+  }
+  return 0;
 }
 
 function setAddressMapStatus(text, error=false, ok=false){
@@ -3982,7 +3990,7 @@ function getOrderTotals(){
   if(method === "Доставка") deliveryFee = deliveryBaseFee(subtotal, method);
   const autoQuote = automaticPromoQuote();
   const promoDiscount = IS_TELEGRAM_USER && promoState.valid ? Math.max(0, Number(promoState.discount || 0)) : autoQuote.discount;
-  if(!promoState.valid) deliveryFee = autoQuote.deliveryFee;
+  // Доставка всегда рассчитывается только по расстоянию через тарифы delivery_price.
   const total = Math.max(0, subtotal + deliveryFee - promoDiscount);
   return {method, subtotal, deliveryFee, promoDiscount, total};
 }
@@ -4065,7 +4073,7 @@ async function performSubmit(){
   const autoQuote = automaticPromoQuote();
   const promoVal = IS_TELEGRAM_USER && promoState.valid ? promoState.code : "";
   const promoDiscount = IS_TELEGRAM_USER && promoState.valid ? Math.max(0, Number(promoState.discount || 0)) : autoQuote.discount;
-  if(!promoState.valid) deliveryFee = autoQuote.deliveryFee;
+  // Доставка всегда рассчитывается только по расстоянию через тарифы delivery_price.
   const total = Math.max(0, subtotal + deliveryFee - promoDiscount);
 
   const street = document.getElementById("ckStreet")?.value.trim() || "";
