@@ -1607,6 +1607,40 @@ body.dark-theme .address-map-canvas-wrap .leaflet-control-attribution a{
 }
 
 @media(max-width:520px){
+  /* Уведомление о добавлении/удалении товара располагается в одну линию
+     с корзиной и слева от неё. Учитываем safe-area на iPhone. */
+  .toast {
+    left: auto;
+    right: calc(20px + 64px + 10px);
+    bottom: calc(20px + env(safe-area-inset-bottom));
+    transform: translateY(18px);
+    width: min(260px, calc(100vw - 20px - 64px - 10px - 20px));
+    min-width: 0;
+    max-width: calc(100vw - 94px);
+    border-radius: 16px;
+    text-align: left;
+  }
+
+  .toast.show {
+    transform: translateY(0);
+  }
+
+  .toast .toast-content {
+    padding: 11px 12px !important;
+    gap: 8px !important;
+  }
+
+  .toast .toast-content > span:nth-child(2) {
+    min-width: 0;
+    font-size: 12px;
+    line-height: 1.25;
+  }
+
+  .toast #undoBtn {
+    padding: 5px 8px !important;
+    font-size: 11px !important;
+  }
+
   .footer-socials{
     flex-direction:column;
     gap:10px;
