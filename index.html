@@ -1049,16 +1049,17 @@ body.dark-theme .topbar {
 
 .form{
   display:grid;
-  gap:12px
+  gap:8px
 }
 
 .form label{
-  font-size:12px;
+  font-size:11px;
   font-weight:800;
   color:var(--tg-muted);
   text-transform:uppercase;
-  letter-spacing:.06em;
-  margin-top: 4px;
+  letter-spacing:.05em;
+  margin-top: 2px;
+  margin-bottom: -2px;
 }
 
 .form input,
@@ -1066,11 +1067,11 @@ body.dark-theme .topbar {
   width:100%;
   border:1px solid var(--tg-line);
   background:var(--tg-card);
-  border-radius:14px;
-  padding:14px 16px;
+  border-radius:12px;
+  padding:11px 14px;
   outline:none;
   color:var(--tg-text);
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 500;
   transition: border-color 0.2s;
 }
@@ -1079,8 +1080,18 @@ body.dark-theme .topbar {
 }
 
 .form textarea{
-  min-height:80px;
+  min-height:64px;
   resize:vertical
+}
+
+.form-row-2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+.form-row-2 > div{min-width:0;display:grid;gap:6px;}
+@media(max-width:420px){
+  .form-row-2{grid-template-columns:1fr;}
 }
 
 .form input.invalid,
@@ -1288,41 +1299,41 @@ body.dark-theme .topbar {
 .address-card-head{
   display:flex;
   align-items:flex-start;
-  gap:12px;
-  padding:16px 16px 12px;
+  gap:10px;
+  padding:12px 14px 10px;
   background:linear-gradient(180deg, color-mix(in srgb, var(--accent) 8%, var(--tg-card)), var(--tg-card));
   border-bottom:1px solid var(--tg-line);
 }
 .address-card-icon{
-  width:42px;
-  height:42px;
-  min-width:42px;
-  border-radius:14px;
+  width:34px;
+  height:34px;
+  min-width:34px;
+  border-radius:11px;
   display:grid;
   place-items:center;
   background:rgba(176,42,92,.12);
   color:var(--accent);
-  font-size:20px;
+  font-size:16px;
 }
 .address-card-head-text strong{
   display:block;
-  font-size:15px;
+  font-size:14px;
   font-weight:800;
   letter-spacing:-.02em;
   color:var(--tg-text);
 }
 .address-card-head-text span{
   display:block;
-  margin-top:3px;
-  font-size:12px;
-  line-height:1.45;
+  margin-top:2px;
+  font-size:11px;
+  line-height:1.4;
   color:var(--tg-muted);
   font-weight:500;
 }
 .address-card-body{
-  padding:14px 16px 16px;
+  padding:12px 12px 14px;
   display:grid;
-  gap:14px;
+  gap:10px;
 }
 .address-search-row{
   display:grid;
@@ -1374,9 +1385,10 @@ body.dark-theme .topbar {
 .address-details input{
   width:100%;
   box-sizing:border-box;
-  height:46px;
-  font-size:15px;
+  height:42px;
+  font-size:14px;
   font-weight:600;
+  padding:8px 12px;
 }
 .address-map-status{
   display:flex;
@@ -1409,14 +1421,14 @@ body.dark-theme .topbar {
 .check-row{
   display:flex!important;
   align-items:center;
-  gap:10px;
+  gap:8px;
   margin:0!important;
-  padding:12px 14px;
-  border-radius:14px;
+  padding:9px 12px;
+  border-radius:12px;
   background:var(--tg-soft);
   border:1px solid var(--tg-line);
   font-weight:700;
-  font-size:14px;
+  font-size:13px;
   color:var(--tg-text);
   cursor:pointer;
   transition:border-color .15s, background .15s;
@@ -1474,13 +1486,14 @@ body.dark-theme .topbar {
 #calculateDeliveryBtn{
   width:100%;
   margin-top:0;
-  min-height:50px;
-  font-size:15px;
-  border-radius:14px;
+  min-height:44px;
+  font-size:14px;
+  border-radius:12px;
   display:flex;
   align-items:center;
   justify-content:center;
   gap:8px;
+  padding:10px 14px;
 }
 #calculateDeliveryBtn:disabled{
   opacity:.7;
@@ -1503,7 +1516,7 @@ body.dark-theme .topbar {
 }
 #deliveryMap{
   width:100%;
-  height:240px;
+  height:180px;
   z-index:1;
   background:var(--tg-soft);
 }
@@ -1898,11 +1911,16 @@ body.dark-theme .address-map-canvas-wrap .leaflet-control-attribution a{
     <form class="form hidden" id="cartViewForm">
       <div id="cartOrderRecap" class="hint"></div>
 
-      <label data-i18n="nameLabel">Имя*</label>
-      <input id="ckName" name="name" required data-i18n-placeholder="namePlaceholder" placeholder="Как к вам обращаться">
-
-      <label data-i18n="phoneLabel">Телефон*</label>
-      <input id="ckPhone" name="phone" required inputmode="tel" data-i18n-placeholder="phonePlaceholder" placeholder="+7 900 000-00-00">
+      <div class="form-row-2">
+        <div>
+          <label data-i18n="nameLabel">Имя*</label>
+          <input id="ckName" name="name" required data-i18n-placeholder="namePlaceholder" placeholder="Как к вам обращаться">
+        </div>
+        <div>
+          <label data-i18n="phoneLabel">Телефон*</label>
+          <input id="ckPhone" name="phone" required inputmode="tel" data-i18n-placeholder="phonePlaceholder" placeholder="+7 900 000-00-00">
+        </div>
+      </div>
 
       <label data-i18n="methodLabel">Способ получения</label>
       <div class="method">
@@ -1927,15 +1945,6 @@ body.dark-theme .address-map-canvas-wrap .leaflet-control-attribution a{
             </div>
           </div>
           <div class="address-card-body">
-            <div class="address-search-row">
-              <input id="ckAddressQuery" type="search" enterkeyhint="search" autocomplete="street-address" data-i18n-placeholder="addressQueryPlaceholder" placeholder="Например: Бебеля 130" aria-label="Быстрый поиск адреса">
-              <button type="button" class="address-search-btn" id="addressSearchBtn" data-i18n="addressSearch">Найти</button>
-            </div>
-            <p class="address-hint-tiny" data-i18n="addressQueryHint">Можно ввести улицу и дом одной строкой, кликнуть по карте или перетащить метку.</p>
-            <div class="address-map-canvas-wrap">
-              <div id="deliveryMap" role="application" aria-label="Карта выбора адреса доставки"></div>
-              <div class="address-map-tip" data-i18n="mapTip">Нажмите на карту или перетащите синюю метку</div>
-            </div>
             <div class="address-required-grid">
               <div class="address-field">
                 <label for="ckStreet" data-i18n="streetLabel">Улица*</label>
@@ -1966,6 +1975,10 @@ body.dark-theme .address-map-canvas-wrap .leaflet-control-attribution a{
               <span class="status-text" data-i18n="addressMapHint">Введите улицу и дом, затем нажмите «Рассчитать стоимость доставки».</span>
             </div>
             <div class="delivery-distance" id="deliveryDistanceInfo" role="status" aria-live="polite"></div>
+            <div class="address-map-canvas-wrap">
+              <div id="deliveryMap" role="application" aria-label="Карта выбора адреса доставки"></div>
+              <div class="address-map-tip" data-i18n="mapTip">Можно уточнить точку на карте</div>
+            </div>
           </div>
         </div>
       </div>
@@ -1975,8 +1988,8 @@ body.dark-theme .address-map-canvas-wrap .leaflet-control-attribution a{
       </div>
 
       <label data-i18n="dateLabel">Желаемая дата</label>
-      <div class="hint" style="margin-top: -6px; margin-bottom: 8px;" data-i18n="dateHint">Заказы принимаются минимум за 48 часов.</div>
       <input id="ckDate" name="date" type="date" required>
+      <div class="hint" style="margin-top:-2px;margin-bottom:2px;font-size:12px;" data-i18n="dateHint">Заказы принимаются минимум за 48 часов.</div>
 
       <label data-i18n="commentLabel">Комментарий</label>
       <textarea id="ckComment" name="comment" data-i18n-placeholder="commentPlaceholder" placeholder="Пожелания к заказу"></textarea>
@@ -2110,7 +2123,7 @@ const I18N = {
     promoToggle: "Ввести промокод",
     deliveryPromoTitle: "Стоимость доставки",
     deliveryPromoSubtitle: "Стоимость доставки рассчитывается только по расстоянию от кондитерского дома.",
-    deliveryPromoNote: "До 1 км — бесплатно. Дальше цена зависит от расстояния. Самовывоз — бесплатно.",
+    deliveryPromoNote: "До 1 км — бесплатно. Дальше цена по расстоянию по прямой. Самовывоз — бесплатно.",
     clearCart: "Очистить корзину",
     total: "Итого",
     checkout: "Оформить заказ",
@@ -2133,10 +2146,10 @@ const I18N = {
     addressMapHint: "Введите улицу и дом, затем нажмите «Рассчитать стоимость доставки».",
     addressMapRequired: "Сначала рассчитайте стоимость доставки по адресу",
     addressCardTitle: "Куда доставить?",
-    addressCardSubtitle: "Укажите улицу и дом в Екатеринбурге — мы рассчитаем доставку по расстоянию",
+    addressCardSubtitle: "Улица и дом в Екатеринбурге — расстояние по прямой",
     addressQueryPlaceholder: "Например: Бебеля 130",
     addressQueryHint: "Можно ввести улицу и дом одной строкой, кликнуть по карте или перетащить метку.",
-    mapTip: "Нажмите на карту или перетащите синюю метку",
+    mapTip: "Можно уточнить точку на карте",
     privateHouse: "Это частный дом",
     apartmentLabel: "Квартира*",
     apartmentPlaceholder: "№ квартиры",
@@ -2240,7 +2253,7 @@ const I18N = {
     promoToggle: "Enter promo code",
     deliveryPromoTitle: "Delivery cost",
     deliveryPromoSubtitle: "Delivery price is calculated only by distance from the pastry house.",
-    deliveryPromoNote: "Up to 1 km is free. Beyond that, price depends on distance. Pickup is free.",
+    deliveryPromoNote: "Up to 1 km is free. Beyond that, price is by straight-line distance. Pickup is free.",
     clearCart: "Clear cart",
     total: "Total",
     checkout: "Checkout",
@@ -2263,10 +2276,10 @@ const I18N = {
     addressMapHint: "Enter street and building, then tap Calculate delivery cost.",
     addressMapRequired: "Please calculate delivery cost for the address first",
     addressCardTitle: "Where to deliver?",
-    addressCardSubtitle: "Enter street and building in Yekaterinburg — we calculate delivery by distance",
+    addressCardSubtitle: "Street and building in Yekaterinburg — straight-line distance",
     addressQueryPlaceholder: "E.g. Bebelya 130",
     addressQueryHint: "Type street and house in one line, click the map, or drag the pin.",
-    mapTip: "Tap the map or drag the blue pin",
+    mapTip: "You can fine-tune the point on the map",
     privateHouse: "This is a private house",
     apartmentLabel: "Apartment*",
     apartmentPlaceholder: "Apartment number",
@@ -2553,8 +2566,7 @@ const PHOTON_URL = "https://photon.komoot.io/api/";
 const PHOTON_REVERSE_URL = "https://photon.komoot.io/reverse";
 const NOMINATIM_URL = "https://nominatim.openstreetmap.org/search";
 const NOMINATIM_REVERSE_URL = "https://nominatim.openstreetmap.org/reverse";
-// Distance via FOSSGIS OSRM (routing.openstreetmap.de) — car profile
-const FOSSGIS_OSRM_URL = "https://routing.openstreetmap.de/routed-car/route/v1/driving/";
+// Distance: straight-line (haversine) from bakery to delivery point
 let deliveryDistanceKm = null;
 let deliveryCoords = null;
 let geocodeInFlight = false;
@@ -2793,39 +2805,32 @@ async function nominatimSearch(street, house){
   throw new Error("Nominatim address not found");
 }
 
-async function calculateRoadDistanceKm(coords){
-  // FOSSGIS OSRM (routing.openstreetmap.de) — road distance in meters
-  const url = `${FOSSGIS_OSRM_URL}${DELIVERY_HOME[1]},${DELIVERY_HOME[0]};${coords[1]},${coords[0]}?overview=full&geometries=geojson&steps=false`;
-  const r = await fetch(url, { headers: { Accept: "application/json" } });
-  if (!r.ok) throw new Error(`FOSSGIS OSRM ${r.status}`);
-  const data = await r.json();
-  if (data?.code && data.code !== "Ok") throw new Error(data.code || "Route not found");
-  const meters = Number(data?.routes?.[0]?.distance);
-  if (!Number.isFinite(meters)) throw new Error("Route not found");
+function calculateStraightDistanceKm(coords){
+  // Прямое расстояние (по прямой) от кондитерского дома до адреса
+  const km = haversineKm(DELIVERY_HOME, coords);
+  if (!Number.isFinite(km)) throw new Error("Distance not found");
 
-  // Draw route on map if available
+  // На карте — прямая линия, не маршрут по дорогам
   try {
-    const geometry = data?.routes?.[0]?.geometry;
-    if (geometry && deliveryMap && typeof L !== "undefined") {
+    if (deliveryMap && typeof L !== "undefined") {
       if (routeLayer) {
         deliveryMap.removeLayer(routeLayer);
         routeLayer = null;
       }
-      routeLayer = L.geoJSON(geometry, {
-        style: {
-          color: "#b02a5c",
-          weight: 4,
-          opacity: 0.8,
-          lineJoin: "round"
-        }
+      routeLayer = L.polyline([DELIVERY_HOME, coords], {
+        color: "#b02a5c",
+        weight: 3,
+        opacity: 0.85,
+        dashArray: "8 6",
+        lineJoin: "round"
       }).addTo(deliveryMap);
       try {
-        deliveryMap.fitBounds(routeLayer.getBounds().pad(0.18));
+        deliveryMap.fitBounds(L.latLngBounds([DELIVERY_HOME, coords]).pad(0.25));
       } catch (_) {}
     }
   } catch (_) {}
 
-  return meters / 1000;
+  return km;
 }
 
 async function reverseGeocode(lat, lon){
@@ -2953,10 +2958,6 @@ async function setDeliveryPointFromMap(lat, lon, doReverse){
         const rev = await reverseGeocode(lat, lon);
         if (rev.street) document.getElementById("ckStreet").value = rev.street;
         if (rev.house) document.getElementById("ckHouse").value = rev.house;
-        const q = document.getElementById("ckAddressQuery");
-        if (q && (rev.street || rev.display)) {
-          q.value = rev.house ? `${rev.street} ${rev.house}` : (rev.street || rev.display.split(",")[0]);
-        }
         ["ckStreet","ckHouse"].forEach(id => document.getElementById(id)?.classList?.remove("invalid"));
       } catch (_) {
         // keep coords even if reverse fails
@@ -2964,9 +2965,9 @@ async function setDeliveryPointFromMap(lat, lon, doReverse){
     }
     setAddressMapStatus(t("addressFoundCalc"));
     try {
-      deliveryDistanceKm = await calculateRoadDistanceKm([lat, lon]);
+      deliveryDistanceKm = calculateStraightDistanceKm([lat, lon]);
     } catch {
-      deliveryDistanceKm = haversineKm(DELIVERY_HOME, [lat, lon]) * 1.25;
+      deliveryDistanceKm = haversineKm(DELIVERY_HOME, [lat, lon]);
       if (routeLayer && deliveryMap) {
         deliveryMap.removeLayer(routeLayer);
         routeLayer = null;
@@ -3002,44 +3003,11 @@ function refreshDeliveryMapSize(){
   if (deliveryMap) setTimeout(() => deliveryMap.invalidateSize(), 120);
 }
 
-function parseAddressQuery(query){
-  const raw = String(query || "").trim();
-  if(!raw) return null;
-  // "ул. Бебеля, 130" / "Бебеля 130" / "Бебеля, д. 130"
-  const cleaned = raw
-    .replace(/\b(ул\.?|улица|просп\.?|проспект|пер\.?|переулок|бул\.?|бульвар|ш\.?|шоссе)\b/giu, " ")
-    .replace(/\b(д\.?|дом|корп\.?|корпус|стр\.?|строение)\b/giu, " ")
-    .replace(/[.,]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-  const m = cleaned.match(/^(.+?)\s+(\d+[\w\/-]*)$/u);
-  if(m) return { street: m[1].trim(), house: m[2].trim() };
-  return null;
-}
-
-function applyAddressQueryToFields(){
-  const q = document.getElementById("ckAddressQuery")?.value.trim() || "";
-  const parsed = parseAddressQuery(q);
-  if(!parsed) return false;
-  const streetEl = document.getElementById("ckStreet");
-  const houseEl = document.getElementById("ckHouse");
-  if(streetEl) streetEl.value = parsed.street;
-  if(houseEl) houseEl.value = parsed.house;
-  [streetEl, houseEl].forEach(el => el?.classList?.remove("invalid"));
-  return true;
-}
-
 async function geocodeDeliveryAddress(){
-  // If quick search filled but fields empty — parse first
   const streetEl = document.getElementById("ckStreet");
   const houseEl = document.getElementById("ckHouse");
-  let street = streetEl?.value.trim() || "";
-  let house = houseEl?.value.trim() || "";
-  if((!street || !house) && document.getElementById("ckAddressQuery")?.value.trim()){
-    applyAddressQueryToFields();
-    street = streetEl?.value.trim() || "";
-    house = houseEl?.value.trim() || "";
-  }
+  const street = streetEl?.value.trim() || "";
+  const house = houseEl?.value.trim() || "";
   if(!street||!house){
     if(!street) markInvalid(streetEl);
     if(!house) markInvalid(houseEl);
@@ -3049,10 +3017,8 @@ async function geocodeDeliveryAddress(){
   if(geocodeInFlight) return;
   geocodeInFlight = true;
   const btn = document.getElementById("calculateDeliveryBtn");
-  const searchBtn = document.getElementById("addressSearchBtn");
   const prevBtnText = btn?.textContent;
   if(btn){ btn.disabled = true; btn.textContent = t("calculatingDelivery"); }
-  if(searchBtn) searchBtn.disabled = true;
   try{
     setAddressMapStatus(t("addressLooking"));
     let found;
@@ -3067,9 +3033,9 @@ async function geocodeDeliveryAddress(){
     placeDeliveryMarker(found.coords[0], found.coords[1]);
     setAddressMapStatus(t("addressFoundCalc"));
     try{
-      deliveryDistanceKm = await calculateRoadDistanceKm(found.coords);
+      deliveryDistanceKm = calculateStraightDistanceKm(found.coords);
     }catch{
-      deliveryDistanceKm = haversineKm(DELIVERY_HOME, found.coords) * 1.25;
+      deliveryDistanceKm = haversineKm(DELIVERY_HOME, found.coords);
       if (routeLayer && deliveryMap) {
         deliveryMap.removeLayer(routeLayer);
         routeLayer = null;
@@ -3087,7 +3053,6 @@ async function geocodeDeliveryAddress(){
   }finally{
     geocodeInFlight = false;
     if(btn){ btn.disabled = false; btn.textContent = prevBtnText || t("calculateDelivery"); }
-    if(searchBtn) searchBtn.disabled = false;
   }
 }
 
@@ -3095,7 +3060,7 @@ async function geocodeDeliveryAddress(){
 function resetDeliveryAddressState(){
   deliveryDistanceKm = null;
   deliveryCoords = null;
-  ["ckStreet","ckHouse","ckAddressQuery","ckApartment","ckFloor"].forEach(id => { const el=document.getElementById(id); if(el) el.value=""; });
+  ["ckStreet","ckHouse","ckApartment","ckFloor"].forEach(id => { const el=document.getElementById(id); if(el) el.value=""; });
   const ph = document.getElementById("privateHouse");
   if(ph) ph.checked = false;
   document.getElementById("apartmentFields")?.classList.remove("hidden");
@@ -4202,18 +4167,7 @@ reviewSubmitBtn?.addEventListener("click", performSubmit);
 );
 
 document.getElementById("calculateDeliveryBtn")?.addEventListener("click", geocodeDeliveryAddress);
-document.getElementById("addressSearchBtn")?.addEventListener("click", () => {
-  applyAddressQueryToFields();
-  geocodeDeliveryAddress();
-});
-document.getElementById("ckAddressQuery")?.addEventListener("keydown", (e) => {
-  if(e.key === "Enter"){
-    e.preventDefault();
-    applyAddressQueryToFields();
-    geocodeDeliveryAddress();
-  }
-});
-["ckStreet","ckHouse","ckAddressQuery"].forEach(id => {
+["ckStreet","ckHouse"].forEach(id => {
   document.getElementById(id)?.addEventListener("input", () => {
     deliveryDistanceKm = null;
     deliveryCoords = null;
