@@ -1784,7 +1784,7 @@ body.dark-theme .address-map-canvas-wrap .leaflet-control-attribution a{
       <div class="feature-card">
         <div class="feature-icon">📦</div>
         <h3 data-i18n="step4Title">Условия доставки</h3>
-        <p data-i18n="deliveryTiersInfo">До 500 ₽ — 200 ₽ | До 1000 ₽ — 150 ₽ | До 2000 ₽ — 100 ₽ | От 2000 ₽ — бесплатно</p>
+        <p data-i18n="deliveryTiersInfo">До 1 км — бесплатно | До 3 км — 300 ₽ | До 5 км — 400 ₽ | Более 5 км — 500 ₽</p>
       </div>
     </div>
   </div>
@@ -2106,11 +2106,11 @@ const I18N = {
     telegramChannel: "Канал Telegram: @MalinaDessert",
     telegramBot: "Бот Telegram: @MalinaBakeryBot",
     deliveryTiersTitle: "Стоимость доставки",
-    deliveryTiersInfo: "До 1 км — 200 ₽ | Более 1 км — 300 ₽ | Более 3 км — 400 ₽ | Более 5 км — 500 ₽",
+    deliveryTiersInfo: "До 1 км — бесплатно | До 3 км — 300 ₽ | До 5 км — 400 ₽ | Более 5 км — 500 ₽",
     promoToggle: "Ввести промокод",
     deliveryPromoTitle: "Стоимость доставки",
     deliveryPromoSubtitle: "Стоимость доставки рассчитывается только по расстоянию от кондитерского дома.",
-    deliveryPromoNote: "Цена доставки рассчитывается по расстоянию. Самовывоз — бесплатно.",
+    deliveryPromoNote: "До 1 км — бесплатно. Дальше цена зависит от расстояния. Самовывоз — бесплатно.",
     clearCart: "Очистить корзину",
     total: "Итого",
     checkout: "Оформить заказ",
@@ -2236,11 +2236,11 @@ const I18N = {
     telegramChannel: "Telegram channel: @MalinaDessert",
     telegramBot: "Telegram bot: @MalinaBakeryBot",
     deliveryTiersTitle: "Delivery cost",
-    deliveryTiersInfo: "Up to 1 km — 200 ₽ | Over 1 km — 300 ₽ | Over 3 km — 400 ₽ | Over 5 km — 500 ₽",
+    deliveryTiersInfo: "Up to 1 km — free | Up to 3 km — 300 ₽ | Up to 5 km — 400 ₽ | Over 5 km — 500 ₽",
     promoToggle: "Enter promo code",
     deliveryPromoTitle: "Delivery cost",
     deliveryPromoSubtitle: "Delivery price is calculated only by distance from the pastry house.",
-    deliveryPromoNote: "Delivery price is calculated by distance. Pickup is free.",
+    deliveryPromoNote: "Up to 1 km is free. Beyond that, price depends on distance. Pickup is free.",
     clearCart: "Clear cart",
     total: "Total",
     checkout: "Checkout",
@@ -2552,8 +2552,8 @@ const DELIVERY_HOME = [56.854232, 60.555415]; // Екатеринбург, ул.
 const PHOTON_URL = "https://photon.komoot.io/api/";
 const NOMINATIM_URL = "https://nominatim.openstreetmap.org/search";
 const NOMINATIM_REVERSE_URL = "https://nominatim.openstreetmap.org/reverse";
-// Distance via Valhalla (OpenStreetMap public instance) — instead of OSRM
-const VALHALLA_URL = "https://valhalla1.openstreetmap.de/route";
+// Distance via FOSSGIS OSRM (routing.openstreetmap.de) — car profile
+const FOSSGIS_OSRM_URL = "https://routing.openstreetmap.de/routed-car/route/v1/driving/";
 let deliveryDistanceKm = null;
 let deliveryCoords = null;
 let geocodeInFlight = false;
@@ -2566,7 +2566,7 @@ let mapInitialized = false;
 function deliveryPriceByDistance(distanceKm){
   const d = Number(distanceKm);
   if(!Number.isFinite(d)) return 0;
-  if(d <= 1) return 200;
+  if(d <= 1) return 0;      // до 1 км — бесплатно
   if(d <= 3) return 300;
   if(d <= 5) return 400;
   return 500;
@@ -2596,7 +2596,8 @@ function updateDeliveryDistanceUI(){
   }
   const price = deliveryPriceByDistance(deliveryDistanceKm);
   const distStr = deliveryDistanceKm.toFixed(1);
-  el.innerHTML = `<span class="dd-label">${t("deliveryDistanceLabel")}</span><span class="dd-value"><span>${distStr} км</span><span class="dd-price">${money(price)}</span></span>`;
+  const priceLabel = price === 0 ? t("deliveryFree") : money(price);
+  el.innerHTML = `<span class="dd-label">${t("deliveryDistanceLabel")}</span><span class="dd-value"><span>${distStr} км</span><span class="dd-price">${priceLabel}</span></span>`;
   el.classList.add("show");
   el.style.display = "block";
 }
@@ -2717,73 +2718,39 @@ async function nominatimSearch(street,house){
   throw new Error("Nominatim address not found");
 }
 
-function decodeValhallaPolyline(str, precision=6){
-  // Valhalla uses 6-precision polyline6 encoding
-  let index = 0, lat = 0, lng = 0;
-  const coordinates = [];
-  const factor = Math.pow(10, precision);
-  while (index < str.length) {
-    let result = 0, shift = 0, b;
-    do {
-      b = str.charCodeAt(index++) - 63;
-      result |= (b & 0x1f) << shift;
-      shift += 5;
-    } while (b >= 0x20);
-    const dlat = (result & 1) ? ~(result >> 1) : (result >> 1);
-    lat += dlat;
-    result = 0; shift = 0;
-    do {
-      b = str.charCodeAt(index++) - 63;
-      result |= (b & 0x1f) << shift;
-      shift += 5;
-    } while (b >= 0x20);
-    const dlng = (result & 1) ? ~(result >> 1) : (result >> 1);
-    lng += dlng;
-    coordinates.push([lat / factor, lng / factor]);
-  }
-  return coordinates;
-}
-
 async function calculateRoadDistanceKm(coords){
-  // Valhalla public OSM instance — road distance (km)
-  const body = {
-    locations: [
-      { lat: DELIVERY_HOME[0], lon: DELIVERY_HOME[1] },
-      { lat: coords[0], lon: coords[1] }
-    ],
-    costing: "auto",
-    directions_options: { units: "kilometers" }
-  };
-  const r = await fetch(VALHALLA_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Accept: "application/json" },
-    body: JSON.stringify(body)
-  });
-  if (!r.ok) throw new Error(`Valhalla ${r.status}`);
+  // FOSSGIS OSRM (routing.openstreetmap.de) — road distance in meters
+  const url = `${FOSSGIS_OSRM_URL}${DELIVERY_HOME[1]},${DELIVERY_HOME[0]};${coords[1]},${coords[0]}?overview=full&geometries=geojson&steps=false`;
+  const r = await fetch(url, { headers: { Accept: "application/json" } });
+  if (!r.ok) throw new Error(`FOSSGIS OSRM ${r.status}`);
   const data = await r.json();
-  const km = Number(data?.trip?.summary?.length);
-  if (!Number.isFinite(km)) throw new Error("Route not found");
-  // optional geometry for map
+  if (data?.code && data.code !== "Ok") throw new Error(data.code || "Route not found");
+  const meters = Number(data?.routes?.[0]?.distance);
+  if (!Number.isFinite(meters)) throw new Error("Route not found");
+
+  // Draw route on map if available
   try {
-    const shape = data?.trip?.legs?.[0]?.shape;
-    if (shape && deliveryMap) {
-      const latlngs = decodeValhallaPolyline(shape, 6);
+    const geometry = data?.routes?.[0]?.geometry;
+    if (geometry && deliveryMap && typeof L !== "undefined") {
       if (routeLayer) {
         deliveryMap.removeLayer(routeLayer);
         routeLayer = null;
       }
-      if (latlngs.length > 1) {
-        routeLayer = L.polyline(latlngs, {
+      routeLayer = L.geoJSON(geometry, {
+        style: {
           color: "#b02a5c",
           weight: 4,
-          opacity: 0.75,
+          opacity: 0.8,
           lineJoin: "round"
-        }).addTo(deliveryMap);
-        deliveryMap.fitBounds(routeLayer.getBounds().pad(0.15));
-      }
+        }
+      }).addTo(deliveryMap);
+      try {
+        deliveryMap.fitBounds(routeLayer.getBounds().pad(0.18));
+      } catch (_) {}
     }
   } catch (_) {}
-  return km;
+
+  return meters / 1000;
 }
 
 async function reverseGeocode(lat, lon){
@@ -2816,9 +2783,11 @@ function ensureDeliveryMap(){
     scrollWheelZoom: false
   }).setView(DELIVERY_HOME, 13);
 
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    maxZoom: 19,
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+  // Carto Voyager basemap (OpenStreetMap data, different style from default OSM tiles)
+  L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+    maxZoom: 20,
+    subdomains: "abcd",
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
   }).addTo(deliveryMap);
 
   const homeIcon = L.divIcon({
@@ -3040,11 +3009,7 @@ function resetDeliveryAddressState(){
 
 function deliveryBaseFee(subtotal, method){
   if(method !== "Доставка") return 0;
-  const distance = Number(deliveryDistanceKm);
-  if(!Number.isFinite(distance) || distance <= 1) return 200;
-  if(distance <= 3) return 300;
-  if(distance <= 5) return 400;
-  return 500;
+  return deliveryPriceByDistance(deliveryDistanceKm);
 }
 
 function automaticPromoQuote(){
@@ -3514,8 +3479,8 @@ function showDeliveryRules(){
   const noteEl = document.getElementById("deliveryModalNote");
   if(!backdrop || !rulesEl) return;
   const rules = currentLanguage === "en"
-    ? [["Up to 1 km", "200 ₽"], ["Over 1 km", "300 ₽"], ["Over 3 km", "400 ₽"], ["Over 5 km", "500 ₽"]]
-    : [["До 1 км", "200 ₽"], ["Более 1 км", "300 ₽"], ["Более 3 км", "400 ₽"], ["Более 5 км", "500 ₽"]];
+    ? [["Up to 1 km", "Free"], ["Up to 3 km", "300 ₽"], ["Up to 5 km", "400 ₽"], ["Over 5 km", "500 ₽"]]
+    : [["До 1 км", "Бесплатно"], ["До 3 км", "300 ₽"], ["До 5 км", "400 ₽"], ["Более 5 км", "500 ₽"]];
   rulesEl.innerHTML = rules.map(r => `<div class="delivery-rule"><strong>${r[0]}</strong><span class="delivery-rule-save">${r[1]}</span></div>`).join("");
   if(noteEl) noteEl.textContent = t("deliveryPromoNote");
   backdrop.classList.add("open");
