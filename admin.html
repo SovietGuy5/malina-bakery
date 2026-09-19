@@ -1168,6 +1168,8 @@ button:disabled {
 }
 
 
+.field-hint{display:block;margin-top:-2px;color:var(--muted);font-size:10px;line-height:1.4}
+
 /* ============================================================
    SWITCH
    ============================================================ */
@@ -1503,7 +1505,7 @@ body.pending #accessDenied{display:flex!important}
 .product-image{background:#211c26!important}
 .product-name{color:#fff}
 .badge-category{background:rgba(255,255,255,.05);color:#bdb5c0}
-.badge-tag,.discount-pill{background:var(--accent-soft)!important;color:var(--accent)!important}
+.badge-quantum{background:var(--accent-soft)!important;color:var(--accent)!important}.badge-tag,.discount-pill{background:var(--accent-soft)!important;color:var(--accent)!important}
 .icon-button,.mini-button{background:#211c26!important;color:#e9e3ea!important;border-color:var(--line)!important}
 .icon-button:hover,.mini-button:hover{border-color:rgba(255,59,141,.3)!important}
 .icon-button.danger,.mini-button.danger{color:var(--danger)!important}
@@ -2808,6 +2810,31 @@ body:not(.pending):not(.denied) #accessLoading{display:none!important}
                     >
 
                 </div>
+
+            </div>
+
+
+            <!-- QUANTITY QUANTUM -->
+
+            <div class="field">
+
+                <label for="quantityQuantum">
+                    Квант заказа
+                </label>
+
+                <input
+                    id="quantityQuantum"
+                    type="number"
+                    min="1"
+                    step="1"
+                    value="1"
+                    inputmode="numeric"
+                    placeholder="1"
+                >
+
+                <small class="field-hint">
+                    1 — можно заказать по 1 шт. · 6 — только 6, 12, 18…
+                </small>
 
             </div>
 
@@ -4508,6 +4535,12 @@ function productCard(
                         )}
                     </span>
 
+                    ${Number(product.quantity_quantum || 1) > 1 ? `
+                        <span class="badge badge-quantum">
+                            Кратно ${Number(product.quantity_quantum || 1)}
+                        </span>
+                    ` : ""}
+
                     ${stockBadge}
 
                     ${category}
@@ -4604,6 +4637,11 @@ function openCreateModal() {
     document.getElementById(
         "sortOrder",
     ).value = "0";
+
+
+    document.getElementById(
+        "quantityQuantum",
+    ).value = "1";
 
 
     document.getElementById(
@@ -4707,6 +4745,12 @@ function openEditModal(
         "sortOrder",
     ).value =
         product.sort_order ?? 0;
+
+
+    document.getElementById(
+        "quantityQuantum",
+    ).value =
+        product.quantity_quantum ?? 1;
 
 
     document.getElementById(
@@ -4828,6 +4872,29 @@ async function saveProduct() {
     }
 
 
+    const quantityQuantum =
+        Number(
+            document.getElementById(
+                "quantityQuantum",
+            ).value || 1,
+        );
+
+
+    if (
+        !Number.isInteger(quantityQuantum) ||
+        quantityQuantum < 1
+    ) {
+
+        toast(
+            "Квант заказа должен быть целым числом от 1",
+            true,
+        );
+
+        return;
+
+    }
+
+
     saveButton.disabled =
         true;
 
@@ -4899,6 +4966,9 @@ async function saveProduct() {
                         "sortOrder",
                     ).value || 0,
                 ),
+
+            quantity_quantum:
+                quantityQuantum,
 
             in_stock:
                 document.getElementById(
