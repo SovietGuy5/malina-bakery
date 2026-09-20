@@ -1274,7 +1274,31 @@ body.dark-theme .topbar {
 
 /* Quantity quantum */
 .qty-control-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:5px}
-.quantity-quantum-hint{font-size:10px;line-height:1.2;color:var(--tg-muted);font-weight:600;white-space:nowrap}
+
+/* Product characteristics (chips) */
+.chips{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-top:10px;
+}
+.chip{
+  display:inline-flex;
+  align-items:center;
+  padding:6px 10px;
+  border-radius:10px;
+  background:var(--tg-soft);
+  color:var(--tg-muted);
+  font-size:13px;
+  font-weight:500;
+  line-height:1.1;
+  white-space:nowrap;
+}
+.chip-order{
+  background:color-mix(in srgb, var(--accent) 10%, transparent);
+  color:var(--accent);
+  font-weight:600;
+}
 .qty-controls span {
   min-width: 18px;
   text-align: center;
@@ -1899,7 +1923,7 @@ body.dark-theme .address-map-canvas-wrap .leaflet-control-attribution a{
   <div class="sheet-scroll" style="padding-top: 0; flex: 1;">
     <img id="pmImage" src="" alt="">
     <div id="pmDesc" style="color:var(--tg-muted); font-size:15px; margin-bottom:12px; line-height:1.5;"></div>
-    <div id="pmWeight" style="font-weight:600; font-size:14px; color:var(--tg-muted);"></div>
+    <div id="pmWeight"></div>
   </div>
   <div style="padding: 16px 20px; border-top: 1px solid var(--tg-line); display:flex; justify-content:space-between; align-items:center; position:sticky; bottom:0; background:var(--tg-bg); z-index: 10;">
     <span id="pmPrice" style="font-size:22px; font-weight:800; color:var(--tg-text);"></span>
@@ -2238,6 +2262,8 @@ const I18N = {
     addToCart: "В корзину",
     unavailable: "Сейчас недоступно",
     outOfStock: "НЕТ В НАЛИЧИИ",
+    orderFrom: "Заказ от",
+    pcsShort: "шт.",
     added: "добавлен в корзину",
     sending: "Отправляем заказ…",
     orderError: "Не удалось отправить заказ",
@@ -2368,6 +2394,8 @@ const I18N = {
     addToCart: "В корзину",
     unavailable: "Currently unavailable",
     outOfStock: "OUT OF STOCK",
+    orderFrom: "Order from",
+    pcsShort: "pcs",
     added: "added to cart",
     sending: "Sending order…",
     orderError: "Failed to send the order",
@@ -3283,10 +3311,19 @@ function normalizeProductQuantity(name, qty){
   return Math.max(quantum, Math.floor(value / quantum) * quantum);
 }
 
-function quantityHintHtml(name){
-  const quantum = getProductQuantityQuantum(name);
-  if(quantum <= 1) return '';
-  return `<div class="quantity-quantum-hint">${currentLanguage === 'en' ? `Order only in multiples of ${quantum} pcs.` : `Заказ только кратно ${quantum} шт.`}</div>`;
+function productChipsHtml(p){
+  // Характеристики (объём, тара и т.п.) — отдельными «пилюлями».
+  // Разделители: · ; | и запятая с пробелом (чтобы не ломать «0,33 л»).
+  const parts = String(p.weight || "")
+    .split(/\s*[·;|]\s*|,\s+/)
+    .map(x => x.trim())
+    .filter(Boolean);
+  const chips = parts.map(x => `<span class="chip">${escapeHtml(x)}</span>`);
+  const quantum = Math.max(1, Math.floor(Number(p.quantityQuantum || 1)));
+  if (quantum > 1) {
+    chips.push(`<span class="chip chip-order">${t("orderFrom")} ${quantum} ${t("pcsShort")}</span>`);
+  }
+  return chips.length ? `<div class="chips">${chips.join("")}</div>` : "";
 }
 
 function getQtyControlsHtml(name, out) {
@@ -3299,10 +3336,9 @@ function getQtyControlsHtml(name, out) {
         <span>${qty}</span>
         <button class="qty-btn" data-qty-change="1" data-name="${escapeHtml(name)}">+</button>
       </div>
-      ${quantityHintHtml(name)}
     `;
   }
-  return `<div class="qty-control-wrap"><button class="add" data-qty-change="1" data-name="${escapeHtml(name)}" ${out ? "disabled" : ""} aria-label="${out ? t("outOfStock") : t("addToCart")}">${out ? "×" : t("addToCart")}</button>${quantityHintHtml(name)}</div>`;
+  return `<div class="qty-control-wrap"><button class="add" data-qty-change="1" data-name="${escapeHtml(name)}" ${out ? "disabled" : ""} aria-label="${out ? t("outOfStock") : t("addToCart")}">${out ? "×" : t("addToCart")}</button></div>`;
 }
 
 function getCardFootHtml(p) {
@@ -3337,7 +3373,7 @@ function getCardFootHtml(p) {
 
 function card(p){
   const out = isOutOfStock(p);
-  const fullMeta = [p.description, p.weight].filter(Boolean).join(" · ");
+  const fullMeta = p.description || "";
   const showReadMore = p.description && p.description.length > 55;
   return `
     <article class="card ${out ? "unavailable" : ""}" data-product-name="${escapeHtml(p.name)}">
@@ -3352,6 +3388,7 @@ function card(p){
           <div class="meta" style="-webkit-line-clamp: 2;">${escapeHtml(fullMeta)}</div>
           ${showReadMore ? `<button class="read-more-btn" onclick="toggleReadMore(this); event.stopPropagation();">${t("readMore")}</button>` : ""}
         </div>
+        ${productChipsHtml(p)}
         <div class="card-foot">
           ${getCardFootHtml(p)}
         </div>
@@ -3362,7 +3399,7 @@ function card(p){
 
 function hitCard(p) {
   const out = isOutOfStock(p);
-  const fullMeta = [p.description, p.weight].filter(Boolean).join(" · ");
+  const fullMeta = p.description || "";
   return `
     <article class="hit-card ${out ? "unavailable" : ""}" data-product-name="${escapeHtml(p.name)}">
       <div class="hit-img">
@@ -3373,6 +3410,7 @@ function hitCard(p) {
         <div>
           <h3>${escapeHtml(p.name)}</h3>
           <div class="meta">${escapeHtml(fullMeta)}</div>
+          ${productChipsHtml(p)}
         </div>
         <div class="hit-foot">
           ${getCardFootHtml(p)}
@@ -3464,7 +3502,7 @@ function openProductModal(name) {
   }
   
   document.getElementById("pmDesc").textContent = p.description || "";
-  document.getElementById("pmWeight").textContent = p.weight || "";
+  document.getElementById("pmWeight").innerHTML = productChipsHtml(p);
   
   updateModalControls();
   
