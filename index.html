@@ -3422,6 +3422,8 @@ function hitCard(p) {
 
 function renderCatalog(){
   currentFiltered = activeFilter === "Все" ? allProducts : allProducts.filter(p => p.category === activeFilter);
+  // Товары не в наличии — в самый низ (порядок внутри групп сохраняется)
+  currentFiltered = [...currentFiltered].sort((a, b) => isOutOfStock(a) - isOutOfStock(b));
   prodGrid.innerHTML = currentFiltered.map(card).join("") || `<div class="empty">${t("categoryEmpty")}</div>`;
 }
 
