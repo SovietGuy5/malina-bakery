@@ -240,16 +240,15 @@ body.dark-theme .topbar {
 
 .hero-grid{
   display:grid;
-  grid-template-columns:1.04fr .96fr;
+  grid-template-columns:minmax(0,1fr);
   gap:32px;
   align-items:stretch
 }
 
-.hero-copy,
-.hero-photo{
+.hero-copy{
   border-radius:28px;
   overflow:hidden;
-  min-height:420px
+  min-height:0
 }
 
 .hero-copy{
@@ -350,42 +349,6 @@ body.dark-theme .topbar {
   line-height: 1.5;
 }
 
-.hero-photo{
-  position:relative;
-  background:#1e293b
-}
-
-.hero-photo img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  display:block;
-}
-
-.photo-overlay{
-  position:absolute;
-  inset:auto 14px 14px 14px;
-  padding:16px 20px;
-  border-radius:20px;
-  background:rgba(15, 23, 42, 0.7);
-  backdrop-filter:blur(12px);
-  color:white
-}
-
-.photo-overlay strong{
-  display:block;
-  font-size:15px;
-  font-weight: 700;
-}
-
-.photo-overlay span{
-  font-size:13px;
-  opacity:.8;
-  font-weight: 500;
-  margin-top: 2px;
-  display: block;
-}
-
 .section{
   padding:30px 0
 }
@@ -454,6 +417,9 @@ body.dark-theme .topbar {
 
 .hit-card {
   display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 14px;
   background: var(--hit-bg);
   border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--tg-line));
   border-radius: 20px;
@@ -468,9 +434,12 @@ body.dark-theme .topbar {
 }
 
 .hit-img {
-  width: 150px;
+  width: 168px;
+  aspect-ratio: 1 / 1;
   flex-shrink: 0;
-  background: var(--tg-line);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--tg-soft);
   position: relative;
 }
 
@@ -478,10 +447,13 @@ body.dark-theme .topbar {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
 
 .hit-body {
-  padding: 18px;
+  padding: 2px 2px 2px 0;
+  min-width: 0;
+  align-self: stretch;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -1988,9 +1960,6 @@ body.dark-theme .address-map-canvas-wrap .leaflet-control-attribution a{
     min-height:auto;
     padding:32px 24px;
   }
-  .hero-photo{
-    min-height:300px
-  }
   .products{
     grid-template-columns:repeat(2,1fr)
   }
@@ -2053,9 +2022,6 @@ body.dark-theme .address-map-canvas-wrap .leaflet-control-attribution a{
   .hero-copy{
     padding:24px 20px
   }
-  .hero-photo{
-    min-height:280px
-  }
   .hero h1{
     font-size:34px;
     margin-bottom:14px;
@@ -2106,8 +2072,6 @@ body.dark-theme .address-map-canvas-wrap .leaflet-control-attribution a{
   .primary{padding:12px 18px;font-size:15px;border-radius:14px;min-height:50px}
   .secondary{padding:11px 20px;font-size:15px;border-radius:14px;min-height:50px}
   .hero-note{display:none}
-  .hero-photo{min-height:180px;border-radius:22px}
-  .photo-overlay{display:none}
 
   /* Секции */
   .section{padding:20px 0}
@@ -2117,10 +2081,10 @@ body.dark-theme .address-map-canvas-wrap .leaflet-control-attribution a{
 
   /* Хиты */
   .hits-grid{grid-template-columns:1fr;gap:12px}
-  .hit-card{border-radius:18px}
+  .hit-card{border-radius:18px;padding:10px;gap:12px}
   .hit-card:hover{transform:none}
-  .hit-img{width:112px}
-  .hit-body{padding:14px}
+  .hit-img{width:116px;border-radius:12px}
+  .hit-body{padding:2px 2px 2px 0}
   .hit-body h3{font-size:15px;margin-bottom:4px}
   .hit-tag,.tag{top:8px;left:8px;padding:4px 8px;border-radius:8px;font-size:10px}
 
@@ -2249,14 +2213,6 @@ body.dark-theme .address-map-canvas-wrap .leaflet-control-attribution a{
         <div class="hero-note" data-i18n="heroNote">
           Заказ можно оформить на сайте или прямо внутри Telegram.
         </div>
-      </div>
-    </div>
-
-    <div class="hero-photo">
-      <img src="assets/hero-cheesecake-1.png" data-i18n-alt="heroImageAlt" alt="Чизкейк с черникой">
-      <div class="photo-overlay">
-        <strong data-i18n="freshness">Свежесть в день заказа</strong>
-        <span data-i18n="freshnessSub">Натуральные вкусы · аккуратная упаковка</span>
       </div>
     </div>
   </div>
