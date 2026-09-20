@@ -1892,6 +1892,107 @@ body.dark-theme .address-map-canvas-wrap .leaflet-control-attribution a{
   }
 }
 
+/* =====================================================
+   MOBILE: компактное и вместительное меню
+===================================================== */
+@media(max-width:520px){
+  .wrap{width:min(100% - 20px,600px)}
+
+  /* Шапка */
+  .topbar-inner{height:52px;gap:8px}
+  .brand{gap:8px;font-size:14px;min-width:0}
+  .brand > span[data-i18n="brand"]{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .brand-mark{width:30px;height:30px;min-width:30px;border-radius:9px}
+  .top-actions{gap:6px;flex:0 0 auto}
+  .top-btn{height:30px;padding:0 10px;border-radius:10px;font-size:11px}
+
+  /* Первый экран */
+  .hero{padding:10px 0 2px}
+  .hero-grid{gap:10px}
+  .hero-copy{padding:16px;border-radius:20px;min-height:0}
+  .eyebrow{font-size:10px;margin-bottom:6px}
+  .hero h1{font-size:25px;line-height:1.1;margin-bottom:8px}
+  .hero p{font-size:13px;line-height:1.45;margin-bottom:12px}
+  .hero-actions{gap:8px;margin-bottom:0}
+  .primary{padding:10px 16px;font-size:14px;border-radius:12px}
+  .secondary{padding:9px 14px;font-size:14px;border-radius:12px}
+  .hero-note{display:none}
+  .hero-photo{min-height:130px;border-radius:20px}
+  .photo-overlay{display:none}
+
+  /* Секции */
+  .section{padding:12px 0}
+  .section-head{margin-bottom:8px}
+  .section-head h2{font-size:20px}
+  .section-head p{font-size:12px;margin-top:2px}
+
+  /* Хиты */
+  .hits-grid{grid-template-columns:1fr;gap:10px}
+  .hit-card{border-radius:16px}
+  .hit-card:hover{transform:none}
+  .hit-img{width:96px}
+  .hit-body{padding:10px 12px}
+  .hit-body h3{font-size:14px;margin-bottom:3px}
+  .hit-foot{margin-top:6px;gap:6px}
+  .hit-tag,.tag{top:6px;left:6px;padding:3px 7px;border-radius:7px;font-size:9.5px}
+
+  /* Категории — компактные и «прилипают» под шапкой */
+  .filters{
+    position:sticky;
+    top:calc(52px + env(safe-area-inset-top));
+    z-index:15;
+    gap:6px;
+    margin:0 -10px 6px;
+    padding:6px 10px;
+    background:var(--tg-bg);
+  }
+  .filter{padding:7px 12px;font-size:12px}
+
+  /* Карточки товаров */
+  .products{gap:10px}
+  .card{border-radius:16px}
+  .card:hover{transform:none}
+  .card-img{aspect-ratio:6/5}
+  .card-body{padding:10px}
+  .card h3{font-size:14px;margin-bottom:3px}
+  .meta{font-size:12px;line-height:1.3}
+  .read-more-btn{font-size:11px;margin-top:2px}
+  .chips{gap:4px;margin-top:6px}
+  .chip{padding:4px 7px;border-radius:8px;font-size:11px}
+  .card-foot{padding-top:8px;gap:6px}
+  .price{font-size:15px}
+  .add{height:32px;min-width:32px;padding:0 10px;border-radius:10px;font-size:13px}
+  .qty-controls{gap:4px;padding:3px;border-radius:10px}
+  .qty-controls .qty-btn{width:26px;height:26px;border-radius:7px;font-size:15px}
+  .qty-controls span{min-width:16px;font-size:13px}
+  .unavailable-badge{padding:4px 8px;font-size:10px}
+
+  /* Акции */
+  .feature{grid-template-columns:1fr 1fr;gap:10px}
+  .feature-card{padding:12px;border-radius:16px}
+  .feature-icon{width:34px;height:34px;border-radius:11px;margin-bottom:10px;font-size:15px}
+  .feature-card h3{font-size:14px;margin-bottom:4px}
+  .feature-card p{font-size:12px;line-height:1.4}
+
+  /* Подвал (с запасом под кнопку корзины) */
+  .footer{padding:16px 0 84px}
+  .footer-inner{padding-top:16px;gap:8px}
+
+  /* Корзина */
+  .sheet{border-radius:22px 22px 0 0;max-height:94vh}
+  .sheet-head{padding:12px 14px 8px}
+  .sheet-title{font-size:19px}
+  .icon-btn{width:32px;height:32px;border-radius:10px;font-size:18px}
+  .sheet-scroll{padding:4px 14px 16px}
+  .cart-item:not(.delivery-item){grid-template-columns:52px 1fr auto;gap:9px;padding:8px;border-radius:14px;margin-bottom:8px}
+  .cart-item:not(.delivery-item) .cart-thumb{width:52px;height:52px;border-radius:11px}
+  .cart-info strong{font-size:13px}
+  .cart-info small{font-size:11px;margin-top:2px}
+  .qty{margin-top:5px;gap:6px}
+  .cart-line{font-size:13px}
+  .clear{padding:10px;margin:4px 0 10px}
+}
+
 .review-wrap{padding:4px 0 16px;}
 .review-title{font-size:24px;font-weight:800;margin:0 0 6px;}
 .review-subtitle{color:var(--tg-muted);font-size:14px;margin:0 0 18px;}
