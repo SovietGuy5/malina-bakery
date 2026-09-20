@@ -784,29 +784,48 @@ body.dark-theme .topbar {
 
 /* Прогресс бесплатной доставки в корзине */
 .dprog{
-  margin:0 0 14px;
-  padding:0 2px;
+  margin:0 0 16px;
+  padding:12px 14px 10px;
+  border:1px solid var(--tg-line);
+  border-radius:16px;
+  background:var(--tg-card);
 }
-.dprog-row{
+.dprog-head{
   display:flex;
-  align-items:baseline;
-  justify-content:space-between;
-  gap:10px;
-  margin-bottom:8px;
-  font-size:13px;
+  align-items:center;
+  gap:12px;
+  margin-bottom:12px;
+}
+.dprog-ico{
+  width:38px;
+  height:38px;
+  min-width:38px;
+  border-radius:12px;
+  display:grid;
+  place-items:center;
+  background:color-mix(in srgb, var(--accent) 12%, transparent);
+  color:var(--accent);
+  transition:background .3s ease,color .3s ease;
+}
+.dprog-ico svg{width:22px;height:22px;}
+.dprog-txt{min-width:0;display:flex;flex-direction:column;gap:2px;}
+.dprog-title{
+  font-size:14px;
+  font-weight:800;
+  line-height:1.2;
+  color:var(--tg-text);
+}
+.dprog-sub{
+  font-size:12.5px;
   line-height:1.3;
   color:var(--tg-muted);
   font-weight:600;
 }
-.dprog-row b{
-  color:var(--tg-text);
-  font-weight:800;
-  white-space:nowrap;
-}
+.dprog-sub b{color:var(--accent);font-weight:800;}
 .dprog-track{
   position:relative;
-  height:6px;
-  border-radius:6px;
+  height:8px;
+  border-radius:8px;
   background:var(--tg-soft);
   overflow:hidden;
 }
@@ -825,11 +844,20 @@ body.dark-theme .topbar {
   width:2px;
   margin-left:-1px;
   background:var(--tg-card);
-  opacity:.9;
 }
-.dprog.done .dprog-row{color:var(--success);}
-.dprog.done .dprog-row b{color:var(--success);}
+.dprog-scale{
+  display:flex;
+  justify-content:space-between;
+  margin-top:6px;
+  font-size:11px;
+  font-weight:700;
+  color:var(--tg-muted);
+}
+.dprog.done .dprog-ico{background:color-mix(in srgb, var(--success) 14%, transparent);color:var(--success);}
+.dprog.done .dprog-sub{color:var(--success);}
+.dprog.done .dprog-sub b{color:var(--success);}
 .dprog.done .dprog-fill{background:var(--success);}
+.dprog.done .dprog-scale{display:none;}
 
 .sheet-backdrop{
   position:fixed;
@@ -2013,8 +2041,17 @@ body.dark-theme .address-map-canvas-wrap .leaflet-control-attribution a{
   <div class="sheet-scroll">
     <div id="cartViewItems">
       <div class="dprog hidden" id="deliveryProgress" role="status" aria-live="polite">
-        <div class="dprog-row"><span id="dprogText"></span><b id="dprogValue"></b></div>
+        <div class="dprog-head">
+          <span class="dprog-ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6.5h11v9H3z"/><path d="M14 9.5h3.6l3.4 3.4v2.6h-7"/><circle cx="7.5" cy="17.5" r="1.8"/><circle cx="17.5" cy="17.5" r="1.8"/></svg>
+          </span>
+          <div class="dprog-txt">
+            <span class="dprog-title" id="dprogTitle"></span>
+            <span class="dprog-sub" id="dprogText"></span>
+          </div>
+        </div>
         <div class="dprog-track"><span class="dprog-fill" id="dprogFill"></span><span id="dprogTicks"></span></div>
+        <div class="dprog-scale"><span>0 ₽</span><span id="dprogGoal"></span></div>
       </div>
       <div id="cartItems"></div>
       <div id="cartSummary">
@@ -2357,10 +2394,14 @@ const I18N = {
     promotionsSubtitle: "Специальные предложения, которые действуют сейчас.",
     promotionFrom: "Акция",
     automaticDiscountText: "Скидка по акции",
-    dpToFree: "До бесплатной доставки",
-    dpToDiscount: "До скидки на доставку",
-    dpFree: "Доставка бесплатная",
-    dpDiscountOn: "Скидка на доставку"
+    dpTitleFree: "Бесплатная доставка",
+    dpTitleDiscount: "Скидка на доставку",
+    dpAddMore: "Добавьте ещё",
+    dpReached: "Условие выполнено — доставка бесплатная",
+    dpByAddress: "Для вашего адреса доставка бесплатная",
+    dpDiscountApplied: "Скидка применена",
+    dpFromAmount: "от",
+    dpDiscountWord: "скидка"
   },
   en: {
     pageTitle: 'Pastry house "Malina"',
@@ -2493,10 +2534,14 @@ const I18N = {
     promotionsSubtitle: "Special offers that are active right now.",
     promotionFrom: "Promotion",
     automaticDiscountText: "Promotion discount",
-    dpToFree: "Left for free delivery",
-    dpToDiscount: "Left for delivery discount",
-    dpFree: "Free delivery",
-    dpDiscountOn: "Delivery discount"
+    dpTitleFree: "Free delivery",
+    dpTitleDiscount: "Delivery discount",
+    dpAddMore: "Add",
+    dpReached: "Unlocked — your delivery is free",
+    dpByAddress: "Delivery to your address is free",
+    dpDiscountApplied: "Discount applied",
+    dpFromAmount: "from",
+    dpDiscountWord: "discount"
   }
 };
 
@@ -3333,9 +3378,11 @@ function getDeliveryProgressState(subtotal){
   const method = document.querySelector('input[name="method"]:checked')?.value || "Доставка";
   if(method !== "Доставка" || subtotal <= 0) return null;
 
+  const doneFree = (sub) => ({done:true, pct:100, title:t("dpTitleFree"), sub, goal:"", ticks:[]});
+
   // Адрес уже указан и доставка по расстоянию бесплатная
   if(Number.isFinite(deliveryDistanceKm) && deliveryPriceByDistance(deliveryDistanceKm) === 0){
-    return {done:true, pct:100, text:t("dpFree"), value:"", ticks:[]};
+    return doneFree(t("dpByAddress"));
   }
 
   const promos = activePromotions
@@ -3348,36 +3395,29 @@ function getDeliveryProgressState(subtotal){
   const freeGoal = freeMilestones.length ? freeMilestones[0].min : null;
 
   if(freeGoal !== null && subtotal >= freeGoal){
-    return {done:true, pct:100, text:t("dpFree"), value:"", ticks:[]};
+    return doneFree(t("dpReached"));
   }
 
   // Шкала: до бесплатной доставки, а если её нет — до самой крупной скидки
   const scaleMax = freeGoal !== null ? freeGoal : promos[promos.length - 1].min;
-  if(!(scaleMax > 0)){
-    const best = promos[promos.length - 1];
-    return {done:true, pct:100, text:`${t("dpDiscountOn")} ${deliveryPromoValueText(best.p)}`, value:"", ticks:[]};
+  const title = freeGoal !== null ? t("dpTitleFree") : t("dpTitleDiscount");
+  const next = promos.find(x => x.min > subtotal);
+
+  if(!(scaleMax > 0) || !next){
+    const met = promos.filter(x => x.min <= subtotal).pop() || promos[promos.length - 1];
+    return {done:true, pct:100, title:`${t("dpTitleDiscount")} ${deliveryPromoValueText(met.p)}`, sub:t("dpDiscountApplied"), goal:"", ticks:[]};
   }
 
-  const next = promos.find(x => x.min > subtotal);
   const ticks = promos
     .filter(x => !x.free && x.min > 0 && x.min < scaleMax)
     .map(x => Math.round(x.min / scaleMax * 1000) / 10);
   const pct = Math.max(0, Math.min(100, subtotal / scaleMax * 100));
-
-  if(!next){
-    // Все скидки получены, бесплатной доставки нет
-    const met = promos.filter(x => x.min <= subtotal).pop();
-    return {done:true, pct:100, text:`${t("dpDiscountOn")} ${deliveryPromoValueText(met.p)}`, value:"", ticks:[]};
-  }
-
   const left = Math.ceil(next.min - subtotal);
-  return {
-    done:false,
-    pct,
-    ticks,
-    text: next.free ? t("dpToFree") : `${t("dpToDiscount")} ${deliveryPromoValueText(next.p)}`,
-    value: money(left)
-  };
+  const subHtml = next.free
+    ? `${t("dpAddMore")} <b>${money(left)}</b>`
+    : `${t("dpAddMore")} <b>${money(left)}</b> — ${t("dpDiscountWord")} ${deliveryPromoValueText(next.p)}`;
+
+  return {done:false, pct, title, subHtml, goal:`${t("dpFromAmount")} ${money(scaleMax)}`, ticks};
 }
 
 function updateDeliveryProgress(){
@@ -3394,8 +3434,10 @@ function updateDeliveryProgress(){
   }
   box.classList.remove("hidden");
   box.classList.toggle("done", st.done);
-  document.getElementById("dprogText").textContent = (st.done ? "✓ " : "") + st.text;
-  document.getElementById("dprogValue").textContent = st.value;
+  document.getElementById("dprogTitle").textContent = st.title;
+  const subEl = document.getElementById("dprogText");
+  if(st.done) subEl.textContent = st.sub; else subEl.innerHTML = st.subHtml;
+  document.getElementById("dprogGoal").textContent = st.goal;
   document.getElementById("dprogFill").style.width = st.pct + "%";
   document.getElementById("dprogTicks").innerHTML = st.ticks.map(x => `<span class="dprog-tick" style="left:${x}%"></span>`).join("");
 
