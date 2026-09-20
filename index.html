@@ -399,13 +399,10 @@ body.dark-theme .topbar {
   z-index:10;
 }
 .pm-price{min-width:0;}
-.pm-note{
-  min-height:16px;
-  font-size:12px;
-  font-weight:600;
-  line-height:16px;
-  color:var(--tg-muted);
-  white-space:nowrap;
+.pm-main{
+  display:flex;
+  align-items:center;
+  gap:8px;
 }
 .pm-total{
   font-size:22px;
@@ -414,6 +411,30 @@ body.dark-theme .topbar {
   color:var(--tg-text);
   white-space:nowrap;
 }
+.pm-note{
+  min-height:16px;
+  margin-top:2px;
+  font-size:12px;
+  font-weight:600;
+  line-height:16px;
+  color:var(--tg-muted);
+  white-space:nowrap;
+}
+.pm-note s{opacity:.7;}
+.pm-promo{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-top:14px;
+  padding:11px 14px;
+  border-radius:12px;
+  background:color-mix(in srgb, var(--success) 10%, transparent);
+  color:var(--success);
+  font-size:13px;
+  font-weight:700;
+}
+.pm-promo b{font-weight:800;white-space:nowrap;}
 
 .hit-card {
   display: flex;
@@ -434,7 +455,7 @@ body.dark-theme .topbar {
 }
 
 .hit-img {
-  width: 168px;
+  width: 200px;
   aspect-ratio: 1 / 1;
   flex-shrink: 0;
   border-radius: 14px;
@@ -621,14 +642,19 @@ body.dark-theme .topbar {
   white-space:nowrap;
 }
 .foot-price{
-  display:flex;
-  align-items:baseline;
-  gap:6px;
-  min-height:26px;
+  display:grid;
+  grid-template-rows:auto 16px;
+  row-gap:2px;
   min-width:0;
 }
+.price-main{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-width:0;
+}
+.price-main .price{line-height:1.2;}
 .price-badge{
-  align-self:center;
   padding:2px 6px;
   border-radius:6px;
   background:color-mix(in srgb, var(--success) 12%, transparent);
@@ -638,9 +664,10 @@ body.dark-theme .topbar {
   white-space:nowrap;
 }
 .price-note{
-  margin-left:auto;
   min-width:0;
+  min-height:16px;
   font-size:12px;
+  line-height:16px;
   font-weight:600;
   color:var(--tg-muted);
   white-space:nowrap;
@@ -2083,7 +2110,7 @@ body.dark-theme .address-map-canvas-wrap .leaflet-control-attribution a{
   .hits-grid{grid-template-columns:1fr;gap:12px}
   .hit-card{border-radius:18px;padding:10px;gap:12px}
   .hit-card:hover{transform:none}
-  .hit-img{width:116px;border-radius:12px}
+  .hit-img{width:136px;border-radius:12px}
   .hit-body{padding:2px 2px 2px 0}
   .hit-body h3{font-size:15px;margin-bottom:4px}
   .hit-tag,.tag{top:8px;left:8px;padding:4px 8px;border-radius:8px;font-size:10px}
@@ -2355,6 +2382,7 @@ body.dark-theme .address-map-canvas-wrap .leaflet-control-attribution a{
     <img id="pmImage" src="" alt="">
     <div id="pmDesc" style="color:var(--tg-muted); font-size:15px; margin-bottom:12px; line-height:1.5;"></div>
     <div id="pmWeight"></div>
+    <div id="pmPromo"></div>
   </div>
   <div class="pm-foot">
     <div class="pm-price" id="pmPrice"></div>
@@ -3083,15 +3111,23 @@ function promotionAppliesToProduct(promo, product){
   return false;
 }
 
+/* Скидка на 1 штуку — всегда целое число рублей.
+   Цена за штуку, сумма в корзине и итог считаются от неё, поэтому везде сходятся до рубля. */
+function unitDiscountForPromo(promo, unitPrice){
+  let d = promo.discount_type === "percent"
+    ? unitPrice * Number(promo.discount_value || 0) / 100
+    : Number(promo.discount_value || 0);
+  if(promo.max_discount != null) d = Math.min(d, Number(promo.max_discount));
+  return Math.round(Math.min(unitPrice, Math.max(0, d)));
+}
+
 function productPromoPrice(product){
   const original = priceNum(product.price);
   const promos = activePromotions.filter(p => promotionAppliesToProduct(p, product));
   if(!promos.length) return {original, price:original, promo:null, discount:0};
   let best = {original, price:original, promo:null, discount:0};
   for(const promo of promos){
-    let discount = promo.discount_type === "percent" ? original * Number(promo.discount_value || 0) / 100 : Number(promo.discount_value || 0);
-    if(promo.max_discount != null) discount = Math.min(discount, Number(promo.max_discount));
-    discount = Math.min(original, Math.max(0, discount));
+    const discount = unitDiscountForPromo(promo, original);
     if(discount > best.discount) best = {original, price:Math.max(0, original-discount), promo, discount};
   }
   return best;
@@ -3661,14 +3697,16 @@ function automaticPromoQuote(){
     if(p.promotion_type === "order_discount"){
       let saving = p.discount_type === "percent" ? subtotal * Number(p.discount_value||0)/100 : Number(p.discount_value||0);
       if(p.max_discount != null) saving = Math.min(saving, Number(p.max_discount));
-      bestProductSaving = Math.max(bestProductSaving, Math.min(subtotal, Math.max(0, saving)));
+      bestProductSaving = Math.max(bestProductSaving, Math.min(subtotal, Math.max(0, Math.round(saving))));
     } else if(p.promotion_type === "product_discount" || p.promotion_type === "category_discount"){
       let saving = 0;
       for(const item of cart){
         const product = allProducts.find(x => x.name === item.name);
         if(!promotionAppliesToProduct(p, product)) continue;
-        const line = item.priceNum * item.qty;
-        saving += p.discount_type === "percent" ? line * Number(p.discount_value||0)/100 : Math.min(line, Number(p.discount_value||0) * item.qty);
+        // скидка считается от округлённой скидки на штуку — как в карточке товара
+        let unit = p.discount_type === "percent" ? item.priceNum * Number(p.discount_value||0)/100 : Number(p.discount_value||0);
+        unit = Math.round(Math.min(item.priceNum, Math.max(0, unit)));
+        saving += unit * item.qty;
       }
       if(p.max_discount != null) saving = Math.min(saving, Number(p.max_discount));
       bestProductSaving = Math.max(bestProductSaving, Math.min(subtotal, Math.max(0, saving)));
@@ -3683,7 +3721,7 @@ function automaticPromoQuote(){
         if(item.qty < buy) continue;
         const rewardQty = p.promotion_type === "bogo" ? Math.floor(item.qty/(buy+reward))*reward : Math.floor(item.qty/buy);
         const pct = p.promotion_type === "bogo" ? 100 : Number(p.reward_discount_percent ?? 50);
-        saving = Math.max(saving, item.priceNum * rewardQty * pct / 100);
+        saving = Math.max(saving, Math.round(item.priceNum * rewardQty * pct / 100));
       }
       if(p.max_discount != null) saving = Math.min(saving, Number(p.max_discount));
       bestProductSaving = Math.max(bestProductSaving, Math.min(subtotal, Math.max(0, saving)));
@@ -3691,14 +3729,14 @@ function automaticPromoQuote(){
       bestDeliverySaving = Math.max(bestDeliverySaving, baseDelivery);
     } else if(method === "Доставка" && p.promotion_type === "delivery_discount"){
       let saving = p.discount_type === "percent" ? baseDelivery * Number(p.discount_value||0)/100 : Number(p.discount_value||0);
-      saving = Math.min(baseDelivery, Math.max(0, saving));
+      saving = Math.round(Math.min(baseDelivery, Math.max(0, saving)));
       if(p.max_discount != null) saving = Math.min(saving, Number(p.max_discount));
       bestDeliverySaving = Math.max(bestDeliverySaving, saving);
     }
   }
 
   deliveryFee = Math.max(0, baseDelivery - bestDeliverySaving);
-  return {subtotal, discount:Math.round(bestProductSaving*100)/100, deliveryFee:Math.round(deliveryFee*100)/100, promo:null, deliveryFree:deliveryFee===0 && baseDelivery>0, deliverySaving:Math.round(bestDeliverySaving*100)/100, baseDelivery};
+  return {subtotal, discount:Math.round(bestProductSaving), deliveryFee:Math.round(deliveryFee), promo:null, deliveryFree:deliveryFee===0 && baseDelivery>0, deliverySaving:Math.round(bestDeliverySaving), baseDelivery};
 }
 
 
@@ -3866,7 +3904,7 @@ function renderPromotions(){
 }
 
 function money(n){
-  const num = Number(n || 0);
+  const num = Math.round(Number(n || 0));
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ") + " ₽";
 }
 
@@ -3974,19 +4012,27 @@ function getCardFootHtml(p) {
     ? `<span class="price-badge">−${Math.round((promo.discount / originalPr) * 100)}%</span>`
     : "";
 
-  // Строка цены всегда одна: цена слева, пояснение справа
+  // Блок цены всегда из двух строк: сверху цена и бейдж скидки, снизу пояснение
   let main, note = "";
   if (qty > 0) {
     main = money(pr * qty);
     note = `${money(pr)} × ${qty}`;
+    if (promo.discount > 0) note += ` · <s>${money(originalPr * qty)}</s>`;
   } else {
     main = promo.discount > 0 ? money(pr) : escapeHtml(p.price);
-    if (promo.discount > 0) note = `<s>${money(originalPr)}</s>`;
-    else if (quantum > 1) note = t("perPiece");
+    if (promo.discount > 0) {
+      note = `<s>${money(originalPr)}</s>`;
+      if (quantum > 1) note += ` · ${t("perPiece")}`;
+    } else if (quantum > 1) {
+      note = t("perPiece");
+    }
   }
 
   return `
-    <div class="foot-price"><span class="price">${main}</span>${badge}${note ? `<span class="price-note">${note}</span>` : ""}</div>
+    <div class="foot-price">
+      <div class="price-main"><span class="price">${main}</span>${badge}</div>
+      <div class="price-note">${note || "&nbsp;"}</div>
+    </div>
     <div class="foot-action">${getQtyControlsHtml(p.name, out, true)}</div>
   `;
 }
@@ -4141,12 +4187,37 @@ function updateModalControls() {
   if (!activeModalProduct) return;
   const out = isOutOfStock(activeModalProduct);
   const qty = cart.find(c => c.name === activeModalProduct.name)?.qty || 0;
-  const pr = priceNum(activeModalProduct.price);
-  
-  const pmPriceEl = document.getElementById("pmPrice");
+  const promo = productPromoPrice(activeModalProduct);
+  const pr = promo.price;
+  const originalPr = promo.original;
   const quantum = getProductQuantityQuantum(activeModalProduct.name);
-  const note = qty > 0 ? `${money(pr)} × ${qty}` : (quantum > 1 ? t("perPiece") : "");
-  pmPriceEl.innerHTML = `<div class="pm-note">${note || "&nbsp;"}</div><div class="pm-total">${qty > 0 ? money(pr * qty) : escapeHtml(activeModalProduct.price)}</div>`;
+  const pct = promo.discount > 0 ? Math.round((promo.discount / originalPr) * 100) : 0;
+
+  let main, note = "";
+  if (qty > 0) {
+    main = money(pr * qty);
+    note = `${money(pr)} × ${qty}`;
+    if (promo.discount > 0) note += ` · <s>${money(originalPr * qty)}</s>`;
+  } else {
+    main = promo.discount > 0 ? money(pr) : escapeHtml(activeModalProduct.price);
+    if (promo.discount > 0) {
+      note = `<s>${money(originalPr)}</s>`;
+      if (quantum > 1) note += ` · ${t("perPiece")}`;
+    } else if (quantum > 1) {
+      note = t("perPiece");
+    }
+  }
+
+  document.getElementById("pmPrice").innerHTML =
+    `<div class="pm-main"><span class="pm-total">${main}</span>${pct ? `<span class="price-badge">−${pct}%</span>` : ""}</div>` +
+    `<div class="pm-note">${note || "&nbsp;"}</div>`;
+
+  const promoEl = document.getElementById("pmPromo");
+  if (promoEl) {
+    promoEl.innerHTML = pct
+      ? `<div class="pm-promo"><span>${t("automaticDiscountText")} −${pct}%</span><b>−${money(promo.discount)} / ${t("pcsShort")}</b></div>`
+      : "";
+  }
 
   document.getElementById("pmControls").innerHTML = getQtyControlsHtml(activeModalProduct.name, out, true);
 }
@@ -4343,7 +4414,7 @@ function getCartItemPricing(item){
         ? Math.floor(item.qty / (buy + reward)) * reward
         : Math.floor(item.qty / buy);
       const pct = p.promotion_type === "bogo" ? 100 : Number(p.reward_discount_percent ?? 50);
-      const candidate = Math.min(lineOriginal, originalUnit * rewardQty * pct / 100);
+      const candidate = Math.min(lineOriginal, Math.round(originalUnit * rewardQty * pct / 100));
       if(candidate > discountTotal){
         discountTotal = candidate;
         discountedUnit = Math.max(0, originalUnit - candidate / Math.max(1, item.qty));
@@ -4359,7 +4430,7 @@ function getCartItemPricing(item){
   const subtotal = cart.reduce((sum, i) => sum + Number(i.priceNum || 0) * Number(i.qty || 0), 0);
   const autoQuote = automaticPromoQuote();
   if(!promo && autoQuote.promo?.promotion_type === "order_discount" && subtotal > 0 && autoQuote.discount > 0){
-    const allocated = Math.min(lineOriginal, autoQuote.discount * (lineOriginal / subtotal));
+    const allocated = Math.min(lineOriginal, Math.round(autoQuote.discount * (lineOriginal / subtotal)));
     if(allocated > 0){
       discountTotal = allocated;
       discountedUnit = Math.max(0, originalUnit - allocated / Math.max(1, item.qty));
@@ -4591,7 +4662,7 @@ async function validatePromoFromSupabase(code){
   const result = Array.isArray(data) ? data[0] : data;
   return {
     valid: !!result?.valid,
-    discount: Number(result?.discount || 0),
+    discount: Math.round(Number(result?.discount || 0)),
     message: result?.message || (result?.valid ? "Промокод применен" : "Промокод недействителен")
   };
 }
