@@ -114,21 +114,19 @@ body.dark-theme .topbar {
 
 .topbar-inner{
   height:64px;
-  display:flex;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
   align-items:center;
-  justify-content:space-between;
-  gap:12px
+  gap:12px;
 }
 
+/* Слева — логотип и двухстрочная подпись (никогда не переносится и не обрезается) */
 .brand{
   display:flex;
   align-items:center;
   gap:10px;
-  font-weight:800;
-  letter-spacing:-.03em;
-  font-size: 16px;
+  min-width:0;
 }
-
 .brand-mark{
   width:38px;
   height:38px;
@@ -139,22 +137,72 @@ body.dark-theme .topbar {
   background:#000;
   box-shadow:0 7px 18px rgba(176, 42, 92, 0.25)
 }
-
 .brand-mark img{
   width:100%;
   height:100%;
   display:block;
   object-fit:cover;
 }
+.brand-text{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  min-width:0;
+  line-height:1.1;
+}
+.brand-name{
+  font-size:18px;
+  font-weight:800;
+  letter-spacing:-.03em;
+  white-space:nowrap;
+}
+.brand-sub{
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:.02em;
+  color:var(--tg-muted);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
 
+/* Справа — переключатель языка и вход: одна высота, один ряд */
 .top-actions{
   display:flex;
   align-items:center;
-  gap:8px
+  gap:8px;
+  flex:0 0 auto;
 }
-
-.top-btn {
-  height:38px;
+.lang-switch{
+  height:36px;
+  display:inline-flex;
+  align-items:center;
+  gap:2px;
+  padding:3px;
+  border:1px solid var(--tg-line);
+  border-radius:12px;
+  background:var(--tg-card);
+  color:var(--tg-muted);
+  cursor:pointer;
+}
+.lang-opt{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  height:100%;
+  padding:0 9px;
+  border-radius:9px;
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.02em;
+  transition:background .2s, color .2s;
+}
+.lang-opt.on{
+  background:var(--tg-text);
+  color:var(--tg-card);
+}
+.top-btn{
+  height:36px;
   border:1px solid var(--tg-line);
   background:var(--tg-card);
   color:var(--tg-text);
@@ -162,18 +210,29 @@ body.dark-theme .topbar {
   display:flex;
   align-items:center;
   justify-content:center;
-  padding:0 14px;
-  font-size:12px;
+  padding:0;
+  font-size:13px;
   font-weight:700;
-  letter-spacing:.02em;
-  transition: 0.2s;
-  cursor: pointer;
+  white-space:nowrap;
+  overflow:hidden;
+  transition:border-color .2s, color .2s;
 }
-
-.top-btn:hover{
-  border-color:var(--accent);
-  color:var(--accent)
+.top-btn:hover{border-color:var(--accent);}
+.tg-login,
+.tg-name{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  height:100%;
+  padding:0 13px;
+  font-weight:700;
+  white-space:nowrap;
 }
+.tg-login{color:var(--accent);}
+.tg-login svg,
+.tg-name svg{width:15px;height:15px;flex:none;display:block;}
+.tg-name{max-width:150px;color:var(--tg-text);}
+.tg-name span{overflow:hidden;text-overflow:ellipsis;}
 
 .hero{
   padding:40px 0 30px
@@ -213,6 +272,7 @@ body.dark-theme .topbar {
 }
 
 .hero h1{
+  text-wrap:balance;
   font-size:clamp(36px, 4.8vw, 62px);
   line-height:1.08;
   letter-spacing:-.03em;
@@ -226,6 +286,7 @@ body.dark-theme .topbar {
 }
 
 .hero p{
+  text-wrap:pretty;
   font-size:16px;
   line-height:1.65;
   color:var(--tg-muted);
@@ -240,6 +301,16 @@ body.dark-theme .topbar {
   flex-wrap:wrap;
   margin-top:auto;
   margin-bottom:12px;
+}
+
+.primary,
+.secondary{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:48px;
+  white-space:nowrap;
+  text-align:center;
 }
 
 .primary{
@@ -1900,11 +1971,16 @@ body.dark-theme .address-map-canvas-wrap .leaflet-control-attribution a{
 
   /* Шапка */
   .topbar-inner{height:52px;gap:8px}
-  .brand{gap:8px;font-size:14px;min-width:0}
-  .brand > span[data-i18n="brand"]{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .brand-mark{width:30px;height:30px;min-width:30px;border-radius:9px}
-  .top-actions{gap:6px;flex:0 0 auto}
-  .top-btn{height:30px;padding:0 10px;border-radius:10px;font-size:11px}
+  .brand{gap:8px}
+  .brand-mark{width:32px;height:32px;min-width:32px;border-radius:9px}
+  .brand-name{font-size:15px}
+  .brand-sub{font-size:10px}
+  .top-actions{gap:6px}
+  .lang-switch{height:32px;border-radius:10px}
+  .lang-opt{padding:0 8px;font-size:11px;border-radius:7px}
+  .top-btn{height:32px;border-radius:10px;font-size:12px}
+  .tg-login,.tg-name{padding:0 10px}
+  .tg-name{max-width:110px}
 
   /* Первый экран */
   .hero{padding:10px 0 2px}
@@ -1913,9 +1989,10 @@ body.dark-theme .address-map-canvas-wrap .leaflet-control-attribution a{
   .eyebrow{font-size:10px;margin-bottom:6px}
   .hero h1{font-size:25px;line-height:1.1;margin-bottom:8px}
   .hero p{font-size:13px;line-height:1.45;margin-bottom:12px}
-  .hero-actions{gap:8px;margin-bottom:0}
-  .primary{padding:10px 16px;font-size:14px;border-radius:12px}
-  .secondary{padding:9px 14px;font-size:14px;border-radius:12px}
+  /* Две кнопки всегда в одной строке: главная тянется, вторая по содержимому */
+  .hero-actions{display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:0}
+  .primary{padding:10px 16px;font-size:14px;border-radius:12px;min-height:44px}
+  .secondary{padding:9px 18px;font-size:14px;border-radius:12px;min-height:44px}
   .hero-note{display:none}
   .hero-photo{min-height:130px;border-radius:20px}
   .photo-overlay{display:none}
@@ -2010,6 +2087,12 @@ body.dark-theme .address-map-canvas-wrap .leaflet-control-attribution a{
 .review-actions{display:flex;gap:10px;flex-direction:column;}
 .review-back{width:100%;}
 
+@media(max-width:340px){
+  /* На самых узких экранах «Войти» остаётся только иконкой, подпись бренда скрывается */
+  .tg-login span{display:none}
+  .tg-login{padding:0 11px}
+  .brand-sub{display:none}
+}
 </style>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
@@ -2026,16 +2109,15 @@ body.dark-theme .address-map-canvas-wrap .leaflet-control-attribution a{
       <span class="brand-mark">
         <img src="assets/malina-logo.png" alt="Логотип Кондитерского дома «Малина»">
       </span>
-      <span data-i18n="brand">Кондитерский дом "Малина"</span>
+      <span class="brand-text">
+        <span class="brand-name" data-i18n="brandName">Малина</span>
+        <span class="brand-sub" data-i18n="brandSub">Кондитерский дом</span>
+      </span>
     </a>
 
     <div class="top-actions">
-      <button class="top-btn" id="languageToggle" type="button" aria-label="Change language">
-        RU
-      </button>
-      <span class="top-btn" id="tgUser">
-        <span data-i18n="shop">Магазин</span>
-      </span>
+      <button class="lang-switch" id="languageToggle" type="button" aria-label="Change language"></button>
+      <span class="top-btn" id="tgUser"></span>
     </div>
 
   </div>
@@ -2454,6 +2536,10 @@ const I18N = {
     pageTitle: 'Кондитерский дом "Малина"',
     brand: 'Кондитерский дом "Малина"',
     shop: "Магазин",
+    brandName: "Малина",
+    brandSub: "Кондитерский дом",
+    loginShort: "Войти",
+    loginFull: "Войти через Telegram",
     eyebrow: "Заведение со вкусом",
     heroTitle1: "С любовью к каждому кусочку",
     heroDescription: "Чизкейки, торты и меренговые рулеты — свежие, вкусные, а главное — натуральные",
@@ -2594,6 +2680,10 @@ const I18N = {
     pageTitle: 'Pastry house "Malina"',
     brand: 'Pastry house "Malina"',
     shop: "Shop",
+    brandName: "Malina",
+    brandSub: "Pastry house",
+    loginShort: "Sign in",
+    loginFull: "Sign in with Telegram",
     eyebrow: "A place with taste",
     heroTitle1: "With love for every bite",
     heroDescription: "Cheesecakes, cakes and meringue rolls — fresh, delicious, and above all — natural",
@@ -2766,8 +2856,11 @@ function applyLanguage(){
     el.alt = t(key);
   });
   
-  languageToggle.innerHTML = currentLanguage === "ru" ? "EN" : "RU";
+  languageToggle.innerHTML =
+    `<span class="lang-opt${currentLanguage === "ru" ? " on" : ""}">RU</span>` +
+    `<span class="lang-opt${currentLanguage === "en" ? " on" : ""}">EN</span>`;
   languageToggle.setAttribute("aria-label", t("languageLabel"));
+  document.getElementById("tgLoginLink")?.setAttribute("aria-label", t("loginFull"));
   
   renderAll();
   renderCart();
@@ -2797,7 +2890,7 @@ if(TG && TG.ready){
 
   if(IS_TELEGRAM_USER){
     const u = TG_USER;
-    tgUserEl.innerHTML = `<span style="display:flex; align-items:center; gap:6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> ${escapeHtml(u.first_name || u.username)}</span>`;
+    tgUserEl.innerHTML = `<span class="tg-name"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>${escapeHtml(u.first_name || u.username)}</span></span>`;
   } else {
     setupWebAuth();
   }
@@ -2806,7 +2899,7 @@ if(TG && TG.ready){
 }
 
 function setupWebAuth() {
-  tgUserEl.innerHTML = `<a href="https://t.me/MalinaBakeryBot" target="_blank" rel="noopener" style="color:var(--accent); font-weight:700;">Войти через Telegram</a>`;
+  tgUserEl.innerHTML = `<a class="tg-login" id="tgLoginLink" href="https://t.me/MalinaBakeryBot" target="_blank" rel="noopener" aria-label="${escapeHtml(t("loginFull"))}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 3.5 2.8 10.7a.6.6 0 0 0 0 1.1l4.7 1.7 1.8 5.6a.6.6 0 0 0 1 .2l2.6-2.6 4.6 3.4a.6.6 0 0 0 .9-.4L22.3 4.2a.6.6 0 0 0-.8-.7z"/><path d="m7.5 13.5 9-6.5"/></svg><span data-i18n="loginShort">${escapeHtml(t("loginShort"))}</span></a>`;
 }
 
 /* =====================================================
