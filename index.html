@@ -761,6 +761,76 @@ body.dark-theme .topbar {
     font-weight:800;
 }
 
+/* Мини-прогресс бесплатной доставки на кнопке корзины */
+.fab-progress{
+  position:absolute;
+  left:16px;
+  right:16px;
+  bottom:8px;
+  height:3px;
+  border-radius:3px;
+  background:rgba(255,255,255,.32);
+  overflow:hidden;
+  pointer-events:none;
+}
+.fab-progress i{
+  display:block;
+  height:100%;
+  width:0;
+  border-radius:inherit;
+  background:#fff;
+  transition:width .35s cubic-bezier(.16,1,.3,1);
+}
+
+/* Прогресс бесплатной доставки в корзине */
+.dprog{
+  margin:0 0 14px;
+  padding:0 2px;
+}
+.dprog-row{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:8px;
+  font-size:13px;
+  line-height:1.3;
+  color:var(--tg-muted);
+  font-weight:600;
+}
+.dprog-row b{
+  color:var(--tg-text);
+  font-weight:800;
+  white-space:nowrap;
+}
+.dprog-track{
+  position:relative;
+  height:6px;
+  border-radius:6px;
+  background:var(--tg-soft);
+  overflow:hidden;
+}
+.dprog-fill{
+  position:absolute;
+  inset:0 auto 0 0;
+  width:0;
+  border-radius:inherit;
+  background:linear-gradient(90deg, var(--accent), var(--accent-dark));
+  transition:width .4s cubic-bezier(.16,1,.3,1), background .3s ease;
+}
+.dprog-tick{
+  position:absolute;
+  top:0;
+  bottom:0;
+  width:2px;
+  margin-left:-1px;
+  background:var(--tg-card);
+  opacity:.9;
+}
+.dprog.done .dprog-row{color:var(--success);}
+.dprog.done .dprog-row b{color:var(--success);}
+.dprog.done .dprog-fill{background:var(--success);}
+
 .sheet-backdrop{
   position:fixed;
   inset:0;
@@ -1637,13 +1707,14 @@ body.dark-theme .address-map-canvas-wrap .leaflet-control-attribution a{
   /* Уведомление о добавлении/удалении товара располагается в одну линию
      с корзиной и слева от неё. Учитываем safe-area на iPhone. */
   .toast {
-    left: auto;
-    right: calc(20px + 64px + 10px);
-    bottom: calc(20px + env(safe-area-inset-bottom));
+    left: 20px;
+    right: 20px;
+    /* над кнопкой корзины (64px) + бейдж счётчика + зазор */
+    bottom: calc(20px + 64px + 18px + env(safe-area-inset-bottom));
     transform: translateY(18px);
-    width: min(260px, calc(100vw - 20px - 64px - 10px - 20px));
+    width: auto;
     min-width: 0;
-    max-width: calc(100vw - 94px);
+    max-width: none;
     border-radius: 16px;
     text-align: left;
   }
@@ -1659,7 +1730,7 @@ body.dark-theme .address-map-canvas-wrap .leaflet-control-attribution a{
 
   .toast .toast-content > span:nth-child(2) {
     min-width: 0;
-    font-size: 12px;
+    font-size: 13px;
     line-height: 1.25;
   }
 
@@ -1895,6 +1966,7 @@ body.dark-theme .address-map-canvas-wrap .leaflet-control-attribution a{
   </svg>
   <span class="count" id="cartCount" hidden>0</span>
   <span class="total" id="floatingCartTotal" hidden>0 ₽</span>
+  <span class="fab-progress" id="fabProgress" hidden><i></i></span>
 </button>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -1940,6 +2012,10 @@ body.dark-theme .address-map-canvas-wrap .leaflet-control-attribution a{
 
   <div class="sheet-scroll">
     <div id="cartViewItems">
+      <div class="dprog hidden" id="deliveryProgress" role="status" aria-live="polite">
+        <div class="dprog-row"><span id="dprogText"></span><b id="dprogValue"></b></div>
+        <div class="dprog-track"><span class="dprog-fill" id="dprogFill"></span><span id="dprogTicks"></span></div>
+      </div>
       <div id="cartItems"></div>
       <div id="cartSummary">
         
@@ -2280,7 +2356,11 @@ const I18N = {
     promotionsTitle: "🔥 Акции",
     promotionsSubtitle: "Специальные предложения, которые действуют сейчас.",
     promotionFrom: "Акция",
-    automaticDiscountText: "Скидка по акции"
+    automaticDiscountText: "Скидка по акции",
+    dpToFree: "До бесплатной доставки",
+    dpToDiscount: "До скидки на доставку",
+    dpFree: "Доставка бесплатная",
+    dpDiscountOn: "Скидка на доставку"
   },
   en: {
     pageTitle: 'Pastry house "Malina"',
@@ -2412,7 +2492,11 @@ const I18N = {
     promotionsTitle: "🔥 Promotions",
     promotionsSubtitle: "Special offers that are active right now.",
     promotionFrom: "Promotion",
-    automaticDiscountText: "Promotion discount"
+    automaticDiscountText: "Promotion discount",
+    dpToFree: "Left for free delivery",
+    dpToDiscount: "Left for delivery discount",
+    dpFree: "Free delivery",
+    dpDiscountOn: "Delivery discount"
   }
 };
 
@@ -3229,6 +3313,96 @@ function automaticPromoQuote(){
 }
 
 
+/* ---------- Прогресс бесплатной доставки ----------
+   Берёт актуальные акции из activePromotions:
+   - free_delivery      → цель (100% шкалы)
+   - delivery_discount  → промежуточные отметки на шкале
+   - delivery_price     → если по расстоянию доставка уже 0 ₽, показываем «бесплатная» */
+function deliveryPromoIsFree(p){
+  if(p.promotion_type === "free_delivery") return true;
+  return p.promotion_type === "delivery_discount" && p.discount_type === "percent" && Number(p.discount_value || 0) >= 100;
+}
+
+function deliveryPromoValueText(p){
+  return p.discount_type === "percent"
+    ? `−${Number(p.discount_value || 0)}%`
+    : `−${money(Number(p.discount_value || 0))}`;
+}
+
+function getDeliveryProgressState(subtotal){
+  const method = document.querySelector('input[name="method"]:checked')?.value || "Доставка";
+  if(method !== "Доставка" || subtotal <= 0) return null;
+
+  // Адрес уже указан и доставка по расстоянию бесплатная
+  if(Number.isFinite(deliveryDistanceKm) && deliveryPriceByDistance(deliveryDistanceKm) === 0){
+    return {done:true, pct:100, text:t("dpFree"), value:"", ticks:[]};
+  }
+
+  const promos = activePromotions
+    .filter(p => (p?.promotion_type === "free_delivery" || p?.promotion_type === "delivery_discount"))
+    .map(p => ({p, min:Math.max(0, Number(p.min_order_amount || 0)), free:deliveryPromoIsFree(p)}))
+    .sort((a,b) => a.min - b.min);
+  if(!promos.length) return null;
+
+  const freeMilestones = promos.filter(x => x.free);
+  const freeGoal = freeMilestones.length ? freeMilestones[0].min : null;
+
+  if(freeGoal !== null && subtotal >= freeGoal){
+    return {done:true, pct:100, text:t("dpFree"), value:"", ticks:[]};
+  }
+
+  // Шкала: до бесплатной доставки, а если её нет — до самой крупной скидки
+  const scaleMax = freeGoal !== null ? freeGoal : promos[promos.length - 1].min;
+  if(!(scaleMax > 0)){
+    const best = promos[promos.length - 1];
+    return {done:true, pct:100, text:`${t("dpDiscountOn")} ${deliveryPromoValueText(best.p)}`, value:"", ticks:[]};
+  }
+
+  const next = promos.find(x => x.min > subtotal);
+  const ticks = promos
+    .filter(x => !x.free && x.min > 0 && x.min < scaleMax)
+    .map(x => Math.round(x.min / scaleMax * 1000) / 10);
+  const pct = Math.max(0, Math.min(100, subtotal / scaleMax * 100));
+
+  if(!next){
+    // Все скидки получены, бесплатной доставки нет
+    const met = promos.filter(x => x.min <= subtotal).pop();
+    return {done:true, pct:100, text:`${t("dpDiscountOn")} ${deliveryPromoValueText(met.p)}`, value:"", ticks:[]};
+  }
+
+  const left = Math.ceil(next.min - subtotal);
+  return {
+    done:false,
+    pct,
+    ticks,
+    text: next.free ? t("dpToFree") : `${t("dpToDiscount")} ${deliveryPromoValueText(next.p)}`,
+    value: money(left)
+  };
+}
+
+function updateDeliveryProgress(){
+  const box = document.getElementById("deliveryProgress");
+  const fab = document.getElementById("fabProgress");
+  if(!box || !fab) return;
+  const subtotal = cart.filter(i => i.name !== "Доставка").reduce((s,i) => s + i.priceNum * i.qty, 0);
+  const st = getDeliveryProgressState(subtotal);
+
+  if(!st){
+    box.classList.add("hidden");
+    fab.hidden = true;
+    return;
+  }
+  box.classList.remove("hidden");
+  box.classList.toggle("done", st.done);
+  document.getElementById("dprogText").textContent = (st.done ? "✓ " : "") + st.text;
+  document.getElementById("dprogValue").textContent = st.value;
+  document.getElementById("dprogFill").style.width = st.pct + "%";
+  document.getElementById("dprogTicks").innerHTML = st.ticks.map(x => `<span class="dprog-tick" style="left:${x}%"></span>`).join("");
+
+  fab.hidden = false;
+  fab.firstElementChild.style.width = st.pct + "%";
+}
+
 function renderPromotions(){
   const section = document.getElementById("promotionsSection");
   const grid = document.getElementById("promotionsGrid");
@@ -3834,6 +4008,7 @@ function renderCart(){
     cartItems.innerHTML = itemsHTML;
   }
   updatePromoVisibility();
+  updateDeliveryProgress();
   updateMainButton();
 }
 
