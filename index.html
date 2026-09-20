@@ -422,6 +422,36 @@ body.dark-theme .topbar {
   cursor: pointer;
 }
 
+/* Нижняя панель окна товара: цена слева, кнопка справа — высота всегда одна */
+.pm-foot{
+  padding:14px 20px;
+  border-top:1px solid var(--tg-line);
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr);
+  align-items:center;
+  gap:16px;
+  position:sticky;
+  bottom:0;
+  background:var(--tg-bg);
+  z-index:10;
+}
+.pm-price{min-width:0;}
+.pm-note{
+  min-height:16px;
+  font-size:12px;
+  font-weight:600;
+  line-height:16px;
+  color:var(--tg-muted);
+  white-space:nowrap;
+}
+.pm-total{
+  font-size:22px;
+  font-weight:800;
+  line-height:1.15;
+  color:var(--tg-text);
+  white-space:nowrap;
+}
+
 .hit-card {
   display: flex;
   background: var(--hit-bg);
@@ -438,7 +468,7 @@ body.dark-theme .topbar {
 }
 
 .hit-img {
-  width: 140px;
+  width: 150px;
   flex-shrink: 0;
   background: var(--tg-line);
   position: relative;
@@ -451,7 +481,7 @@ body.dark-theme .topbar {
 }
 
 .hit-body {
-  padding: 16px;
+  padding: 18px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -467,14 +497,6 @@ body.dark-theme .topbar {
   letter-spacing:-.02em;
 }
 
-.hit-foot {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
-  gap: 8px;
-  margin-top: 12px;
-}
 
 .hit-tag, .tag {
   position: absolute;
@@ -532,7 +554,7 @@ body.dark-theme .topbar {
 .products{
   display:grid;
   grid-template-columns:repeat(4,1fr);
-  gap:16px
+  gap:20px
 }
 
 .card{
@@ -566,7 +588,7 @@ body.dark-theme .topbar {
 }
 
 .card-body{
-  padding:16px;
+  padding:18px;
   display: flex;
   flex-direction: column;
   flex-grow: 1;
@@ -579,6 +601,12 @@ body.dark-theme .topbar {
   margin:0 0 6px;
   letter-spacing:-.02em;
   color: var(--tg-text);
+  /* название всегда занимает ровно 2 строки — карточки в ряду не «пляшут» */
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+  min-height:2.4em;
 }
 
 .meta{
@@ -604,21 +632,51 @@ body.dark-theme .topbar {
   cursor: pointer;
 }
 
-.card-foot{
-  display:flex;
-  flex-wrap: wrap;
-  align-items:center;
-  justify-content:space-between;
-  gap:8px;
+/* Низ карточки всегда одинаковый: 1-я строка — цена, 2-я — кнопка на всю ширину */
+.card-foot,
+.hit-foot{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:10px;
   margin-top:auto;
-  padding-top: 16px;
+  padding-top:14px;
 }
 
 .price{
   font-weight:800;
-  font-size:16px;
+  font-size:18px;
   color: var(--tg-text);
+  white-space:nowrap;
 }
+.foot-price{
+  display:flex;
+  align-items:baseline;
+  gap:6px;
+  min-height:26px;
+  min-width:0;
+}
+.price-badge{
+  align-self:center;
+  padding:2px 6px;
+  border-radius:6px;
+  background:color-mix(in srgb, var(--success) 12%, transparent);
+  color:var(--success);
+  font-size:11px;
+  font-weight:800;
+  white-space:nowrap;
+}
+.price-note{
+  margin-left:auto;
+  min-width:0;
+  font-size:12px;
+  font-weight:600;
+  color:var(--tg-muted);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.price-note s{opacity:.7;}
+.foot-action{min-width:0;}
 
 .price-info {
   display: flex;
@@ -1526,6 +1584,60 @@ body.dark-theme .topbar {
 /* Quantity quantum */
 .qty-control-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:5px}
 
+/* Кнопка «В корзину» и счётчик: одинаковая высота и на всю ширину —
+   при добавлении товара ничего не сдвигается */
+.card-foot .qty-control-wrap,
+.hit-foot .qty-control-wrap,
+#pmControls .qty-control-wrap{display:block;width:100%;}
+.card-foot .add,
+.hit-foot .add,
+#pmControls .add{
+  width:100%;
+  height:44px;
+  padding:0 12px;
+  border-radius:12px;
+  font-size:14px;
+  font-weight:700;
+}
+.card-foot .add:disabled,
+.hit-foot .add:disabled,
+#pmControls .add:disabled{
+  background:var(--tg-soft);
+  color:var(--tg-muted);
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:.02em;
+}
+.card-foot .qty-controls,
+.hit-foot .qty-controls,
+#pmControls .qty-controls{
+  display:grid;
+  grid-template-columns:44px minmax(0,1fr) 44px;
+  align-items:center;
+  gap:0;
+  width:100%;
+  height:44px;
+  padding:3px;
+  border-radius:12px;
+}
+.card-foot .qty-controls .qty-btn,
+.hit-foot .qty-controls .qty-btn,
+#pmControls .qty-controls .qty-btn{
+  width:100%;
+  height:100%;
+  border-radius:9px;
+  font-size:18px;
+}
+.card-foot .qty-controls span,
+.hit-foot .qty-controls span,
+#pmControls .qty-controls span{
+  min-width:0;
+  font-size:16px;
+}
+#pmControls .add,
+#pmControls .qty-controls{height:48px;}
+#pmControls .qty-controls{grid-template-columns:48px minmax(0,1fr) 48px;}
+
 /* Product characteristics (chips) */
 .chips{
   display:flex;
@@ -1970,79 +2082,73 @@ body.dark-theme .address-map-canvas-wrap .leaflet-control-attribution a{
   .wrap{width:min(100% - 20px,600px)}
 
   /* Шапка */
-  .topbar-inner{height:52px;gap:8px}
-  .brand{gap:8px}
-  .brand-mark{width:32px;height:32px;min-width:32px;border-radius:9px}
-  .brand-name{font-size:15px}
-  .brand-sub{font-size:10px}
-  .top-actions{gap:6px}
-  .lang-switch{height:32px;border-radius:10px}
-  .lang-opt{padding:0 8px;font-size:11px;border-radius:7px}
-  .top-btn{height:32px;border-radius:10px;font-size:12px}
-  .tg-login,.tg-name{padding:0 10px}
+  .topbar-inner{height:58px;gap:10px}
+  .brand{gap:10px}
+  .brand-mark{width:38px;height:38px;min-width:38px;border-radius:11px}
+  .brand-name{font-size:16px}
+  .brand-sub{font-size:11px}
+  .top-actions{gap:8px}
+  .lang-switch{height:38px;border-radius:12px}
+  .lang-opt{padding:0 10px;font-size:12px;border-radius:9px}
+  .top-btn{height:38px;border-radius:12px;font-size:13px}
+  .tg-login,.tg-name{padding:0 12px}
   .tg-name{max-width:110px}
 
   /* Первый экран */
-  .hero{padding:10px 0 2px}
-  .hero-grid{gap:10px}
-  .hero-copy{padding:16px;border-radius:20px;min-height:0}
-  .eyebrow{font-size:10px;margin-bottom:6px}
-  .hero h1{font-size:25px;line-height:1.1;margin-bottom:8px}
-  .hero p{font-size:13px;line-height:1.45;margin-bottom:12px}
+  .hero{padding:14px 0 6px}
+  .hero-grid{gap:12px}
+  .hero-copy{padding:22px 18px;border-radius:22px;min-height:0}
+  .eyebrow{font-size:11px;margin-bottom:8px}
+  .hero h1{font-size:28px;line-height:1.12;margin-bottom:10px}
+  .hero p{font-size:14px;line-height:1.5;margin-bottom:18px}
   /* Две кнопки всегда в одной строке: главная тянется, вторая по содержимому */
-  .hero-actions{display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:0}
-  .primary{padding:10px 16px;font-size:14px;border-radius:12px;min-height:44px}
-  .secondary{padding:9px 18px;font-size:14px;border-radius:12px;min-height:44px}
+  .hero-actions{display:grid;grid-template-columns:1fr auto;gap:10px;margin-bottom:0}
+  .primary{padding:12px 18px;font-size:15px;border-radius:14px;min-height:50px}
+  .secondary{padding:11px 20px;font-size:15px;border-radius:14px;min-height:50px}
   .hero-note{display:none}
-  .hero-photo{min-height:130px;border-radius:20px}
+  .hero-photo{min-height:180px;border-radius:22px}
   .photo-overlay{display:none}
 
   /* Секции */
-  .section{padding:12px 0}
-  .section-head{margin-bottom:8px}
-  .section-head h2{font-size:20px}
-  .section-head p{font-size:12px;margin-top:2px}
+  .section{padding:20px 0}
+  .section-head{margin-bottom:12px}
+  .section-head h2{font-size:24px}
+  .section-head p{font-size:13px;margin-top:4px}
 
   /* Хиты */
-  .hits-grid{grid-template-columns:1fr;gap:10px}
-  .hit-card{border-radius:16px}
+  .hits-grid{grid-template-columns:1fr;gap:12px}
+  .hit-card{border-radius:18px}
   .hit-card:hover{transform:none}
-  .hit-img{width:96px}
-  .hit-body{padding:10px 12px}
-  .hit-body h3{font-size:14px;margin-bottom:3px}
-  .hit-foot{margin-top:6px;gap:6px}
-  .hit-tag,.tag{top:6px;left:6px;padding:3px 7px;border-radius:7px;font-size:9.5px}
+  .hit-img{width:112px}
+  .hit-body{padding:14px}
+  .hit-body h3{font-size:15px;margin-bottom:4px}
+  .hit-tag,.tag{top:8px;left:8px;padding:4px 8px;border-radius:8px;font-size:10px}
 
-  /* Категории — компактные и «прилипают» под шапкой */
+  /* Категории — крупные и «прилипают» под шапкой */
   .filters{
     position:sticky;
-    top:calc(52px + env(safe-area-inset-top));
+    top:calc(58px + env(safe-area-inset-top));
     z-index:15;
-    gap:6px;
-    margin:0 -10px 6px;
-    padding:6px 10px;
+    gap:8px;
+    margin:0 -10px 8px;
+    padding:8px 10px;
     background:var(--tg-bg);
   }
-  .filter{padding:7px 12px;font-size:12px}
+  .filter{padding:10px 16px;font-size:13px}
 
-  /* Карточки товаров */
-  .products{gap:10px}
-  .card{border-radius:16px}
+  /* Карточки товаров: две колонки, всё выровнено по строкам */
+  .products{gap:12px}
+  .card{border-radius:18px}
   .card:hover{transform:none}
-  .card-img{aspect-ratio:6/5}
-  .card-body{padding:10px}
-  .card h3{font-size:14px;margin-bottom:3px}
-  .meta{font-size:12px;line-height:1.3}
-  .read-more-btn{font-size:11px;margin-top:2px}
-  .chips{gap:4px;margin-top:6px}
-  .chip{padding:4px 7px;border-radius:8px;font-size:11px}
-  .card-foot{padding-top:8px;gap:6px}
-  .price{font-size:15px}
-  .add{height:32px;min-width:32px;padding:0 10px;border-radius:10px;font-size:13px}
-  .qty-controls{gap:4px;padding:3px;border-radius:10px}
-  .qty-controls .qty-btn{width:26px;height:26px;border-radius:7px;font-size:15px}
-  .qty-controls span{min-width:16px;font-size:13px}
-  .unavailable-badge{padding:4px 8px;font-size:10px}
+  .card-img{aspect-ratio:5/4}
+  .card-body{padding:12px}
+  .card h3{font-size:15px;margin-bottom:4px}
+  .meta{font-size:12.5px;line-height:1.35}
+  .chips{gap:5px;margin-top:8px}
+  .chip{padding:5px 8px;border-radius:9px;font-size:12px}
+  .card-foot,.hit-foot{padding-top:12px;gap:10px}
+  .price{font-size:17px}
+  .unavailable-badge{padding:5px 10px;font-size:11px}
 
   /* Акции */
   .feature{grid-template-columns:1fr 1fr;gap:10px}
@@ -2294,8 +2400,8 @@ body.dark-theme .address-map-canvas-wrap .leaflet-control-attribution a{
     <div id="pmDesc" style="color:var(--tg-muted); font-size:15px; margin-bottom:12px; line-height:1.5;"></div>
     <div id="pmWeight"></div>
   </div>
-  <div style="padding: 16px 20px; border-top: 1px solid var(--tg-line); display:flex; justify-content:space-between; align-items:center; position:sticky; bottom:0; background:var(--tg-bg); z-index: 10;">
-    <span id="pmPrice" style="font-size:22px; font-weight:800; color:var(--tg-text);"></span>
+  <div class="pm-foot">
+    <div class="pm-price" id="pmPrice"></div>
     <div id="pmControls"></div>
   </div>
 </aside>
@@ -2649,6 +2755,7 @@ const I18N = {
     unavailable: "Сейчас недоступно",
     outOfStock: "НЕТ В НАЛИЧИИ",
     orderFrom: "Заказ от",
+    perPiece: "за шт.",
     pcsShort: "шт.",
     added: "добавлен в корзину",
     sending: "Отправляем заказ…",
@@ -2793,6 +2900,7 @@ const I18N = {
     unavailable: "Currently unavailable",
     outOfStock: "OUT OF STOCK",
     orderFrom: "Order from",
+    perPiece: "per pc.",
     pcsShort: "pcs",
     added: "added to cart",
     sending: "Sending order…",
@@ -3883,7 +3991,7 @@ function productChipsHtml(p){
   return chips.length ? `<div class="chips">${chips.join("")}</div>` : "";
 }
 
-function getQtyControlsHtml(name, out) {
+function getQtyControlsHtml(name, out, full) {
   const quantum = getProductQuantityQuantum(name);
   const qty = cart.find(c => c.name === name)?.qty || 0;
   if (qty > 0) {
@@ -3895,7 +4003,7 @@ function getQtyControlsHtml(name, out) {
       </div>
     `;
   }
-  return `<div class="qty-control-wrap"><button class="add" data-qty-change="1" data-name="${escapeHtml(name)}" ${out ? "disabled" : ""} aria-label="${out ? t("outOfStock") : t("addToCart")}">${out ? "×" : t("addToCart")}</button></div>`;
+  return `<div class="qty-control-wrap"><button class="add" data-qty-change="1" data-name="${escapeHtml(name)}" ${out ? "disabled" : ""} aria-label="${out ? t("outOfStock") : t("addToCart")}">${out ? (full ? t("outOfStock") : "×") : t("addToCart")}</button></div>`;
 }
 
 function getCardFootHtml(p) {
@@ -3904,34 +4012,32 @@ function getCardFootHtml(p) {
   const promo = productPromoPrice(p);
   const pr = promo.price;
   const originalPr = promo.original;
+  const quantum = getProductQuantityQuantum(p.name);
 
-  let priceHtml = '';
+  const badge = promo.discount > 0
+    ? `<span class="price-badge">−${Math.round((promo.discount / originalPr) * 100)}%</span>`
+    : "";
+
+  // Строка цены всегда одна: цена слева, пояснение справа
+  let main, note = "";
   if (qty > 0) {
-     priceHtml = `
-       <div class="price-info">
-         <div style="font-size:12px; font-weight:normal; color:var(--tg-muted); line-height:1.2; margin-bottom:2px;">
-           ${promo.discount > 0 ? `<span style="text-decoration:line-through;opacity:.55;">${money(originalPr)}</span> → ` : ""}${money(pr)} x ${qty} шт.
-         </div>
-         <div class="price">${money(pr * qty)}${promo.discount > 0 ? ` <span style="font-size:11px;color:var(--success);">−${Math.round((promo.discount/originalPr)*100)}%</span>` : ""}</div>
-       </div>`;
+    main = money(pr * qty);
+    note = `${money(pr)} × ${qty}`;
   } else {
-     priceHtml = promo.discount > 0
-       ? `<span class="price"><span style="text-decoration:line-through;opacity:.5;font-size:12px;margin-right:6px;">${money(originalPr)}</span>${money(pr)} <span style="font-size:11px;color:var(--success);">−${Math.round((promo.discount/originalPr)*100)}%</span></span>`
-       : `<span class="price">${escapeHtml(p.price)}</span>`;
+    main = promo.discount > 0 ? money(pr) : escapeHtml(p.price);
+    if (promo.discount > 0) note = `<s>${money(originalPr)}</s>`;
+    else if (quantum > 1) note = t("perPiece");
   }
 
   return `
-    ${priceHtml}
-    <div class="controls-wrap">
-      ${getQtyControlsHtml(p.name, out)}
-    </div>
+    <div class="foot-price"><span class="price">${main}</span>${badge}${note ? `<span class="price-note">${note}</span>` : ""}</div>
+    <div class="foot-action">${getQtyControlsHtml(p.name, out, true)}</div>
   `;
 }
 
 function card(p){
   const out = isOutOfStock(p);
   const fullMeta = p.description || "";
-  const showReadMore = p.description && p.description.length > 55;
   return `
     <article class="card ${out ? "unavailable" : ""}" data-product-name="${escapeHtml(p.name)}">
       <div class="card-img">
@@ -3941,10 +4047,7 @@ function card(p){
       </div>
       <div class="card-body">
         <h3>${escapeHtml(p.name)}</h3>
-        <div>
-          <div class="meta" style="-webkit-line-clamp: 2;">${escapeHtml(fullMeta)}</div>
-          ${showReadMore ? `<button class="read-more-btn" onclick="toggleReadMore(this); event.stopPropagation();">${t("readMore")}</button>` : ""}
-        </div>
+        <div class="meta" style="-webkit-line-clamp: 2;">${escapeHtml(fullMeta)}</div>
         ${productChipsHtml(p)}
         <div class="card-foot">
           ${getCardFootHtml(p)}
@@ -4085,13 +4188,11 @@ function updateModalControls() {
   const pr = priceNum(activeModalProduct.price);
   
   const pmPriceEl = document.getElementById("pmPrice");
-  if(qty > 0) {
-    pmPriceEl.innerHTML = `<div style="font-size:12px; font-weight:normal; color:var(--tg-muted); line-height:1; margin-bottom:4px;">${money(pr)} x ${qty} шт.</div><div>${money(pr * qty)}</div>`;
-  } else {
-    pmPriceEl.textContent = activeModalProduct.price;
-  }
+  const quantum = getProductQuantityQuantum(activeModalProduct.name);
+  const note = qty > 0 ? `${money(pr)} × ${qty}` : (quantum > 1 ? t("perPiece") : "");
+  pmPriceEl.innerHTML = `<div class="pm-note">${note || "&nbsp;"}</div><div class="pm-total">${qty > 0 ? money(pr * qty) : escapeHtml(activeModalProduct.price)}</div>`;
 
-  document.getElementById("pmControls").innerHTML = getQtyControlsHtml(activeModalProduct.name, out);
+  document.getElementById("pmControls").innerHTML = getQtyControlsHtml(activeModalProduct.name, out, true);
 }
 
 /* =====================================================
