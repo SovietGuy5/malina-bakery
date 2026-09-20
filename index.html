@@ -702,133 +702,167 @@ body.dark-theme .topbar {
 }
 
 .cart-fab{
-    position:fixed;
-    right:20px;
-    bottom:calc(20px + env(safe-area-inset-bottom));
-    z-index:30;
-    min-width:64px;
-    height:64px;
-    border:0;
-    border-radius:22px;
-    background: linear-gradient(135deg, var(--accent), var(--accent-dark)) !important;
-    color: #fff !important;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:8px;
-    padding:0 16px;
-    box-shadow: 0 10px 25px rgba(176, 42, 92, 0.4);
-    transition: 0.2s;
+  position:fixed;
+  right:18px;
+  bottom:calc(18px + env(safe-area-inset-bottom));
+  z-index:30;
+  min-width:52px;
+  height:52px;
+  border:0;
+  border-radius:18px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark)) !important;
+  color:#fff !important;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  padding:0 14px;
+  box-shadow:0 8px 20px rgba(176, 42, 92, 0.35);
+  transition:transform .2s, height .25s cubic-bezier(.16,1,.3,1), padding .25s cubic-bezier(.16,1,.3,1);
 }
-
-.cart-fab:hover {
-    transform: scale(1.05);
+.cart-fab.has-progress{
+  height:60px;
+  padding-bottom:12px;
 }
+.cart-fab:hover{transform:scale(1.05);}
 
-.cart-fab svg{
-    width:24px;
-    height:24px;
-    stroke: #fff !important;
-    color: #fff !important;
+.cart-fab > svg{
+  width:20px;
+  height:20px;
+  stroke:#fff !important;
+  color:#fff !important;
 }
-
-.cart-fab svg path,
-.cart-fab svg circle{
-    stroke: #fff !important;
-    fill:none !important;
+.cart-fab > svg path,
+.cart-fab > svg circle{
+  stroke:#fff !important;
+  fill:none !important;
 }
 
 .cart-fab .count{
-    position: absolute;
-    top: -6px;
-    right: -6px;
-    min-width: 24px;
-    height: 24px;
-    padding: 0 6px;
-    border-radius: 999px;
-    background: #fff !important;
-    color: var(--accent) !important;
-    font-size: 12px;
-    font-weight: 800;
-    display: grid;
-    place-items: center;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  position:absolute;
+  top:-6px;
+  right:-6px;
+  min-width:20px;
+  height:20px;
+  padding:0 5px;
+  border-radius:999px;
+  background:#fff !important;
+  color:var(--accent) !important;
+  font-size:11px;
+  font-weight:800;
+  display:grid;
+  place-items:center;
+  box-shadow:0 2px 6px rgba(0,0,0,0.15);
 }
-
 .cart-fab .total{
-    color: #fff !important;
-    font-size:14px;
-    font-weight:800;
+  color:#fff !important;
+  font-size:13px;
+  font-weight:800;
 }
 
-/* Мини-прогресс бесплатной доставки на кнопке корзины */
+/* ---- Мини-взрыв (общий для корзины и кнопки) ---- */
+.ex-burst{
+  position:absolute;
+  width:0;
+  height:0;
+  pointer-events:none;
+  z-index:3;
+}
+.ex-burst b{
+  position:absolute;
+  left:-9px;
+  top:-9px;
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  border:2px solid var(--c, var(--success));
+  opacity:0;
+  animation:ex-ring .55s ease-out forwards;
+}
+.ex-burst i{
+  position:absolute;
+  left:-2px;
+  top:-2px;
+  width:4px;
+  height:4px;
+  border-radius:50%;
+  background:var(--c, var(--success));
+  opacity:0;
+  animation:ex-spark .6s cubic-bezier(.16,1,.3,1) forwards;
+}
+@keyframes ex-ring{
+  0%{opacity:.9;transform:scale(.3);}
+  100%{opacity:0;transform:scale(2.6);}
+}
+@keyframes ex-spark{
+  0%{opacity:1;transform:translate(0,0) scale(1);}
+  100%{opacity:0;transform:translate(var(--dx), var(--dy)) scale(.3);}
+}
+
+/* ---- Мини-прогресс на кнопке корзины: грузовик встроен в ползунок ---- */
 .fab-progress{
   position:absolute;
-  left:16px;
-  right:16px;
-  bottom:8px;
-  height:3px;
+  left:14px;
+  right:14px;
+  bottom:9px;
+  height:4px;
   pointer-events:none;
 }
 .fab-progress .fp-track{
   position:absolute;
   inset:0;
-  border-radius:3px;
+  border-radius:4px;
   background:rgba(255,255,255,.32);
-  overflow:hidden;
 }
 .fab-progress .fp-track i{
-  position:relative;
   display:block;
   height:100%;
-  width:0;
+  width:calc(7px + (100% - 14px) * var(--pn, 0));
   border-radius:inherit;
   background:#fff;
-  overflow:hidden;
   transition:width .35s cubic-bezier(.16,1,.3,1);
 }
-.fab-progress .fp-track i::after{
-  content:"";
+.fab-progress .fp-knob{
   position:absolute;
-  inset:0;
-  background:linear-gradient(90deg, transparent, rgba(176,42,92,.55), transparent);
-  transform:translateX(-100%);
-}
-.fab-progress .fp-truck{
-  position:absolute;
-  bottom:4px;
+  top:50%;
   left:calc((100% - 14px) * var(--pn, 0));
   width:14px;
-  height:11px;
+  height:14px;
+  margin-top:-7px;
+  border-radius:50%;
+  background:#fff;
+  display:grid;
+  place-items:center;
+  box-shadow:0 1px 3px rgba(0,0,0,.25);
   transition:left .35s cubic-bezier(.16,1,.3,1);
 }
-.cart-fab .fp-truck svg{
+.cart-fab .fp-knob svg{
   display:block;
-  width:14px;
-  height:11px;
-  overflow:visible;
+  width:9px;
+  height:9px;
+  stroke:var(--accent) !important;
+  color:var(--accent) !important;
 }
-.cart-fab .fp-truck svg path,
-.cart-fab .fp-truck svg circle{stroke-width:2.4;}
-.fab-progress .fp-truck.moving{animation:dprog-drive .5s ease-in-out;}
-.fab-progress.celebrate .fp-truck{animation:dprog-hop .6s cubic-bezier(.34,1.56,.64,1);}
-.fab-progress.celebrate .fp-track i::after{animation:dprog-shine .8s ease .1s;}
+.cart-fab .fp-knob svg path,
+.cart-fab .fp-knob svg circle{
+  stroke:var(--accent) !important;
+  fill:none !important;
+  stroke-width:2.6;
+}
+.fab-burst{right:7px;top:50%;}
 
-/* Прогресс бесплатной доставки в корзине (компактный) */
+/* ---- Прогресс бесплатной доставки в корзине (компактный) ---- */
 .dprog{
-  margin:0 0 12px;
-  padding:9px 12px 11px;
-  border:1px solid var(--tg-line);
-  border-radius:14px;
-  background:var(--tg-card);
+  --k:28px;
+  margin:0 0 10px;
 }
 .dprog-head{
   display:flex;
   align-items:baseline;
   justify-content:space-between;
   gap:10px;
-  margin-bottom:4px;
-  line-height:1.25;
+  margin-bottom:6px;
+  line-height:1.2;
 }
 .dprog-title{
   flex:0 1 auto;
@@ -848,91 +882,63 @@ body.dark-theme .topbar {
   white-space:nowrap;
 }
 .dprog-sub b{color:var(--accent);font-weight:800;}
+.dprog-lane{position:relative;}
 .dprog-track{
   position:relative;
-  height:6px;
-  border-radius:6px;
+  height:20px;
+  border-radius:20px;
   background:var(--tg-soft);
   overflow:hidden;
 }
 .dprog-fill{
   position:absolute;
   inset:0 auto 0 0;
-  width:0;
+  width:calc(var(--k) + (100% - var(--k)) * var(--pn, 0));
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  padding-right:6px;
   border-radius:inherit;
   background:linear-gradient(90deg, var(--accent), var(--accent-dark));
+  color:#fff;
+  overflow:hidden;
   transition:width .4s cubic-bezier(.16,1,.3,1), background .3s ease;
 }
-.dprog-tick{
-  position:absolute;
-  top:0;
-  bottom:0;
-  width:2px;
-  margin-left:-1px;
-  background:var(--tg-card);
+.dprog-fill svg{
+  position:relative;
+  z-index:1;
+  flex:none;
+  display:block;
+  width:15px;
+  height:15px;
 }
-.dprog.done{border-color:color-mix(in srgb, var(--success) 45%, var(--tg-line));}
-.dprog.done .dprog-sub,
-.dprog.done .dprog-sub b{color:var(--success);}
-.dprog.done .dprog-fill{background:var(--success);}
-
-/* Грузовик, едущий по шкале */
-.dprog-lane{position:relative;padding-top:13px;}
-.dprog-rider{
-  position:absolute;
-  top:0;
-  left:calc((100% - 17px) * var(--pn, 0));
-  width:17px;
-  height:13px;
-  color:var(--accent);
-  transition:left .45s cubic-bezier(.16,1,.3,1), color .3s ease;
-}
-.dprog-rider svg{display:block;width:17px;height:13px;overflow:visible;}
-.dprog-rider.moving{animation:dprog-drive .55s ease-in-out;}
-.dprog.done .dprog-rider{color:var(--success);}
-@keyframes dprog-drive{
-  0%,100%{transform:translateY(0);}
-  25%{transform:translateY(-1.5px);}
-  50%{transform:translateY(0);}
-  75%{transform:translateY(-1px);}
-}
-
-/* Анимация при полном заполнении шкалы */
 .dprog-fill::after{
   content:"";
   position:absolute;
   inset:0;
-  background:linear-gradient(90deg, transparent, rgba(255,255,255,.6), transparent);
+  background:linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent);
   transform:translateX(-100%);
 }
-.dprog.celebrate{animation:dprog-glow 1.3s ease-out;}
-.dprog.celebrate .dprog-fill::after{animation:dprog-shine .9s ease .1s;}
-.dprog.celebrate .dprog-rider{animation:dprog-hop .6s cubic-bezier(.34,1.56,.64,1);}
+.dprog.celebrate .dprog-fill::after{animation:dprog-shine .8s ease .05s;}
 @keyframes dprog-shine{to{transform:translateX(100%);}}
-@keyframes dprog-hop{0%,100%{transform:translateY(0);}40%{transform:translateY(-6px);}}
-@keyframes dprog-glow{
-  0%{box-shadow:0 0 0 0 color-mix(in srgb, var(--success) 45%, transparent);}
-  100%{box-shadow:0 0 0 14px color-mix(in srgb, var(--success) 0%, transparent);}
-}
-.dprog-confetti{position:absolute;right:8px;top:9px;width:0;height:0;pointer-events:none;}
-.dprog-confetti i{
+.dprog-tick{
   position:absolute;
-  left:0;top:0;
-  width:6px;height:6px;
+  top:4px;
+  bottom:4px;
+  width:2px;
+  margin-left:-1px;
   border-radius:2px;
-  background:var(--c, var(--success));
-  opacity:0;
-  animation:dprog-burst .95s cubic-bezier(.16,1,.3,1) forwards;
+  background:var(--tg-muted);
+  opacity:.35;
 }
-@keyframes dprog-burst{
-  0%{opacity:1;transform:translate(0,0) rotate(0) scale(1);}
-  100%{opacity:0;transform:translate(var(--dx), var(--dy)) rotate(var(--r,180deg)) scale(.5);}
-}
-.cart-fab.pulse{animation:fab-pulse .7s cubic-bezier(.34,1.56,.64,1);}
-@keyframes fab-pulse{0%,100%{transform:scale(1);}45%{transform:scale(1.12);}}
+.dprog.done .dprog-sub,
+.dprog.done .dprog-sub b{color:var(--success);}
+.dprog.done .dprog-fill{background:var(--success);}
+.dprog-burst{right:13px;top:50%;}
+
 @media (prefers-reduced-motion: reduce){
-  .dprog, .dprog *, .dprog *::after, .cart-fab.pulse, .fab-progress *, .fab-progress *::after{animation:none !important;}
-  .dprog-rider, .dprog-fill, .fab-progress .fp-truck, .fab-progress .fp-track i{transition:none !important;}
+  .ex-burst b, .ex-burst i, .dprog.celebrate .dprog-fill::after{animation:none !important;}
+  .dprog-fill, .fab-progress .fp-track i, .fab-progress .fp-knob{transition:none !important;}
 }
 
 .sheet-backdrop{
@@ -1813,8 +1819,8 @@ body.dark-theme .address-map-canvas-wrap .leaflet-control-attribution a{
   .toast {
     left: 20px;
     right: 20px;
-    /* над кнопкой корзины (64px) + бейдж счётчика + зазор */
-    bottom: calc(20px + 64px + 18px + env(safe-area-inset-bottom));
+    /* над кнопкой корзины (до 60px) + бейдж счётчика + зазор */
+    bottom: calc(18px + 60px + 16px + env(safe-area-inset-bottom));
     transform: translateY(18px);
     width: auto;
     min-width: 0;
@@ -2072,7 +2078,8 @@ body.dark-theme .address-map-canvas-wrap .leaflet-control-attribution a{
   <span class="total" id="floatingCartTotal" hidden>0 ₽</span>
   <span class="fab-progress" id="fabProgress" hidden>
     <span class="fp-track"><i></i></span>
-    <span class="fp-truck" id="fabTruck" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6.5h11v9H3z"/><path d="M14 9.5h3.6l3.4 3.4v2.6h-7"/><circle cx="7.5" cy="17.5" r="1.8"/><circle cx="17.5" cy="17.5" r="1.8"/></svg></span>
+    <span class="fp-knob" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6.5h11v9H3z"/><path d="M14 9.5h3.6l3.4 3.4v2.6h-7"/><circle cx="7.5" cy="17.5" r="1.8"/><circle cx="17.5" cy="17.5" r="1.8"/></svg></span>
+    <span class="ex-burst fab-burst" id="fabBurst" aria-hidden="true"></span>
   </span>
 </button>
 
@@ -2125,11 +2132,11 @@ body.dark-theme .address-map-canvas-wrap .leaflet-control-attribution a{
           <span class="dprog-sub" id="dprogText"></span>
         </div>
         <div class="dprog-lane" id="dprogLane">
-          <span class="dprog-rider" id="dprogRider" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6.5h11v9H3z"/><path d="M14 9.5h3.6l3.4 3.4v2.6h-7"/><circle cx="7.5" cy="17.5" r="1.8"/><circle cx="17.5" cy="17.5" r="1.8"/></svg>
-          </span>
-          <div class="dprog-track"><span class="dprog-fill" id="dprogFill"></span><span id="dprogTicks"></span></div>
-          <span class="dprog-confetti" id="dprogConfetti" aria-hidden="true"></span>
+          <div class="dprog-track">
+            <span class="dprog-fill" id="dprogFill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6.5h11v9H3z"/><path d="M14 9.5h3.6l3.4 3.4v2.6h-7"/><circle cx="7.5" cy="17.5" r="1.8"/><circle cx="17.5" cy="17.5" r="1.8"/></svg></span>
+            <span id="dprogTicks"></span>
+          </div>
+          <span class="ex-burst dprog-burst" id="dprogBurst" aria-hidden="true"></span>
         </div>
       </div>
       <div id="cartItems"></div>
@@ -3506,47 +3513,39 @@ let dprogPrevSubtotal = 0;
 let dprogPendingCelebrate = false;
 let dprogCelebrateTimer = null;
 
+function spawnBurst(el, colors, count){
+  if(!el) return;
+  let html = `<b style="--c:${colors[0]}"></b>`;
+  for(let i = 0; i < count; i++){
+    const a = (i / count) * Math.PI * 2 + Math.random() * 0.4;
+    const d = 16 + Math.random() * 12;
+    html += `<i style="--dx:${Math.round(Math.cos(a) * d)}px;--dy:${Math.round(Math.sin(a) * d)}px;--c:${colors[i % colors.length]}"></i>`;
+  }
+  el.innerHTML = html;
+}
+
 function playDeliveryCelebration(){
   const box = document.getElementById("deliveryProgress");
-  const conf = document.getElementById("dprogConfetti");
+  const burst = document.getElementById("dprogBurst");
   if(!box || box.classList.contains("hidden")) return;
-
-  // Конфетти из правого края шкалы
-  const colors = ["var(--success)", "var(--accent)", "#f59e0b", "#3b82f6"];
-  conf.innerHTML = Array.from({length: 10}, (_, i) => {
-    const angle = (-160 + i * 16) * Math.PI / 180;
-    const dist = 26 + Math.random() * 26;
-    const dx = Math.round(Math.cos(angle) * dist);
-    const dy = Math.round(Math.sin(angle) * dist);
-    const rot = Math.round(-200 + Math.random() * 400);
-    return `<i style="--dx:${dx}px;--dy:${dy}px;--r:${rot}deg;--c:${colors[i % colors.length]};animation-delay:${Math.round(Math.random()*90)}ms"></i>`;
-  }).join("");
-
+  spawnBurst(burst, ["var(--success)", "#f59e0b", "var(--accent)", "#3b82f6"], 12);
   box.classList.remove("celebrate");
   void box.offsetWidth;
   box.classList.add("celebrate");
   clearTimeout(dprogCelebrateTimer);
   dprogCelebrateTimer = setTimeout(() => {
     box.classList.remove("celebrate");
-    conf.innerHTML = "";
-  }, 1500);
+    burst.innerHTML = "";
+  }, 900);
 }
 
 let fabCelebrateTimer = null;
 function playFabCelebration(){
-  const btn = document.getElementById("mobileStickyBtn");
-  const bar = document.getElementById("fabProgress");
-  if(!btn || !bar) return;
-  btn.classList.remove("pulse");
-  bar.classList.remove("celebrate");
-  void btn.offsetWidth;
-  btn.classList.add("pulse");
-  bar.classList.add("celebrate");
+  const burst = document.getElementById("fabBurst");
+  if(!burst) return;
+  spawnBurst(burst, ["#ffffff", "#ffe08a", "#ffffff", "#ffc2d8"], 10);
   clearTimeout(fabCelebrateTimer);
-  fabCelebrateTimer = setTimeout(() => {
-    btn.classList.remove("pulse");
-    bar.classList.remove("celebrate");
-  }, 1000);
+  fabCelebrateTimer = setTimeout(() => { burst.innerHTML = ""; }, 800);
 }
 
 function updateDeliveryProgress(){
@@ -3561,9 +3560,11 @@ function updateDeliveryProgress(){
   dprogWasDone = st ? st.done : null;
   dprogPrevSubtotal = subtotal;
 
+  const fabBtn = document.getElementById("mobileStickyBtn");
   if(!st){
     box.classList.add("hidden");
     fab.hidden = true;
+    fabBtn?.classList.remove("has-progress");
     dprogPendingCelebrate = false;
     return;
   }
@@ -3574,29 +3575,15 @@ function updateDeliveryProgress(){
   document.getElementById("dprogTitle").textContent = st.title;
   const subEl = document.getElementById("dprogText");
   if(st.done) subEl.textContent = st.sub; else subEl.innerHTML = st.subHtml;
-  document.getElementById("dprogFill").style.width = st.pct + "%";
-  const lane = document.getElementById("dprogLane");
-  const rider = document.getElementById("dprogRider");
-  const prevPn = lane.style.getPropertyValue("--pn");
   const nextPn = String(st.pct / 100);
-  lane.style.setProperty("--pn", nextPn);
-  if(prevPn !== "" && prevPn !== nextPn){
-    rider.classList.remove("moving");
-    void rider.offsetWidth;
-    rider.classList.add("moving");
-  }
-  document.getElementById("dprogTicks").innerHTML = st.ticks.map(x => `<span class="dprog-tick" style="left:${x}%"></span>`).join("");
+  document.getElementById("dprogLane").style.setProperty("--pn", nextPn);
+  document.getElementById("dprogTicks").innerHTML = st.ticks
+    .map(x => `<span class="dprog-tick" style="left:calc(var(--k) + (100% - var(--k)) * ${x / 100})"></span>`)
+    .join("");
 
   fab.hidden = false;
-  fab.querySelector(".fp-track i").style.width = st.pct + "%";
-  const prevFabPn = fab.style.getPropertyValue("--pn");
   fab.style.setProperty("--pn", nextPn);
-  if(prevFabPn !== "" && prevFabPn !== nextPn){
-    const truck = document.getElementById("fabTruck");
-    truck.classList.remove("moving");
-    void truck.offsetWidth;
-    truck.classList.add("moving");
-  }
+  fabBtn?.classList.add("has-progress");
 
   if(justReached){
     playFabCelebration();
